@@ -28,3 +28,6 @@ legacy-web/
 
 # 验收/调试临时文件
 *.log
+
+# 视觉工具的临时产物（截图/裁剪），不进仓库
+.dsh-vision-router/
