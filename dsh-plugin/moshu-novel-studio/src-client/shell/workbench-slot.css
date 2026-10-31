@@ -1,0 +1,46 @@
+/* 主区面板在工作台全屏时的提示卡。 */
+
+.moshu-slot-away {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 100%;
+  min-height: 240px;
+  padding: 32px;
+  text-align: center;
+  color: var(--dsw-alias-label-secondary);
+  background: var(--dsw-alias-bg-base);
+}
+
+.moshu-slot-away strong {
+  color: var(--dsw-alias-label-primary);
+  font-size: 14px;
+}
+
+.moshu-slot-away p {
+  margin: 0 0 8px;
+  max-width: 340px;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.moshu-slot-away-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  background: var(--dsw-alias-bg-layer-2);
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.moshu-slot-away-btn:hover {
+  color: var(--dsw-alias-label-primary);
+  border-color: var(--dsw-alias-brand-primary);
+}

@@ -1,0 +1,30 @@
+node_modules/
+
+# 插件构建产物：**提交进仓库**（别人的 DSH 直接能用，不必先构建）
+# 需要重新生成时跑 npm run build:plugin
+
+# 临时脚本与验收沙箱
+dsh-plugin/.tmp/
+dsh-plugin/.tmp-*/
+.tmp-*/
+
+# 本机配置：模型通道 / 当前作品，因机器而异
+.moshu/
+
+# 作品数据：**整个目录都不进仓库**（作者自己的书，公开仓库里不该有）
+novels/
+
+# 旧的独立 Web 应用（已停用，确认后可整目录删除）
+legacy-web/
+
+# 其它
+.dsh-home/
+*.tsbuildinfo
+.*-check.*
+
+# 打包产物
+*.zip
+*.tgz
+
+# 验收/调试临时文件
+*.log

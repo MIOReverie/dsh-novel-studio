@@ -1,0 +1,97 @@
+/* 工作台全屏浮层：盖住整帧，用满窗口高度。颜色只用宿主 token。 */
+
+.moshu-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000; /* 盖住宿主自己的弹层（宿主最高 1100） */
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--dsw-alias-bg-base);
+  color: var(--dsw-alias-label-primary);
+}
+
+.moshu-overlay-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  padding: 4px 12px;
+  border-bottom: 1px solid var(--dsw-alias-border-l1);
+  background: var(--dsw-alias-bg-layer-1);
+}
+
+.moshu-overlay-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--dsw-alias-brand-primary) 12%, transparent);
+  color: var(--dsw-alias-brand-primary);
+}
+
+.moshu-overlay-title {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.moshu-overlay-hint {
+  margin-left: 4px;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.moshu-overlay-close {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  background: var(--dsw-alias-bg-layer-2);
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.moshu-overlay-close:hover {
+  color: var(--dsw-alias-label-primary);
+  border-color: var(--dsw-alias-brand-primary);
+  background: color-mix(in oklab, var(--dsw-alias-brand-primary) 10%, var(--dsw-alias-bg-layer-2));
+}
+
+.moshu-overlay-close:focus-visible {
+  outline: 2px solid var(--dsw-alias-brand-primary);
+  outline-offset: 2px;
+}
+
+.moshu-overlay-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 760px) {
+  .moshu-overlay-hint {
+    display: none;
+  }
+}
+
+
+/* 浮层里不要额外留白：上下都给内容。 */
+.moshu-overlay-head{padding:4px 12px;min-height:0}
+.moshu-overlay-body{min-height:0}
+
+
+/* 全屏条只做"退出"这一件事，压到最薄，把高度留给内容。 */
+.moshu-overlay-bar{padding:4px 12px;gap:8px;font-size:11.5px}
+.moshu-overlay-bar button{padding:3px 8px}

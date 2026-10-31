@@ -1,0 +1,477 @@
+/* 墨枢 · 故事大纲 / 世界资料库。所有规则限定在 .moshu-root 内，颜色走宿主主题变量。 */
+
+.moshu-root .outline-view,.moshu-root .library-view{
+  --world-ink:var(--moshu-ink);
+  --world-muted:var(--moshu-muted);
+  --world-green:var(--moshu-brand);
+  --world-green-dark:var(--moshu-brand-ink);
+  --world-sage:var(--moshu-tint);
+  --world-paper:var(--moshu-surface);
+  --world-line:var(--moshu-line);
+  color:var(--world-ink);padding:2px 0 36px;font-size:13px;min-width:0}
+.moshu-root .outline-view *,.moshu-root .library-view *{box-sizing:border-box}
+.moshu-root .outline-view button,.moshu-root .library-view button{
+  transition:background-color .18s,border-color .18s,color .18s,box-shadow .18s,transform .18s}
+.moshu-root .outline-view h1,.moshu-root .outline-view h2,.moshu-root .outline-view h3,
+.moshu-root .library-view h1,.moshu-root .library-view h2{
+  font-family:var(--moshu-serif);color:var(--world-ink)}
+
+.moshu-root .outline-header,.moshu-root .library-header{
+  display:flex;align-items:center;justify-content:space-between;gap:24px;margin:3px 0 23px}
+.moshu-root .outline-header h1,.moshu-root .library-header h1{
+  margin:3px 0 5px;font-size:26px;font-weight:650;letter-spacing:.04em}
+.moshu-root .outline-header p:not(.eyebrow),.moshu-root .library-header p:not(.eyebrow){
+  margin:0;color:var(--world-muted);font-size:12px;line-height:1.8}
+.moshu-root .outline-view .eyebrow,.moshu-root .library-view .eyebrow{
+  margin:0;color:var(--moshu-faint);font-size:9px;font-weight:650;letter-spacing:.2em}
+
+.moshu-root .outline-view .primary-button,.moshu-root .library-view .primary-button,
+.moshu-root .outline-view .secondary-button,.moshu-root .library-view .secondary-button{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap;
+  border-radius:8px;padding:9px 14px;font-size:12px;font-weight:550;line-height:1.4}
+.moshu-root .outline-view .primary-button,.moshu-root .library-view .primary-button{
+  border:1px solid var(--world-green);background:var(--world-green);
+  color:var(--dsw-alias-label-primary-foreground);
+  box-shadow:0 3px 8px color-mix(in oklab,var(--dsw-alias-brand-primary) 20%,transparent)}
+.moshu-root .outline-view .primary-button:hover,.moshu-root .library-view .primary-button:hover{
+  background:var(--world-green-dark);border-color:var(--world-green-dark)}
+.moshu-root .outline-view .secondary-button,.moshu-root .library-view .secondary-button{
+  border:1px solid var(--world-line);background:var(--moshu-surface-2);color:var(--world-muted)}
+.moshu-root .outline-view .secondary-button:hover,.moshu-root .library-view .secondary-button:hover{
+  background:var(--world-sage);border-color:var(--moshu-line-strong);color:var(--world-green-dark)}
+.moshu-root .outline-view .icon-button,.moshu-root .library-view .icon-button{
+  display:inline-grid;place-items:center;width:34px;height:34px;padding:0;
+  border:1px solid var(--world-line);border-radius:8px;background:transparent;color:var(--world-muted)}
+.moshu-root .outline-view .icon-button:hover,.moshu-root .library-view .icon-button:hover{
+  background:var(--world-sage);color:var(--world-green-dark)}
+
+.moshu-root .outline-view .section-heading,.moshu-root .library-view .section-heading{
+  display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:17px}
+.moshu-root .outline-view .section-heading>div,.moshu-root .library-view .section-heading>div{
+  display:flex;align-items:center;gap:9px;color:var(--world-green-dark)}
+.moshu-root .outline-view .section-heading h2,.moshu-root .library-view .section-heading h2{
+  margin:0;font-size:16px;font-weight:600;letter-spacing:.03em}
+.moshu-root .outline-view .section-heading>span,.moshu-root .library-view .section-heading>span{
+  color:var(--moshu-faint);font-size:10px}
+
+/* 大纲统计 */
+.moshu-root .outline-stats{
+  display:grid;grid-template-columns:repeat(3,minmax(100px,.7fr)) minmax(210px,1.65fr);
+  background:var(--moshu-surface);border:1px solid var(--world-line);border-radius:12px;
+  margin-bottom:20px;box-shadow:0 3px 16px color-mix(in oklab,#000 4%,transparent);overflow:hidden}
+.moshu-root .outline-stats>div{
+  display:flex;align-items:center;gap:12px;padding:18px 21px;position:relative}
+.moshu-root .outline-stats>div:not(:last-child):after{
+  content:"";position:absolute;right:0;top:23%;height:54%;width:1px;background:var(--world-line)}
+.moshu-root .outline-stats>div>svg{color:var(--world-muted)}
+.moshu-root .outline-stats span{color:var(--world-muted);font-size:10px;line-height:1.7}
+.moshu-root .outline-stats strong{
+  display:block;color:var(--world-green-dark);font-family:var(--moshu-serif);font-size:23px;
+  line-height:1.1;font-weight:550;font-variant-numeric:tabular-nums}
+.moshu-root .outline-stats .outline-progress{display:block;padding-top:14px}
+.moshu-root .outline-progress>span{display:flex;justify-content:space-between;align-items:center}
+.moshu-root .outline-progress>span strong{font-family:inherit;font-size:11px;font-weight:550}
+.moshu-root .outline-progress>span b{
+  font-size:15px;color:var(--world-green-dark);font-weight:600;font-variant-numeric:tabular-nums}
+.moshu-root .outline-view .progress-track{
+  height:5px;background:var(--moshu-surface-2);border-radius:9px;overflow:hidden;margin:8px 0 5px}
+.moshu-root .outline-view .progress-track i{
+  display:block;height:100%;border-radius:inherit;background:var(--moshu-brand);transition:width .5s ease}
+.moshu-root .outline-progress small{font-size:9px;color:var(--moshu-faint)}
+
+/* 故事节拍 */
+.moshu-root .story-arc{
+  padding:21px 24px 24px;border:1px solid var(--world-line);border-radius:12px;
+  background:linear-gradient(135deg,var(--moshu-surface),var(--moshu-surface-2));
+  margin-bottom:25px;overflow:hidden}
+.moshu-root .arc-track{
+  display:flex;position:relative;align-items:flex-start;gap:0;overflow-x:auto;padding:4px 0 3px;
+  scrollbar-width:thin;scrollbar-color:var(--moshu-line-strong) transparent}
+.moshu-root .arc-line{
+  position:absolute;left:32px;right:32px;top:17px;height:1px;
+  background:linear-gradient(90deg,var(--moshu-line-strong),var(--moshu-brand),var(--moshu-line-strong))}
+.moshu-root .arc-stop{
+  position:relative;z-index:1;min-width:105px;flex:1;display:flex;flex-direction:column;
+  align-items:center;border:0;background:transparent;padding:0 5px;color:var(--world-muted)}
+.moshu-root .arc-stop:hover .arc-node{
+  background:var(--moshu-brand);color:var(--dsw-alias-label-primary-foreground);border-color:var(--moshu-brand);
+  box-shadow:0 0 0 5px var(--moshu-tint)}
+.moshu-root .arc-node{
+  width:29px;height:29px;border:1px solid var(--moshu-line-strong);border-radius:50%;
+  background:var(--moshu-surface);display:grid;place-items:center;margin-bottom:9px;transition:all .2s}
+.moshu-root .arc-stop strong{font-size:11px;font-weight:550;white-space:nowrap}
+.moshu-root .arc-stop small{
+  font-size:9px;color:var(--moshu-faint);margin-top:5px;max-width:130px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.moshu-root .empty-inline{
+  display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;
+  color:var(--world-muted);font-size:12px}
+
+/* 卷与章节卡片 */
+.moshu-root .volume-list{display:flex;flex-direction:column;gap:17px}
+.moshu-root .volume-section{
+  border:1px solid var(--world-line);background:var(--moshu-surface);border-radius:12px;
+  padding:20px 22px;box-shadow:0 4px 15px color-mix(in oklab,#000 4%,transparent)}
+.moshu-root .volume-heading{display:flex;align-items:center;gap:11px}
+.moshu-root .collapse-button{
+  display:grid;place-items:center;width:28px;height:30px;padding:0;border:0;background:transparent;
+  color:var(--world-muted);border-radius:5px;flex-shrink:0}
+.moshu-root .collapse-button:hover{background:var(--moshu-hover);color:var(--world-green-dark)}
+.moshu-root .volume-heading>div{flex:1;min-width:0}
+.moshu-root .volume-heading h2{margin:0;font-size:18px;font-weight:600;letter-spacing:.03em}
+.moshu-root .volume-heading p{
+  margin:5px 0 0;color:var(--world-muted);font-size:10px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;line-height:1.6}
+.moshu-root .chapter-grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-top:19px}
+.moshu-root .chapter-card{
+  display:flex;flex-direction:column;min-width:0;border:1px solid var(--world-line);
+  border-radius:10px;background:var(--world-paper);padding:16px;
+  transition:transform .2s,border-color .2s,box-shadow .2s}
+.moshu-root .chapter-card:hover{
+  transform:translateY(-2px);border-color:var(--moshu-line-strong);
+  box-shadow:0 7px 22px color-mix(in oklab,#000 7%,transparent)}
+.moshu-root .chapter-card-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.moshu-root .chapter-card .chapter-number{
+  font-family:Georgia,var(--moshu-serif);color:var(--moshu-faint);font-size:22px;font-weight:400;line-height:1}
+.moshu-root .outline-view .status-badge{
+  display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border:1px solid var(--world-line);
+  border-radius:20px;color:var(--world-muted);background:var(--moshu-surface-2);font-size:9px;white-space:nowrap}
+.moshu-root .status-已完成{
+  background:color-mix(in oklab,var(--dsw-alias-state-success-primary) 16%,transparent);
+  color:var(--moshu-success);border-color:color-mix(in oklab,var(--dsw-alias-state-success-primary) 32%,transparent)}
+.moshu-root .status-草稿,.moshu-root .status-待审阅{
+  background:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 14%,transparent);
+  color:var(--moshu-warn);border-color:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 28%,transparent)}
+.moshu-root .chapter-card h3{
+  font-size:15px;font-weight:600;line-height:1.6;margin:14px 0 6px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.moshu-root .chapter-card>p{
+  font-size:11px;color:var(--world-muted);line-height:1.85;margin:0;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:41px}
+.moshu-root .chapter-meta{
+  display:flex;justify-content:space-between;gap:8px;font-size:9px;color:var(--moshu-faint);
+  margin:13px 0 14px}
+.moshu-root .chapter-meta span{display:flex;align-items:center;gap:4px;min-width:0}
+.moshu-root .chapter-actions{
+  display:flex;align-items:center;gap:7px;margin-top:auto;border-top:1px solid var(--world-line);
+  padding-top:12px}
+.moshu-root .chapter-actions .primary-button{padding:6px 10px;font-size:10px;box-shadow:none}
+.moshu-root .chapter-actions .icon-button{width:29px;height:29px;border:0}
+.moshu-root .chapter-actions select{
+  margin-left:auto;width:73px;min-width:0;padding:5px 3px;border:0;background:transparent;
+  color:var(--world-muted);font-size:9px;outline-offset:1px}
+.moshu-root .empty-volume{text-align:center;padding:28px 10px 10px;color:var(--world-muted)}
+.moshu-root .empty-volume svg{opacity:.65}
+.moshu-root .empty-volume p{font-size:11px}
+.moshu-root .empty-volume button{
+  display:inline-flex;gap:5px;align-items:center;border:0;background:none;color:var(--world-green-dark);
+  font-size:11px;padding:5px}
+
+/* 章纲对话框 */
+.moshu-root .outline-editor-options{
+  display:grid;grid-template-columns:1fr 1.35fr 1fr;gap:12px;padding:18px 25px 0}
+.moshu-root .outline-editor-options label,.moshu-root .new-document-modal>label,
+.moshu-root .markdown-field{font-size:11px;color:var(--world-muted);font-weight:500}
+.moshu-root .outline-editor-options input,.moshu-root .outline-editor-options select,
+.moshu-root .new-document-modal input{
+  display:block;width:100%;margin-top:7px;border:1px solid var(--world-line);border-radius:7px;
+  background:var(--moshu-surface-2);color:var(--moshu-ink);padding:9px 10px;font-size:12px;outline:none}
+.moshu-root .outline-editor-options input:focus,.moshu-root .outline-editor-options select:focus,
+.moshu-root .new-document-modal input:focus{
+  border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 45%,var(--world-line));
+  box-shadow:0 0 0 3px var(--moshu-tint)}
+.moshu-root .markdown-field{display:block;padding:18px 25px 0}
+.moshu-root .markdown-field textarea{
+  display:block;resize:vertical;width:100%;min-height:310px;margin-top:8px;
+  border:1px solid var(--world-line);border-radius:9px;background:var(--moshu-surface-2);
+  color:var(--moshu-ink);padding:18px;font-family:var(--moshu-serif);font-size:13px;
+  line-height:2;outline:none;tab-size:2}
+.moshu-root .markdown-field textarea:focus{
+  border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 45%,var(--world-line));
+  box-shadow:0 0 0 3px var(--moshu-tint)}
+
+/* 资料库导航与搜索 */
+.moshu-root .library-toolbar{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+.moshu-root .library-search{
+  display:flex;align-items:center;gap:9px;width:min(390px,50%);padding:0 12px;
+  background:var(--moshu-surface-2);border:1px solid var(--world-line);border-radius:8px;
+  color:var(--world-muted);transition:border-color .2s,box-shadow .2s}
+.moshu-root .library-search:focus-within{
+  border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 45%,var(--world-line));
+  box-shadow:0 0 0 3px var(--moshu-tint)}
+.moshu-root .library-search input{
+  width:100%;min-width:0;border:0;outline:none;background:transparent;padding:10px 0;
+  color:var(--moshu-ink);font-size:12px}
+.moshu-root .library-search input::placeholder{color:var(--moshu-faint)}
+.moshu-root .library-search button{
+  border:0;background:none;padding:2px;color:var(--world-muted);display:grid;place-items:center}
+.moshu-root .library-view .segmented-control{display:flex;padding:3px;background:var(--moshu-surface-2);border-radius:8px;gap:2px}
+.moshu-root .library-view .segmented-control button{
+  display:flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--world-muted);
+  padding:7px 12px;border-radius:6px;font-size:11px}
+.moshu-root .library-view .segmented-control button.active{
+  background:var(--moshu-surface-3);color:var(--world-green-dark);
+  box-shadow:0 1px 5px color-mix(in oklab,#000 10%,transparent)}
+
+.moshu-root .library-tabs{
+  display:flex;gap:4px;border-bottom:1px solid var(--world-line);margin-bottom:17px;overflow-x:auto}
+.moshu-root .library-tabs button{
+  position:relative;display:flex;align-items:center;gap:7px;white-space:nowrap;border:0;
+  background:none;padding:10px 16px 12px;color:var(--world-muted);font-size:12px}
+.moshu-root .library-tabs button:after{
+  content:"";position:absolute;bottom:-1px;left:14px;right:14px;height:2px;
+  background:transparent;border-radius:2px}
+.moshu-root .library-tabs button:hover{background:var(--moshu-hover);color:var(--world-green-dark)}
+.moshu-root .library-tabs button.active{color:var(--world-green-dark);font-weight:600}
+.moshu-root .library-tabs button.active:after{background:var(--moshu-brand)}
+.moshu-root .library-tabs button>span{
+  font-size:9px;min-width:17px;padding:1px 4px;text-align:center;border-radius:10px;
+  background:var(--moshu-surface-2);color:var(--world-muted)}
+.moshu-root .library-tabs button.active>span{background:var(--moshu-tint);color:var(--world-green-dark)}
+
+/* 主从布局 */
+.moshu-root .library-layout{
+  /* 100vh 是整个窗口；对话内嵌/浮层里容器只有几百像素，会把面板撑出滚动区。 */
+display:grid;grid-template-columns:265px minmax(0,1fr);min-height:530px;height:min(820px,100%);
+  border:1px solid var(--world-line);border-radius:12px;overflow:hidden;
+  background:var(--moshu-surface);box-shadow:0 4px 18px color-mix(in oklab,#000 5%,transparent)}
+.moshu-root .document-list{
+  background:var(--moshu-surface-2);border-right:1px solid var(--world-line);overflow-y:auto;
+  padding:10px;scrollbar-width:thin;scrollbar-color:var(--moshu-line-strong) transparent}
+.moshu-root .document-list-heading{
+  display:flex;align-items:center;justify-content:space-between;padding:7px 8px 12px;
+  color:var(--world-muted);font-size:10px}
+.moshu-root .document-list-item{
+  width:100%;display:flex;align-items:center;gap:10px;text-align:left;border:1px solid transparent;
+  background:transparent;padding:12px 10px;border-radius:8px;margin-bottom:3px;color:var(--world-muted)}
+.moshu-root .document-list-item:hover{background:var(--moshu-hover)}
+.moshu-root .document-list-item.active{
+  background:var(--moshu-tint);border-color:var(--moshu-line-strong);color:var(--world-green-dark)}
+.moshu-root .document-icon{
+  width:30px;height:32px;display:grid;place-items:center;flex-shrink:0;border-radius:7px;
+  background:var(--moshu-surface);color:var(--world-muted);border:1px solid var(--world-line)}
+.moshu-root .document-list-item.active .document-icon{
+  color:var(--world-green-dark);border-color:var(--moshu-line-strong)}
+.moshu-root .document-list-item>span:nth-child(2){min-width:0;flex:1}
+.moshu-root .document-list-item strong{
+  display:block;font-size:12px;font-weight:550;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.moshu-root .document-list-item small{
+  display:block;font-size:9px;line-height:1.65;color:var(--world-muted);margin-top:4px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.moshu-root .document-list-item>svg{color:var(--moshu-faint)}
+.moshu-root .empty-list{text-align:center;padding:55px 10px;color:var(--world-muted)}
+.moshu-root .empty-list p{font-size:12px;margin:12px 0 6px}
+.moshu-root .empty-list small{font-size:10px}
+
+.moshu-root .document-reader{
+  display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--moshu-surface)}
+.moshu-root .document-header{
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:20px 28px 17px;border-bottom:1px solid var(--world-line)}
+.moshu-root .document-type{font-size:9px;letter-spacing:.1em;color:var(--world-muted)}
+.moshu-root .document-header h2{
+  font-size:23px;font-weight:600;margin:4px 0 6px;letter-spacing:.03em}
+.moshu-root .document-header p{margin:0;color:var(--moshu-faint);font-size:9px;word-break:break-all}
+.moshu-root .editor-actions{display:flex;gap:7px}
+
+.moshu-root .library-view .markdown-preview{
+  overflow-y:auto;padding:20px 35px 40px;flex:1;min-height:0;
+  scrollbar-width:thin;scrollbar-color:var(--moshu-line-strong) transparent}
+.moshu-root .preview-caption,.moshu-root .editor-caption{
+  display:flex;align-items:center;gap:6px;font-family:var(--moshu-sans);
+  color:var(--moshu-faint);font-size:9px;letter-spacing:.04em;margin-bottom:20px}
+.moshu-root .editor-caption{
+  margin:0;padding:13px 18px;border-bottom:1px solid var(--world-line);background:var(--moshu-surface-2)}
+.moshu-root .editor-caption span{margin-left:auto;letter-spacing:0}
+.moshu-root .library-view .markdown-preview h1{
+  font-size:25px;margin:20px 0 18px;font-weight:600;color:var(--moshu-ink)}
+.moshu-root .library-view .markdown-preview h2{
+  font-size:18px;margin:26px 0 11px;padding-bottom:8px;border-bottom:1px solid var(--world-line);
+  font-weight:600;color:var(--world-green-dark)}
+.moshu-root .library-view .markdown-preview h3,
+.moshu-root .library-view .markdown-preview h4,
+.moshu-root .library-view .markdown-preview h5,
+.moshu-root .library-view .markdown-preview h6{
+  font-size:15px;margin:22px 0 9px;color:var(--world-green-dark)}
+.moshu-root .library-view .markdown-preview p{
+  font-family:var(--moshu-serif);font-size:13px;line-height:2.1;letter-spacing:.025em;
+  color:var(--moshu-ink);margin:8px 0}
+.moshu-root .library-view .markdown-preview blockquote{
+  border-left:3px solid color-mix(in oklab,var(--dsw-alias-brand-primary) 35%,transparent);
+  margin:17px 0;padding:8px 15px;background:var(--moshu-surface-2);color:var(--world-muted);
+  font-family:var(--moshu-serif);line-height:1.9}
+.moshu-root .library-view .markdown-preview hr{
+  border:0;border-top:1px solid var(--world-line);margin:24px 0}
+.moshu-root .library-view .markdown-preview code{
+  font-family:var(--moshu-mono);background:var(--moshu-surface-2);border-radius:4px;
+  padding:2px 5px;font-size:.9em;color:var(--world-green-dark)}
+.moshu-root .markdown-editor{display:flex;flex-direction:column;flex:1;min-height:0}
+.moshu-root .markdown-editor textarea{
+  flex:1;min-height:0;width:100%;resize:none;border:0;background:var(--moshu-surface);
+  color:var(--moshu-ink);padding:22px 29px 35px;font-family:var(--moshu-mono);font-size:12px;
+  line-height:1.95;outline:none;tab-size:2}
+.moshu-root .library-view .empty-state{padding:60px 25px}
+
+/* 人物关系 */
+.moshu-root .relationship-view{
+  border:1px solid var(--world-line);border-radius:12px;background:var(--moshu-surface);
+  padding:23px;min-height:460px}
+.moshu-root .view-description{font-size:11px;color:var(--world-muted);line-height:1.8;margin:-5px 0 23px}
+.moshu-root .relationship-board{
+  display:grid;grid-template-columns:minmax(260px,.85fr) minmax(320px,1.15fr);gap:25px}
+.moshu-root .relation-people{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-content:start;
+  padding:18px;border-radius:12px;
+  background:radial-gradient(circle at 30% 20%,var(--moshu-tint),var(--moshu-surface-2));
+  border:1px solid var(--world-line)}
+.moshu-root .person-node{
+  display:flex;flex-direction:column;align-items:center;border:1px solid var(--world-line);
+  border-radius:10px;background:var(--moshu-surface);padding:17px 8px;color:var(--world-green-dark)}
+.moshu-root .person-node:hover{
+  border-color:var(--moshu-line-strong);
+  box-shadow:0 5px 18px color-mix(in oklab,#000 8%,transparent);transform:translateY(-2px)}
+.moshu-root .person-node>span{
+  display:grid;place-items:center;width:38px;height:38px;background:var(--moshu-tint);
+  border-radius:50%;margin-bottom:8px}
+.moshu-root .person-node strong{font-family:var(--moshu-serif);font-size:13px;font-weight:600}
+.moshu-root .person-node small{color:var(--world-muted);font-size:9px;margin-top:4px}
+.moshu-root .relationship-list{display:flex;flex-direction:column;gap:8px;align-content:start}
+.moshu-root .relationship-row{
+  display:grid;grid-template-columns:1fr minmax(100px,1.2fr) 1fr;align-items:center;gap:10px;
+  border-bottom:1px solid var(--world-line);padding:13px 4px;font-size:12px}
+.moshu-root .relationship-row>strong:first-child{text-align:right}
+.moshu-root .relationship-row>strong{font-weight:550;color:var(--world-green-dark)}
+.moshu-root .relationship-row>span{
+  display:flex;justify-content:center;align-items:center;gap:5px;color:var(--world-muted);
+  font-size:10px;text-align:center;background:var(--moshu-surface-2);border-radius:15px;padding:5px 8px}
+
+/* 新建资料对话框 */
+.moshu-root .new-document-modal{width:min(480px,100%);padding-bottom:0}
+.moshu-root .new-document-modal>label{display:block;margin:20px 25px 0}
+.moshu-root .new-document-modal fieldset{border:0;margin:18px 25px 0;padding:0}
+.moshu-root .new-document-modal legend{
+  font-size:11px;color:var(--world-muted);font-weight:500;margin-bottom:8px}
+.moshu-root .category-picker{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.moshu-root .category-picker button{
+  display:flex;flex-direction:column;align-items:center;gap:7px;border:1px solid var(--world-line);
+  background:var(--moshu-surface-2);border-radius:8px;padding:13px 5px;color:var(--world-muted);
+  font-size:10px}
+.moshu-root .category-picker button:hover{background:var(--moshu-hover);border-color:var(--moshu-line-strong)}
+.moshu-root .category-picker button.active{
+  background:var(--moshu-tint);border-color:var(--moshu-line-strong);color:var(--world-green-dark)}
+.moshu-root .new-document-modal .form-hint{margin:13px 25px 0}
+.moshu-root .new-document-modal .form-error{margin:13px 25px 0}
+.moshu-root .new-document-modal>footer{
+  justify-content:flex-end;margin-top:20px;border-top:1px solid var(--world-line);
+  background:var(--moshu-surface-2);border-radius:0 0 16px 16px}
+
+@media(min-width:1600px){
+  .moshu-root .chapter-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .moshu-root .library-layout{grid-template-columns:290px minmax(0,1fr)}
+  .moshu-root .markdown-preview{padding-inline:48px}
+  .moshu-root .outline-stats>div{padding-inline:27px}
+}
+@media(max-width:1200px){
+  .moshu-root .chapter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .moshu-root .outline-stats{grid-template-columns:repeat(3,1fr)}
+  .moshu-root .outline-stats .outline-progress{grid-column:1/-1;border-top:1px solid var(--world-line)}
+  .moshu-root .outline-stats>div:nth-child(3):after{display:none}
+  .moshu-root .library-layout{grid-template-columns:225px minmax(0,1fr)}
+  .moshu-root .document-header{padding-inline:22px}
+  .moshu-root .markdown-preview{padding-inline:26px}
+  .moshu-root .relationship-board{grid-template-columns:1fr}
+  .moshu-root .relation-people{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:850px){
+  .moshu-root .outline-stats{grid-template-columns:repeat(3,1fr)}
+  .moshu-root .outline-stats>div{padding:15px}
+  .moshu-root .outline-stats strong{font-size:20px}
+  .moshu-root .outline-stats>div>svg{display:none}
+  .moshu-root .library-layout{grid-template-columns:190px minmax(0,1fr)}
+  .moshu-root .document-list{padding:7px}
+  .moshu-root .document-list-item{padding:10px 7px;gap:7px}
+  .moshu-root .document-icon{display:none}
+  .moshu-root .document-header{padding:17px}
+  .moshu-root .document-header h2{font-size:20px}
+  .moshu-root .relation-people{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .moshu-root .chapter-actions select{display:none}
+  .moshu-root .arc-stop{min-width:95px}
+}
+@media(max-width:680px){
+  .moshu-root .outline-view,.moshu-root .library-view{padding-bottom:20px}
+  .moshu-root .outline-header,.moshu-root .library-header{margin-bottom:17px}
+  .moshu-root .outline-header h1,.moshu-root .library-header h1{font-size:23px}
+  .moshu-root .outline-header>div>p:last-child,.moshu-root .library-header>div>p:last-child{display:none}
+  .moshu-root .outline-header .primary-button,.moshu-root .library-header .primary-button{
+    padding:8px 10px;font-size:11px}
+  .moshu-root .outline-stats{grid-template-columns:repeat(3,1fr)}
+  .moshu-root .outline-stats>div{padding:13px 10px}
+  .moshu-root .outline-stats strong{font-size:19px}
+  .moshu-root .outline-stats span{font-size:8px}
+  .moshu-root .outline-stats .outline-progress{padding:12px 15px}
+  .moshu-root .story-arc{padding:17px 14px}
+  .moshu-root .section-heading>span{display:none}
+  .moshu-root .volume-section{padding:15px 12px}
+  .moshu-root .volume-heading{gap:5px}
+  .moshu-root .volume-heading h2{font-size:16px}
+  .moshu-root .volume-heading p{max-width:180px}
+  .moshu-root .volume-heading .secondary-button{font-size:10px;padding:7px 8px}
+  .moshu-root .chapter-grid{grid-template-columns:1fr;gap:10px}
+  .moshu-root .chapter-card{padding:14px}
+  .moshu-root .chapter-actions select{display:block}
+  .moshu-root .outline-editor-options{grid-template-columns:1fr 1fr;padding-inline:18px}
+  .moshu-root .outline-editor-options label:nth-child(2){grid-column:1/-1;grid-row:2}
+  .moshu-root .markdown-field{padding-inline:18px}
+  .moshu-root .markdown-field textarea{min-height:290px}
+  .moshu-root .library-toolbar{align-items:stretch;gap:9px}
+  .moshu-root .library-search{width:100%;min-width:0}
+  .moshu-root .library-view .segmented-control button{padding:7px 8px;font-size:0;gap:0}
+  .moshu-root .library-view .segmented-control button svg{width:17px;height:17px}
+  .moshu-root .library-tabs button{padding-inline:12px}
+  .moshu-root .library-layout{
+    display:flex;flex-direction:column;height:auto;max-height:none;min-height:500px}
+  .moshu-root .document-list{
+    display:flex;gap:6px;overflow-x:auto;border-right:0;border-bottom:1px solid var(--world-line);
+    padding:8px;max-height:114px}
+  .moshu-root .document-list-heading{display:none}
+  .moshu-root .document-list-item{min-width:140px;width:140px;margin:0;padding:9px}
+  .moshu-root .document-list-item small{-webkit-line-clamp:1}
+  .moshu-root .document-list-item>svg{display:none}
+  .moshu-root .empty-list{width:100%;padding:20px}
+  .moshu-root .empty-list svg{display:none}
+  .moshu-root .empty-list p{margin:0 0 5px}
+  .moshu-root .document-reader{min-height:430px}
+  .moshu-root .document-header{padding:15px 17px}
+  .moshu-root .document-header p{max-width:230px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .moshu-root .document-header h2{font-size:20px}
+  .moshu-root .markdown-preview{padding:16px 20px 30px;max-height:none}
+  .moshu-root .library-view .markdown-preview p{font-size:14px}
+  .moshu-root .markdown-editor textarea{min-height:380px;padding:18px}
+  .moshu-root .preview-caption{margin-bottom:12px}
+  .moshu-root .relationship-view{padding:17px 13px}
+  .moshu-root .relationship-board{display:block}
+  .moshu-root .relation-people{grid-template-columns:repeat(2,minmax(0,1fr));padding:12px}
+  .moshu-root .relationship-list{margin-top:20px}
+  .moshu-root .relationship-row{grid-template-columns:1fr minmax(90px,1.1fr) 1fr;font-size:11px;gap:5px}
+  .moshu-root .category-picker{gap:5px}
+  .moshu-root .category-picker button{padding-inline:2px}
+  .moshu-root .new-document-modal>label,.moshu-root .new-document-modal fieldset{
+    margin-left:18px;margin-right:18px}
+  .moshu-root .new-document-modal>footer{margin-top:18px}
+}
+@media(prefers-reduced-motion:reduce){
+  .moshu-root .outline-view *,.moshu-root .library-view *{animation:none!important;transition:none!important}
+  .moshu-root .chapter-card:hover,.moshu-root .person-node:hover{transform:none}
+}
+
+/* 空大纲：整页没有任何卷时的引导卡（不要再凭空显示「第 1 卷」）。 */
+.moshu-root .outline-empty{
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  padding:40px 24px;margin-top:4px;
+  border:1px dashed var(--world-line);border-radius:12px;
+  background:var(--moshu-surface)}
+.moshu-root .outline-empty p{margin:0;font-size:13px;color:var(--world-ink);font-weight:500}
+.moshu-root .outline-empty small{max-width:380px;line-height:1.8;font-size:11.5px;color:var(--world-muted)}
+.moshu-root .outline-empty .primary-button{margin-top:6px}

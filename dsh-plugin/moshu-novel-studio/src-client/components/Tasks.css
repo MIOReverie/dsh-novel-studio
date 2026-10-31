@@ -1,0 +1,414 @@
+/* 墨枢 · AI 任务中心。所有规则限定在 .moshu-root 内，颜色走宿主主题变量。 */
+
+.moshu-root .tasks-page{
+  --m-ink:var(--moshu-ink);
+  --m-muted:var(--moshu-muted);
+  --m-faint:var(--moshu-faint);
+  --m-green:var(--moshu-brand);
+  --m-green-dark:var(--moshu-brand-ink);
+  --m-pale:var(--moshu-tint);
+  --m-line:var(--moshu-line);
+  --m-paper:var(--moshu-surface);
+  --m-amber:var(--moshu-warn);
+  min-width:0;color:var(--m-ink);padding-bottom:22px;font-size:12px}
+.moshu-root .tasks-page *{box-sizing:border-box}
+.moshu-root .tasks-page button{transition:background .16s,border-color .16s,color .16s,box-shadow .16s}
+.moshu-root .tasks-page h1,.moshu-root .tasks-page h2,
+.moshu-root .tasks-page h3,.moshu-root .tasks-page h4{color:var(--m-ink);margin-top:0}
+.moshu-root .tasks-page p{margin-top:0}
+.moshu-root .tasks-page h1,.moshu-root .tasks-page h2,.moshu-root .tasks-page h3{
+  font-family:var(--moshu-serif)}
+.moshu-root .tasks-header{
+  display:flex;align-items:center;justify-content:space-between;gap:20px;margin:0 0 19px}
+.moshu-root .tasks-header h1{font-size:23px;font-weight:650;letter-spacing:-.5px;margin:5px 0 6px}
+.moshu-root .tasks-header p{font-size:11px;color:var(--m-muted);margin:0;line-height:1.65}
+
+.moshu-root .tasks-page .icon-button{
+  width:28px;height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center;
+  background:transparent;border:0;border-radius:6px;color:var(--m-muted);flex-shrink:0}
+.moshu-root .tasks-page .icon-button:hover{background:var(--moshu-hover);color:var(--m-green-dark)}
+.moshu-root .tasks-page .panel{
+  border:1px solid var(--m-line);border-radius:11px;background:var(--m-paper);
+  box-shadow:0 3px 12px color-mix(in oklab,#000 4%,transparent);min-width:0;overflow:hidden}
+.moshu-root .tasks-page .panel-heading{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 18px 14px}
+.moshu-root .tasks-page .panel-heading h2{
+  font-size:13px;font-weight:650;margin:0;display:flex;gap:7px;align-items:center}
+.moshu-root .tasks-page .panel-heading h2 svg{color:var(--m-muted)}
+.moshu-root .tasks-page .panel-heading p{font-size:10px;color:var(--m-muted);margin:5px 0 0}
+.moshu-root .task-notice{
+  display:flex;align-items:center;gap:8px;border:1px solid var(--m-line);border-radius:7px;
+  background:var(--moshu-tint);color:var(--moshu-brand-ink);font-size:11px;padding:9px 12px;margin:12px 0}
+.moshu-root .task-notice>span{flex:1}
+.moshu-root .task-notice>svg{color:var(--moshu-brand-ink)}
+
+/* DSH 连接面板 */
+.moshu-root .dsh-connection-panel{
+  border:1px solid var(--m-line);border-radius:11px;
+  background:linear-gradient(110deg,var(--moshu-tint),var(--moshu-surface-2));
+  padding:17px 20px;display:flex;align-items:center;justify-content:space-between;
+  gap:20px;margin-bottom:15px}
+.moshu-root .dsh-connection-panel.disconnected{
+  background:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 7%,var(--moshu-surface-2));
+  border-color:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 22%,var(--m-line))}
+.moshu-root .dsh-connection-main{display:flex;align-items:center;gap:12px;min-width:230px}
+.moshu-root .dsh-icon{
+  width:44px;height:44px;display:grid;place-items:center;background:var(--moshu-tint);
+  border:1px solid var(--m-line);border-radius:10px;color:var(--moshu-brand-ink)}
+.moshu-root .disconnected .dsh-icon{
+  background:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 12%,transparent);
+  color:var(--moshu-warn)}
+.moshu-root .connection-title{display:flex;align-items:center;gap:8px}
+.moshu-root .connection-title h2{font-size:13px;font-weight:650;margin:0}
+.moshu-root .connection-status{
+  display:inline-flex;align-items:center;gap:4px;padding:3px 6px;border-radius:4px;
+  font-size:8px;background:color-mix(in oklab,var(--dsw-alias-state-success-primary) 18%,transparent);
+  color:var(--moshu-success)}
+.moshu-root .connection-status.offline{
+  background:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 16%,transparent);
+  color:var(--moshu-warn)}
+.moshu-root .connection-status>span{width:4px;height:4px;border-radius:50%;background:currentColor}
+.moshu-root .connection-status.online>span{
+  box-shadow:0 0 0 2px color-mix(in oklab,var(--dsw-alias-state-success-primary) 26%,transparent)}
+.moshu-root .dsh-connection-main p{font-size:9px;color:var(--m-muted);margin:6px 0 0;line-height:1.5}
+.moshu-root .dsh-connection-meta{display:flex;gap:24px}
+.moshu-root .dsh-connection-meta>div{
+  display:grid;grid-template-columns:16px auto;column-gap:6px;row-gap:4px;align-items:center}
+.moshu-root .dsh-connection-meta svg{color:var(--m-muted);grid-row:span 2}
+.moshu-root .dsh-connection-meta span:not(.model-badge){font-size:8px;color:var(--m-faint)}
+.moshu-root .dsh-connection-meta strong{font-size:10px;font-weight:500;color:var(--m-green-dark);white-space:nowrap}
+.moshu-root .model-badge{grid-column:2;font-size:7px;color:var(--m-faint);display:none}
+
+/* 统计格 */
+.moshu-root .task-stat-grid{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:17px}
+.moshu-root .task-stat-grid>button{
+  display:grid;grid-template-columns:34px 1fr;text-align:left;align-items:center;gap:10px;
+  padding:13px 14px;border:1px solid var(--m-line);border-radius:9px;background:var(--m-paper)}
+.moshu-root .task-stat-grid>button:hover,.moshu-root .task-stat-grid>button.active{
+  border-color:var(--moshu-line-strong);background:var(--moshu-surface-2);
+  box-shadow:0 2px 8px color-mix(in oklab,#000 5%,transparent)}
+.moshu-root .stat-icon{
+  height:34px;width:34px;border-radius:8px;display:grid;place-items:center;
+  background:var(--moshu-surface-2);color:var(--m-muted)}
+.moshu-root .stat-icon.running{background:var(--moshu-tint);color:var(--moshu-brand-ink)}
+.moshu-root .stat-icon.completed{
+  background:color-mix(in oklab,var(--dsw-alias-state-success-primary) 16%,transparent);
+  color:var(--moshu-success)}
+.moshu-root .stat-icon.failed{
+  background:color-mix(in oklab,var(--dsw-alias-state-error-primary) 14%,transparent);
+  color:var(--moshu-error)}
+.moshu-root .task-stat-grid>button>div{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.moshu-root .task-stat-grid>button>div>span{font-size:10px;color:var(--m-muted)}
+.moshu-root .task-stat-grid strong{font-size:20px;line-height:1;font-weight:550;color:var(--m-green-dark)}
+.moshu-root .task-stat-grid small{font-size:8px;color:var(--m-faint);grid-column:2;margin-top:-4px}
+
+/* 运行历史 */
+.moshu-root .tasks-layout{
+  display:grid;grid-template-columns:minmax(315px,.75fr) minmax(470px,1.4fr);gap:16px;align-items:start}
+.moshu-root .task-history{max-height:730px;display:flex;flex-direction:column}
+.moshu-root .task-history-toolbar{
+  display:flex;gap:7px;padding:0 13px 11px;border-bottom:1px solid var(--m-line)}
+.moshu-root .task-history-toolbar .search-field{flex:1}
+.moshu-root .tasks-page .select-field{
+  height:34px;display:flex;align-items:center;gap:4px;background:var(--moshu-surface-2);
+  border:1px solid var(--m-line);border-radius:6px;padding:0 7px;color:var(--m-faint)}
+.moshu-root .tasks-page .select-field select{
+  background:transparent;border:0;outline:0;font-size:9px;color:var(--m-muted);max-width:77px}
+.moshu-root .task-list{
+  overflow:auto;scrollbar-width:thin;scrollbar-color:var(--moshu-line-strong) transparent;
+  padding:6px;flex:1}
+.moshu-root .task-list-item{
+  width:100%;display:flex;align-items:flex-start;gap:9px;text-align:left;padding:12px 8px;
+  background:transparent;border:1px solid transparent;border-radius:7px;margin-bottom:3px;position:relative}
+.moshu-root .task-list-item:hover{background:var(--moshu-hover)}
+.moshu-root .task-list-item.selected{background:var(--moshu-tint);border-color:var(--moshu-line-strong)}
+.moshu-root .task-list-item:active{transform:none}
+.moshu-root .task-status-icon{
+  height:27px;width:27px;display:grid;place-items:center;border-radius:7px;flex-shrink:0;margin-top:2px}
+.moshu-root .task-status-icon.completed{
+  background:color-mix(in oklab,var(--dsw-alias-state-success-primary) 16%,transparent);
+  color:var(--moshu-success)}
+.moshu-root .task-status-icon.running{background:var(--moshu-tint);color:var(--moshu-brand-ink)}
+.moshu-root .task-status-icon.failed{
+  background:color-mix(in oklab,var(--dsw-alias-state-error-primary) 14%,transparent);
+  color:var(--moshu-error)}
+.moshu-root .task-list-content{flex:1;min-width:0}
+.moshu-root .task-list-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.moshu-root .task-type{font-size:8px;color:var(--m-muted)}
+.moshu-root .task-list-top time{font-size:8px;color:var(--m-faint);white-space:nowrap}
+.moshu-root .task-list-content>strong{
+  display:block;font-size:11px;font-weight:550;line-height:1.5;margin:5px 0 4px;color:var(--m-green-dark)}
+.moshu-root .task-summary{
+  font-size:9px;color:var(--m-muted);line-height:1.6;display:block;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.moshu-root .task-list-bottom{
+  display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.moshu-root .task-list-bottom>span:first-child{
+  display:flex;align-items:center;gap:4px;font-size:8px;color:var(--m-faint)}
+.moshu-root .task-status{
+  display:inline-flex;align-items:center;gap:4px;font-size:8px;color:var(--m-muted);white-space:nowrap}
+.moshu-root .task-status.failed{color:var(--moshu-error)}
+.moshu-root .task-chevron{color:var(--m-faint);align-self:center;width:13px}
+.moshu-root .task-show-more{
+  border:0;border-top:1px solid var(--m-line);background:var(--moshu-surface-2);padding:10px;
+  display:flex;align-items:center;justify-content:center;gap:5px;font-size:9px;color:var(--m-muted)}
+
+/* 任务详情 */
+.moshu-root .task-detail{min-height:560px}
+.moshu-root .task-detail-header{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:15px;padding:18px 20px 16px}
+.moshu-root .task-detail-labels{display:flex;align-items:center;gap:8px;font-size:8px;color:var(--m-faint)}
+.moshu-root .task-detail-labels>span+span{border-left:1px solid var(--m-line);padding-left:8px}
+.moshu-root .task-id{font-family:var(--moshu-mono);color:var(--m-faint)}
+.moshu-root .task-detail-header h2{font-size:16px;font-weight:600;margin:10px 0 6px;letter-spacing:-.2px}
+.moshu-root .task-detail-header p{
+  font-size:10px;color:var(--m-muted);line-height:1.8;margin:0;max-width:570px}
+.moshu-root .task-detail-tabs{
+  display:flex;align-items:center;gap:2px;padding:0 15px;border-bottom:1px solid var(--m-line);
+  border-top:1px solid var(--m-line);background:var(--moshu-surface-2);overflow:auto}
+.moshu-root .task-detail-tabs button{
+  display:flex;align-items:center;gap:5px;padding:11px 8px;background:transparent;border:0;
+  position:relative;font-size:9px;color:var(--m-muted);white-space:nowrap}
+.moshu-root .task-detail-tabs button.active{color:var(--m-green-dark)}
+.moshu-root .task-detail-tabs button.active:after{
+  content:"";position:absolute;bottom:-1px;left:8px;right:8px;height:2px;border-radius:2px;
+  background:var(--moshu-brand)}
+.moshu-root .task-detail-tabs button>span{
+  font-size:7px;min-width:13px;padding:1px 3px;background:var(--moshu-surface);border-radius:4px}
+.moshu-root .task-detail-tabs .attention-count{
+  background:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 22%,transparent)!important;
+  color:var(--moshu-warn)}
+.moshu-root .task-detail-body{padding:17px 20px 20px}
+.moshu-root .tasks-page .section-heading{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.moshu-root .tasks-page .section-heading h3{font-size:11px;font-weight:600;margin:0}
+.moshu-root .result-indicator{font-size:8px;color:var(--m-muted)}
+.moshu-root .execution-result{
+  border:1px solid var(--m-line);border-radius:7px;background:var(--moshu-surface-2);
+  padding:13px;margin-bottom:14px}
+.moshu-root .execution-result>p{
+  font-size:11px;line-height:1.9;color:var(--m-muted);margin:0;white-space:pre-wrap}
+.moshu-root .error-callout{
+  display:flex;gap:8px;border-top:1px solid var(--m-line);margin-top:12px;padding-top:11px;
+  color:var(--moshu-error)}
+.moshu-root .error-callout strong{font-size:10px;font-weight:550}
+.moshu-root .error-callout p{font-size:9px;line-height:1.6;color:var(--m-muted);margin:4px 0 0}
+.moshu-root .task-metadata{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 22px;margin:0 0 15px}
+.moshu-root .task-metadata>div{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;
+  border-bottom:1px solid var(--m-line);font-size:9px}
+.moshu-root .task-metadata dt{display:flex;align-items:center;gap:6px;color:var(--m-muted)}
+.moshu-root .task-metadata dd{margin:0;color:var(--m-muted);text-align:right}
+.moshu-root .task-metadata code{
+  font-size:9px;color:var(--m-green-dark);background:var(--moshu-tint);border-radius:4px;padding:3px 5px}
+
+.moshu-root .source-summary-card,.moshu-root .review-callout{
+  width:100%;display:flex;align-items:center;gap:10px;text-align:left;border:1px solid var(--m-line);
+  background:var(--moshu-surface-2);border-radius:7px;padding:12px}
+.moshu-root .source-summary-card:hover,.moshu-root .review-callout:hover{
+  background:var(--moshu-hover);border-color:var(--moshu-line-strong)}
+.moshu-root .source-summary-card>span{
+  height:33px;width:33px;display:grid;place-items:center;background:var(--moshu-tint);
+  color:var(--moshu-brand-ink);border-radius:7px}
+.moshu-root .source-summary-card>div,.moshu-root .review-callout>div{flex:1;min-width:0}
+.moshu-root .source-summary-card strong,.moshu-root .review-callout strong{
+  font-size:10px;font-weight:550;display:block}
+.moshu-root .source-summary-card p,.moshu-root .review-callout p{
+  font-size:8px;color:var(--m-muted);margin:5px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.moshu-root .source-summary-card>svg,.moshu-root .review-callout>svg:last-child{color:var(--m-faint)}
+.moshu-root .review-callout{
+  margin-top:9px;
+  background:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 8%,var(--moshu-surface-2));
+  border-color:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 24%,var(--m-line));
+  color:var(--moshu-warn)}
+.moshu-root .review-callout p{color:var(--m-muted)}
+.moshu-root .detail-section-intro{margin-bottom:13px}
+.moshu-root .detail-section-intro h3{font-size:12px;font-weight:600;margin:0 0 6px}
+.moshu-root .detail-section-intro p{font-size:9px;color:var(--m-muted);line-height:1.7;margin:0}
+.moshu-root .source-access-note{
+  display:flex;align-items:center;gap:6px;padding:8px 10px;background:var(--moshu-tint);
+  border:1px solid var(--m-line);color:var(--moshu-brand-ink);border-radius:6px;
+  font-size:8px;margin-bottom:11px}
+.moshu-root .section-footnote{
+  display:flex;align-items:center;gap:5px;font-size:8px;color:var(--m-faint);
+  margin:12px 0 0;line-height:1.6}
+
+/* 上下文来源 */
+.moshu-root .source-record{border:1px solid var(--m-line);border-radius:7px;margin-bottom:7px;overflow:hidden}
+.moshu-root .source-record>button{
+  display:flex;align-items:center;gap:9px;width:100%;padding:10px;border:0;
+  background:var(--m-paper);text-align:left}
+.moshu-root .source-record>button:hover{background:var(--moshu-surface-2)}
+.moshu-root .source-file-icon{
+  height:28px;width:28px;display:grid;place-items:center;background:var(--moshu-tint);
+  border-radius:5px;color:var(--moshu-brand-ink)}
+.moshu-root .source-record>button>span:nth-child(2){min-width:0;flex:1}
+.moshu-root .source-record strong{display:block;font-size:10px;font-weight:550}
+.moshu-root .source-record small{
+  display:block;font-size:8px;color:var(--m-muted);margin-top:4px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.moshu-root .source-read-badge{
+  display:flex;align-items:center;gap:3px;font-size:8px;color:var(--m-muted);white-space:nowrap}
+.moshu-root .source-record>button>svg{color:var(--m-faint);transition:transform .2s}
+.moshu-root .source-record>button>svg.expanded{transform:rotate(180deg)}
+.moshu-root .source-content-preview{
+  padding:10px;border-top:1px solid var(--m-line);background:var(--moshu-surface-2)}
+.moshu-root .source-content-preview pre{
+  font-family:var(--moshu-serif);white-space:pre-wrap;overflow-wrap:anywhere;font-size:10px;
+  line-height:1.9;color:var(--m-muted);max-height:240px;overflow:auto;margin:0 0 10px}
+
+/* 变更审查 */
+.moshu-root .change-review-card{
+  border:1px solid var(--m-line);border-radius:8px;overflow:hidden;margin-bottom:12px;
+  background:var(--m-paper)}
+.moshu-root .change-review-header{display:flex;align-items:center;gap:9px;padding:12px}
+.moshu-root .change-file-icon{
+  height:30px;width:30px;display:grid;place-items:center;
+  background:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 14%,transparent);
+  border-radius:6px;color:var(--moshu-warn)}
+.moshu-root .change-review-header>div{flex:1;min-width:0}
+.moshu-root .change-review-header h4{font-size:11px;font-weight:550;margin:0 0 4px}
+.moshu-root .change-review-header p{
+  font-size:8px;color:var(--m-faint);margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.moshu-root .tasks-page .status-badge{
+  display:inline-flex;align-items:center;gap:4px;padding:3px 6px;border-radius:4px;
+  font-size:8px;white-space:nowrap;border:0}
+.moshu-root .tasks-page .status-badge.pending{
+  background:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 20%,transparent);color:var(--moshu-warn)}
+.moshu-root .memory-diff{
+  display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--m-line);
+  border-bottom:1px solid var(--m-line)}
+.moshu-root .memory-diff>div{padding:12px;min-width:0}
+.moshu-root .memory-diff>div+div{border-left:1px solid var(--m-line)}
+.moshu-root .memory-diff span{font-size:8px;color:var(--m-faint);display:flex;gap:4px;align-items:center}
+.moshu-root .memory-diff p{
+  font-size:10px;line-height:1.85;color:var(--m-muted);white-space:pre-wrap;
+  overflow-wrap:anywhere;margin:8px 0 0}
+.moshu-root .diff-before{background:var(--moshu-surface-2)}
+.moshu-root .diff-after{background:var(--moshu-tint)}
+.moshu-root .diff-after span{color:var(--moshu-brand-ink)}
+.moshu-root .diff-after p{color:var(--m-green-dark)}
+.moshu-root .change-review-actions{display:flex;justify-content:flex-end;gap:7px;padding:10px 12px}
+.moshu-root .review-result{display:flex;align-items:center;gap:6px;font-size:9px;padding:11px 13px}
+.moshu-root .review-result.accepted{
+  background:color-mix(in oklab,var(--dsw-alias-state-success-primary) 16%,transparent);
+  color:var(--moshu-success)}
+.moshu-root .review-result.rejected{
+  background:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 12%,transparent);
+  color:var(--moshu-warn)}
+.moshu-root .changes-empty{padding:45px 15px!important}
+.moshu-root .empty-success{
+  height:53px;width:53px;border-radius:50%;display:grid;place-items:center;
+  background:var(--moshu-tint);color:var(--moshu-brand-ink)}
+.moshu-root .readonly-assurance{
+  display:flex;align-items:center;gap:5px;font-size:8px;padding:6px 9px;border-radius:5px;
+  background:var(--moshu-surface-2);color:var(--m-muted)}
+
+/* 运行日志 */
+.moshu-root .terminal-log{
+  border:1px solid var(--m-line);border-radius:8px;overflow:hidden;
+  background:color-mix(in oklab,#000 55%,var(--moshu-surface-3));
+  box-shadow:0 3px 10px color-mix(in oklab,#000 8%,transparent)}
+.moshu-root .terminal-header{
+  height:33px;display:flex;align-items:center;justify-content:space-between;
+  background:var(--moshu-surface-2);color:var(--m-muted);padding:0 12px}
+.moshu-root .terminal-header>span:first-child{display:flex;gap:4px}
+.moshu-root .terminal-header i{
+  width:6px;height:6px;border-radius:50%;background:var(--moshu-line-strong)}
+.moshu-root .terminal-header i:first-child{background:var(--moshu-warn)}
+.moshu-root .terminal-header strong{font-size:8px;letter-spacing:1px;font-weight:500}
+.moshu-root .terminal-header>span:last-child{font-size:8px;font-family:var(--moshu-mono)}
+.moshu-root .terminal-body{padding:15px 13px;min-height:210px;max-height:350px;overflow:auto}
+.moshu-root .terminal-body p{
+  font-family:var(--moshu-mono);font-size:9px;color:#c1ccb7;line-height:1.9;margin:0 0 7px;
+  overflow-wrap:anywhere}
+.moshu-root .terminal-body time{color:#819078;margin-right:9px;font-size:8px}
+.moshu-root .terminal-body p>span{
+  display:inline-block;font-size:7px;min-width:39px;margin-right:6px;color:#b2c5a3}
+.moshu-root .terminal-body .log-read{color:#c5b98e}
+.moshu-root .terminal-body .log-error{color:#d8a18b}
+.moshu-root .terminal-body .log-success{color:#afca94}
+.moshu-root .task-detail-empty{min-height:480px}
+.moshu-root .task-detail-empty h2{font-size:14px;margin-top:13px}
+.moshu-root .tasks-footer{
+  display:flex;align-items:center;gap:17px;font-size:8px;color:var(--m-faint);
+  margin-top:13px;padding:0 2px}
+.moshu-root .tasks-footer>span{display:flex;align-items:center;gap:5px}
+.moshu-root .tasks-footer-right{margin-left:auto}
+.moshu-root .tasks-page .empty-state h3{font-size:12px;font-weight:550;margin:10px 0 5px}
+.moshu-root .tasks-page .empty-state p{
+  font-size:10px;line-height:1.8;color:var(--m-muted);margin:0 0 13px}
+.moshu-root .tasks-page .empty-state.compact{padding:22px 10px}
+
+@media(min-width:1600px){
+  .moshu-root .tasks-layout{grid-template-columns:minmax(365px,.75fr) minmax(550px,1.45fr);gap:20px}
+}
+@media(max-width:1250px){
+  .moshu-root .dsh-connection-meta{gap:15px}
+  .moshu-root .tasks-layout{grid-template-columns:minmax(285px,.7fr) minmax(410px,1.3fr);gap:12px}
+  .moshu-root .task-detail-body{padding-inline:15px}
+  .moshu-root .task-detail-header{padding-inline:16px}
+  .moshu-root .task-metadata{gap:0 14px}
+  .moshu-root .task-detail-tabs{padding-inline:10px}
+  .moshu-root .task-detail-tabs button{padding-inline:6px}
+}
+@media(max-width:1050px){
+  .moshu-root .tasks-layout{grid-template-columns:1fr}
+  .moshu-root .task-history{max-height:500px}
+  .moshu-root .dsh-connection-panel{align-items:flex-start}
+  .moshu-root .dsh-connection-meta{flex-wrap:wrap;row-gap:12px}
+  .moshu-root .task-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+  .moshu-root .task-list-item{margin:0}
+  .moshu-root .task-detail{min-height:0}
+  .moshu-root .tasks-footer{margin-bottom:10px}
+}
+@media(max-width:760px){
+  .moshu-root .tasks-header{align-items:flex-start}
+  .moshu-root .tasks-header h1{font-size:21px}
+  .moshu-root .tasks-header .eyebrow{font-size:8px}
+  .moshu-root .dsh-connection-panel{flex-direction:column;gap:17px}
+  .moshu-root .dsh-connection-meta{width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .moshu-root .task-stat-grid{grid-template-columns:repeat(2,1fr);gap:9px}
+  .moshu-root .task-stat-grid>button{padding:11px}
+  .moshu-root .memory-diff{grid-template-columns:1fr}
+  .moshu-root .memory-diff>div+div{border-left:0;border-top:1px solid var(--m-line)}
+  .moshu-root .task-detail-header{flex-wrap:wrap}
+  .moshu-root .task-detail-header>.button{margin-left:auto}
+  .moshu-root .tasks-footer{flex-wrap:wrap;gap:8px 14px}
+  .moshu-root .tasks-footer-right{margin-left:0}
+}
+@media(max-width:520px){
+  .moshu-root .tasks-page{font-size:11px}
+  .moshu-root .tasks-header{gap:10px}
+  .moshu-root .tasks-header p{max-width:240px}
+  .moshu-root .tasks-header>.button{padding:8px}
+  .moshu-root .dsh-connection-meta{grid-template-columns:1fr 1fr}
+  .moshu-root .dsh-connection-meta>div:last-child{display:none}
+  .moshu-root .task-stat-grid>button{grid-template-columns:28px 1fr;gap:8px}
+  .moshu-root .stat-icon{height:28px;width:28px}
+  .moshu-root .task-stat-grid strong{font-size:17px}
+  .moshu-root .task-stat-grid>button>div>span{font-size:9px}
+  .moshu-root .task-list{grid-template-columns:1fr}
+  .moshu-root .task-history-toolbar{flex-wrap:wrap}
+  .moshu-root .tasks-page .select-field select{max-width:none}
+  .moshu-root .task-detail-tabs button{font-size:8px;gap:4px}
+  .moshu-root .task-detail-tabs button svg{display:none}
+  .moshu-root .task-metadata{grid-template-columns:1fr}
+  .moshu-root .task-detail-body{padding:13px}
+  .moshu-root .task-detail-header{padding:15px}
+  .moshu-root .task-detail-header h2{font-size:14px}
+  .moshu-root .source-read-badge{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .moshu-root .tasks-page *{animation:none!important;transition:none!important}
+}
+
+
+/* 同 Memory：按容器宽度收成单列，而不是按视口。 */
+.moshu-root .tasks-view{container-type:inline-size}
+@container (max-width: 760px){
+  .moshu-root .tasks-grid,
+  .moshu-root .task-detail{grid-template-columns:minmax(0,1fr)}
+}

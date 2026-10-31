@@ -1,0 +1,1230 @@
+/* 墨枢 · DSH 整页外壳样式。
+   约定：所有选择器都挂在 .moshu-root 下；颜色只用宿主主题变量，不写 dark 分支
+   （token 自己会变）。版面沿用原设计的字号 / 行高 / 圆角 / 留白。 */
+
+.moshu-root {
+  /* 建立独立层叠上下文：内部 z-index 再大也出不了这个根，
+     不会把宿主的菜单/弹层压在下面（宿主最高 1100）。 */
+  isolation: isolate;
+  /* ---------- token 唯一出处 ----------
+     整页唯一一份 --moshu-* 定义：由页面根组件（page.jsx）最先渲染 .moshu-root，
+     所有子组件只使用、不再各自声明，避免同特异度重复定义互相覆盖导致取值漂移。
+     全部由宿主 --dsw-alias-* 派生，不写死色值、不写 dark 分支。 */
+  --moshu-ink: var(--dsw-alias-label-primary);
+  --moshu-muted: var(--dsw-alias-label-secondary);
+  --moshu-faint: var(--dsw-alias-label-tertiary);
+  --moshu-brand: var(--dsw-alias-brand-primary);
+  --moshu-brand-ink: color-mix(in oklab, var(--dsw-alias-brand-primary) 62%, var(--dsw-alias-label-primary));
+  --moshu-surface: var(--dsw-alias-bg-layer-1);
+  --moshu-surface-2: var(--dsw-alias-bg-layer-2);
+  /* bg-overlay 在两套主题里的层级方向相反（浅色比 layer-1 深、深色比 layer-1 亮），
+     弹层用它会在深色下变成中灰。bg-layer-3 才是宿主给「再上一层」用的。 */
+  --moshu-surface-3: var(--dsw-alias-bg-layer-3);
+  --moshu-surface-soft: color-mix(in oklab, var(--dsw-alias-bg-layer-1) 62%, transparent);
+  --moshu-line: var(--dsw-alias-border-l1);
+  --moshu-line-strong: var(--dsw-alias-border-l2);
+  --moshu-tint: color-mix(in oklab, var(--dsw-alias-brand-primary) 12%, transparent);
+  --moshu-tint-strong: color-mix(in oklab, var(--dsw-alias-brand-primary) 20%, transparent);
+  --moshu-hover: color-mix(in oklab, var(--dsw-alias-brand-primary) 7%, transparent);
+  /* 遮罩必须是「暗」的：以前用 label-primary 当颜料，深色主题下会翻成 34% 白纱幕。 */
+  --moshu-scrim: var(--dsw-alias-bg-mask-1);
+  --moshu-warn: var(--dsw-alias-state-warn-primary);
+  --moshu-error: var(--dsw-alias-state-error-primary);
+  --moshu-success: var(--dsw-alias-state-success-primary);
+  --moshu-serif: "Noto Serif SC", "Songti SC", Georgia, serif;
+  --moshu-sans: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --moshu-mono: ui-monospace, SFMono-Regular, Consolas, "Microsoft YaHei", monospace;
+  --moshu-shadow: 0 18px 60px color-mix(in oklab, #000 20%, transparent);
+
+  /* 高度钉死在容器里：页面本身永远不出现滚动条，只有中间的 .workspace 滚。
+     宿主没给确定高度时（挂载方式不同），退回到它写进滚动容器的视口高度变量。 */
+  height: min(100%, var(--dsh-conversation-viewport-height, 100%));
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  background: var(--dsw-alias-bg-base);
+  color: var(--dsw-alias-label-primary);
+  font-family: "Inter", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.moshu-root *,
+.moshu-root *::before,
+.moshu-root *::after { box-sizing: border-box; }
+
+.moshu-root h1,
+.moshu-root h2,
+.moshu-root h3,
+.moshu-root p { margin: 0; }
+
+.moshu-root button { font: inherit; color: inherit; cursor: pointer; }
+.moshu-root button:active { transform: scale(0.97); }
+.moshu-root button:disabled { cursor: not-allowed; opacity: 0.5; }
+.moshu-root input,
+.moshu-root textarea { font: inherit; color: inherit; }
+
+.moshu-root button:focus-visible,
+.moshu-root input:focus-visible,
+.moshu-root textarea:focus-visible {
+  outline: 2px solid var(--moshu-tint-strong);
+  outline-offset: 2px;
+}
+
+.moshu-root ::selection {
+  background: color-mix(in oklab, var(--dsw-alias-brand-primary) 26%, transparent);
+}
+
+.moshu-root svg { flex-shrink: 0; }
+
+/* ---------- 顶栏 ---------- */
+
+.moshu-root .topbar {
+  display: flex;
+  align-items: center;
+  /* 不再换行：以前标签多的时候顶栏会折成两行，白吃掉一整行高度。 */
+  flex-wrap: nowrap;
+  gap: 6px 16px;
+  min-height: 48px;
+  /* 兜底：正常情况下 .moshu-root 是定高 + overflow:hidden，只有中间 .workspace 滚；
+     万一外层没给高度（宿主挂载方式不同），topbar 也自己贴在顶部，不会被滚走。 */
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: 9px 22px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--moshu-line);
+  background: var(--moshu-surface-soft);
+}
+
+.moshu-root .breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  white-space: nowrap;
+  color: var(--dsw-alias-label-tertiary);
+  min-width: 0;
+}
+
+.moshu-root .breadcrumbs span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 15ch;
+}
+
+.moshu-root .breadcrumbs .sep { opacity: 0.55; max-width: none; }
+
+.moshu-root .breadcrumbs strong {
+  font-weight: 500;
+  color: var(--dsw-alias-label-secondary);
+}
+
+/* ---------- 视图 tab 行（自己的一套类，避开旧 .tabs） ---------- */
+
+.moshu-root .moshu-tabs {
+  /* 标签多了就横向滚，不折行。 */
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1 1 380px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.moshu-root .moshu-tabs::-webkit-scrollbar { display: none; }
+
+.moshu-root .moshu-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12.5px;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.moshu-root .moshu-tab svg { opacity: 0.75; }
+
+.moshu-root .moshu-tab:hover {
+  background: var(--dsw-alias-bg-layer-2);
+  color: var(--dsw-alias-label-primary);
+}
+
+.moshu-root .moshu-tab.is-active {
+  background: var(--moshu-tint);
+  color: var(--dsw-alias-brand-primary);
+  font-weight: 600;
+}
+
+.moshu-root .moshu-tab.is-active svg { opacity: 1; }
+
+/* ---------- 顶栏右侧动作 ---------- */
+
+.moshu-root .top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.moshu-root .search-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding: 0 9px;
+  border: 1px solid var(--moshu-line);
+  border-radius: 7px;
+  background: var(--moshu-surface);
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 10.5px;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.moshu-root .search-trigger:hover {
+  border-color: var(--moshu-line-strong);
+  color: var(--dsw-alias-label-secondary);
+}
+
+.moshu-root .search-trigger span { white-space: nowrap; }
+
+.moshu-root .search-trigger kbd {
+  font-family: inherit;
+  font-size: 9px;
+  letter-spacing: 0.4px;
+  margin-left: 14px;
+  padding: 2px 4px;
+  border: 1px solid var(--moshu-line);
+  border-radius: 3px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.moshu-root .saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  white-space: nowrap;
+  color: var(--dsw-alias-state-success-primary);
+}
+
+.moshu-root .icon-button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.moshu-root .icon-button:hover {
+  background: var(--dsw-alias-bg-layer-2);
+  color: var(--dsw-alias-label-primary);
+}
+
+.moshu-root .model-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 240px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--moshu-line);
+  border-radius: 999px;
+  font-size: 10.5px;
+  color: var(--dsw-alias-label-tertiary);
+  background: var(--moshu-surface-soft);
+}
+
+.moshu-root .model-status > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.moshu-root .model-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--dsw-alias-state-success-primary);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--dsw-alias-state-success-primary) 22%, transparent);
+}
+
+.moshu-root .model-status.is-unavailable { color: var(--dsw-alias-state-warn-primary); }
+
+.moshu-root .model-status.is-unavailable .model-dot {
+  background: var(--dsw-alias-state-warn-primary);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--dsw-alias-state-warn-primary) 22%, transparent);
+}
+
+/* ---------- 标题区 ---------- */
+
+.moshu-root .page-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  /* 标题块整体收薄：上留白 26→12、下 20→10，标题与标语的字号也压一档。 */
+  padding: 12px 22px 10px;
+  flex-shrink: 0;
+}
+
+.moshu-root .page-heading h1 {
+  font-family: var(--moshu-serif);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  line-height: 1.25;
+  margin-bottom: 8px;
+  color: var(--dsw-alias-label-primary);
+}
+
+.moshu-root .page-heading p {
+  font-size: 11.5px;
+  letter-spacing: 0.3px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.moshu-root .page-heading.compact { padding-bottom: 16px; }
+
+.moshu-root .writing-stats {
+  display: flex;
+  align-items: baseline;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.moshu-root .writing-stats span {
+  font-size: 10.5px;
+  color: var(--dsw-alias-label-tertiary);
+  white-space: nowrap;
+}
+
+.moshu-root .writing-stats b {
+  font-size: 16px;
+  font-weight: 500;
+  margin-right: 5px;
+  color: var(--dsw-alias-label-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 主区 ---------- */
+
+.moshu-root .workspace {
+  flex: 1 1 auto;
+  min-height: 0;
+  /* 全页**只有这一块**上下滚动：顶栏与底栏固定，滚动条不会推动布局。 */
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  /* 滚到尽头也不把滚动传给宿主的对话容器。 */
+  overscroll-behavior: contain;
+  padding: 0 28px 18px;
+}
+
+.moshu-root .view-missing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 240px;
+  padding: 40px;
+  border: 1px dashed var(--moshu-line-strong);
+  border-radius: 12px;
+  color: var(--dsw-alias-label-tertiary);
+  text-align: center;
+}
+
+.moshu-root .view-missing strong {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.moshu-root .view-missing span { font-size: 11.5px; }
+
+/* ---------- 底部状态栏 ---------- */
+
+.moshu-root .statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 30px;
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  padding: 0 24px;
+  flex-shrink: 0;
+  border-top: 1px solid var(--moshu-line);
+  background: var(--moshu-surface-soft);
+  font-size: 10px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.moshu-root .statusbar > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.moshu-root .statusbar .truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.moshu-root .local-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--dsw-alias-state-success-primary);
+  flex-shrink: 0;
+}
+
+.moshu-root .status-separator { opacity: 0.45; }
+
+/* ---------- 搜索弹窗 ---------- */
+
+.moshu-root .modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12vh 16px 16px;
+  background: var(--moshu-scrim);
+  backdrop-filter: blur(4px);
+  animation: moshu-fade 0.16s ease-out;
+}
+
+.moshu-root .search-modal {
+  width: min(620px, 100%);
+  background: var(--dsw-alias-bg-overlay);
+  border: 1px solid var(--moshu-line-strong);
+  border-radius: 14px;
+  box-shadow: var(--moshu-shadow);
+  overflow: hidden;
+  animation: moshu-rise 0.18s ease-out;
+}
+
+.moshu-root .search-input {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 18px;
+  border-bottom: 1px solid var(--moshu-line);
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.moshu-root .search-input input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  font-size: 14px;
+  color: var(--dsw-alias-label-primary);
+}
+
+.moshu-root .search-input input::placeholder { color: var(--dsw-alias-label-tertiary); }
+
+.moshu-root .search-input button {
+  display: grid;
+  place-items: center;
+  padding: 3px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.moshu-root .search-input button:hover {
+  background: var(--dsw-alias-bg-layer-2);
+  color: var(--dsw-alias-label-primary);
+}
+
+.moshu-root .search-results {
+  max-height: min(54vh, 430px);
+  overflow: auto;
+  padding: 8px;
+}
+
+.moshu-root .search-results > button {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 13px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  text-align: left;
+  color: var(--dsw-alias-label-primary);
+  transition: background-color 0.12s ease;
+}
+
+.moshu-root .search-results > button:hover { background: var(--dsw-alias-bg-layer-2); }
+.moshu-root .search-results > button > div { min-width: 0; }
+
+.moshu-root .search-results strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.moshu-root .search-results p {
+  margin-top: 5px;
+  font-size: 11px;
+  line-height: 1.65;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.moshu-root .search-results > button > span {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.moshu-root .empty-search,
+.moshu-root .search-hint {
+  padding: 42px 16px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.moshu-root .search-hint { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+
+.moshu-root .search-hint p {
+  margin-top: 8px;
+  font-family: var(--moshu-serif);
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.moshu-root .search-hint span { font-size: 11px; }
+
+/* ---------- toast ---------- */
+
+.moshu-root .toast {
+  position: fixed;
+  left: 50%;
+  bottom: 52px;
+  transform: translateX(-50%);
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--dsw-alias-label-primary) 90%, transparent);
+  color: var(--dsw-alias-bg-base);
+  font-size: 12px;
+  box-shadow: var(--moshu-shadow);
+  /* toast 自己的一套进出场：不能用 moshu-rise，否则会盖掉居中用的 translateX(-50%) */
+  animation: moshu-toast-in 0.18s ease-out;
+}
+
+/* ---------- 首次加载骨架 ---------- */
+
+.moshu-root .loading {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 16px 22px 24px;
+}
+
+.moshu-root .skeleton {
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    var(--dsw-alias-bg-layer-2) 0%,
+    var(--moshu-surface) 40%,
+    var(--dsw-alias-bg-layer-2) 80%
+  );
+  background-size: 220% 100%;
+  animation: moshu-shimmer 1.6s linear infinite;
+}
+
+.moshu-root .skeleton-bar { height: 34px; flex-shrink: 0; }
+
+.moshu-root .skeleton-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 6px 4px;
+}
+
+.moshu-root .skeleton-title { height: 26px; width: 190px; }
+.moshu-root .skeleton-subtitle { height: 12px; width: 280px; }
+
+.moshu-root .skeleton-grid {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr) 280px;
+  gap: 16px;
+}
+
+.moshu-root .skeleton-col { height: 100%; min-height: 180px; }
+.moshu-root .skeleton-col.tall { animation-delay: 0.12s; }
+
+/* ---------- 致命错误 ---------- */
+
+.moshu-root .fatal {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px;
+  text-align: center;
+}
+
+.moshu-root .fatal-mark {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 4px;
+  border-radius: 16px;
+  background: color-mix(in oklab, var(--dsw-alias-state-error-primary) 14%, transparent);
+  color: var(--dsw-alias-state-error-primary);
+}
+
+.moshu-root .fatal h1 {
+  font-family: var(--moshu-serif);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--dsw-alias-label-primary);
+}
+
+.moshu-root .fatal p {
+  max-width: 480px;
+  font-size: 12px;
+  line-height: 1.85;
+  color: var(--dsw-alias-label-tertiary);
+  overflow-wrap: anywhere;
+}
+
+.moshu-root .fatal .button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 9px 18px;
+  border: 1px solid var(--dsw-alias-brand-primary);
+  border-radius: 8px;
+  background: var(--dsw-alias-brand-primary);
+  color: var(--dsw-alias-bg-base);
+  font-size: 12.5px;
+  transition: opacity 0.15s ease;
+}
+
+.moshu-root .fatal .button:hover { opacity: 0.88; }
+
+/* ---------- 旋转（LoaderCircle 等） ---------- */
+
+.moshu-root .is-spinning,
+.moshu-root .spin { animation: moshu-spin 1.1s linear infinite; }
+
+@keyframes moshu-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes moshu-shimmer {
+  0% { background-position: 120% 0; }
+  100% { background-position: -60% 0; }
+}
+
+@keyframes moshu-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes moshu-rise {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes moshu-toast-in {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* ---------- 顶栏下拉菜单（当前书籍 / 模型） ---------- */
+
+.moshu-root .menu-anchor {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+/* 当前书籍按钮：书名 + 章节数，长书名截断 */
+.moshu-root .book-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: min(320px, 34vw);
+  height: 30px;
+  padding: 0 9px;
+  border: 1px solid var(--moshu-line);
+  border-radius: 8px;
+  background: var(--moshu-surface);
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11.5px;
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+.moshu-root .book-trigger:hover {
+  border-color: var(--moshu-line-strong);
+  background: var(--dsw-alias-bg-layer-2);
+}
+
+.moshu-root .book-trigger[aria-expanded='true'] {
+  border-color: var(--dsw-alias-brand-primary);
+  background: var(--moshu-tint);
+  color: var(--dsw-alias-brand-primary);
+}
+
+.moshu-root .book-trigger-icon { opacity: 0.75; }
+
+.moshu-root .book-trigger-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--dsw-alias-label-primary);
+}
+
+.moshu-root .book-trigger-meta {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.moshu-root .book-trigger-caret { opacity: 0.55; flex-shrink: 0; }
+
+/* 模型胶囊现在是按钮 */
+.moshu-root button.model-status {
+  gap: 6px;
+  text-align: left;
+  max-width: 240px;
+}
+
+.moshu-root button.model-status[aria-expanded='true'] {
+  border-color: var(--dsw-alias-brand-primary);
+  background: var(--moshu-tint);
+  color: var(--dsw-alias-brand-primary);
+}
+
+.moshu-root .model-caret { opacity: 0.55; }
+
+/* 弹层本体：挂在 .menu-anchor 里绝对定位，点外面/Esc 由组件关闭 */
+.moshu-root .menu-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 1150;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(92vw, 390px);
+  max-height: min(70vh, 480px);
+  padding: 10px;
+  border: 1px solid var(--moshu-line-strong);
+  border-radius: 12px;
+  background: var(--dsw-alias-bg-overlay, var(--dsw-alias-bg-layer-1));
+  box-shadow: var(--moshu-shadow);
+  color: var(--dsw-alias-label-primary);
+  outline: none;
+  animation: moshu-rise 0.16s ease-out;
+}
+
+.moshu-root .model-menu {
+  left: auto;
+  right: 0;
+  width: min(90vw, 340px);
+}
+
+.moshu-root .menu-popover-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 4px 6px;
+  border-bottom: 1px solid var(--moshu-line);
+}
+
+.moshu-root .menu-popover-head strong {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.moshu-root .menu-busy {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.moshu-root .menu-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overflow-x: hidden;
+  padding: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.moshu-root .menu-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 7px 8px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: background-color 0.12s ease;
+}
+
+.moshu-root .menu-row:hover { background: var(--dsw-alias-bg-layer-2); }
+
+.moshu-root .menu-row.is-current {
+  background: var(--moshu-tint);
+  border-color: color-mix(in oklab, var(--dsw-alias-brand-primary) 32%, transparent);
+}
+
+.moshu-root .menu-row.is-editing { background: var(--dsw-alias-bg-layer-2); }
+
+.moshu-root .menu-row-main {
+  flex: 1 1 140px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  text-align: left;
+}
+
+.moshu-root .menu-row-title {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--dsw-alias-label-primary);
+}
+
+.moshu-root .menu-row-meta {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.moshu-root .menu-row.is-current .menu-row-title { color: var(--dsw-alias-brand-primary); }
+
+.moshu-root .menu-row-check {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  flex-shrink: 0;
+  color: var(--dsw-alias-brand-primary);
+}
+
+.moshu-root .menu-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.moshu-root .menu-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 10.5px;
+  color: var(--dsw-alias-label-tertiary);
+  transition: color 0.12s ease, background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.moshu-root .menu-link:hover {
+  background: var(--moshu-surface);
+  border-color: var(--moshu-line);
+  color: var(--dsw-alias-label-primary);
+}
+
+.moshu-root .menu-link.is-danger:hover {
+  border-color: color-mix(in oklab, var(--dsw-alias-state-error-primary) 40%, transparent);
+  color: var(--dsw-alias-state-error-primary);
+}
+
+.moshu-root .model-refresh { flex-shrink: 0; }
+
+.moshu-root .menu-group { display: flex; flex-direction: column; gap: 1px; padding-bottom: 2px; }
+
+.moshu-root .menu-section-label {
+  padding: 6px 8px 2px;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.moshu-root .model-row {
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  color: var(--dsw-alias-label-primary);
+}
+
+.moshu-root .model-row .menu-row-title { flex: 1 1 auto; }
+
+.moshu-root .model-row .menu-row-meta { flex-shrink: 1; max-width: 45%; }
+
+.moshu-root .menu-search {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 30px;
+  padding: 0 9px;
+  border: 1px solid var(--moshu-line);
+  border-radius: 8px;
+  background: var(--moshu-surface);
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.moshu-root .menu-search:focus-within { border-color: var(--moshu-line-strong); }
+
+.moshu-root .menu-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  font-size: 12px;
+  color: var(--dsw-alias-label-primary);
+}
+
+.moshu-root .menu-search input::placeholder { color: var(--dsw-alias-label-tertiary); }
+
+.moshu-root .menu-search button {
+  display: grid;
+  place-items: center;
+  padding: 2px;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.moshu-root .menu-search button:hover { color: var(--dsw-alias-label-primary); }
+
+.moshu-root .menu-footer {
+  flex-shrink: 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--moshu-line);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.moshu-root .menu-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.moshu-root .menu-field input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 30px;
+  padding: 0 9px;
+  border: 1px solid var(--moshu-line);
+  border-radius: 8px;
+  background: var(--dsw-alias-bg-base);
+  font-size: 12px;
+  color: var(--dsw-alias-label-primary);
+}
+
+.moshu-root .menu-field input::placeholder { color: var(--dsw-alias-label-tertiary); }
+.moshu-root .menu-field input:focus { outline: none; border-color: var(--dsw-alias-brand-primary); }
+
+.moshu-root .menu-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid var(--dsw-alias-brand-primary);
+  border-radius: 8px;
+  background: var(--dsw-alias-brand-primary);
+  color: var(--dsw-alias-bg-base);
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.moshu-root .menu-primary:hover { opacity: 0.9; }
+
+.moshu-root .menu-ghost {
+  flex-shrink: 0;
+  height: 30px;
+  padding: 0 9px;
+  border: 1px solid var(--moshu-line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+.moshu-root .menu-ghost:hover { border-color: var(--moshu-line-strong); color: var(--dsw-alias-label-primary); }
+
+.moshu-root .menu-danger {
+  flex-shrink: 0;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--dsw-alias-state-error-primary);
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--dsw-alias-state-error-primary) 12%, transparent);
+  color: var(--dsw-alias-state-error-primary);
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.moshu-root .menu-danger:hover { background: color-mix(in oklab, var(--dsw-alias-state-error-primary) 20%, transparent); }
+
+.moshu-root .menu-confirm {
+  flex: 1 1 100%;
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in oklab, var(--dsw-alias-state-error-primary) 34%, transparent);
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--dsw-alias-state-error-primary) 8%, transparent);
+}
+
+.moshu-root .menu-confirm-title {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--dsw-alias-label-primary);
+  overflow-wrap: anywhere;
+}
+
+.moshu-root .menu-confirm-hint {
+  margin-top: 3px;
+  font-size: 10.5px;
+  line-height: 1.6;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.moshu-root .menu-confirm-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.moshu-root .menu-error {
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--dsw-alias-state-error-primary);
+  overflow-wrap: anywhere;
+}
+
+.moshu-root .menu-empty {
+  padding: 22px 10px;
+  text-align: center;
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--dsw-alias-label-tertiary);
+  overflow-wrap: anywhere;
+}
+
+.moshu-root .menu-empty.is-warn { color: var(--dsw-alias-state-warn-primary); }
+
+.moshu-root .model-footer {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.moshu-root .menu-current {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  font-size: 10.5px;
+  color: var(--dsw-alias-label-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 降级提示条：书籍 / 设置 / 模型列表加载失败时不清屏，只提示只读 */
+.moshu-root .notice-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 7px 22px;
+  border-bottom: 1px solid var(--moshu-line);
+  background: color-mix(in oklab, var(--dsw-alias-state-warn-primary) 10%, transparent);
+  color: var(--dsw-alias-state-warn-primary);
+  font-size: 10.5px;
+}
+
+.moshu-root .notice-banner .notice-detail {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.moshu-root .notice-retry {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 3px 9px;
+  border: 1px solid var(--moshu-line-strong);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 10.5px;
+  white-space: nowrap;
+}
+
+.moshu-root .notice-retry:hover {
+  border-color: var(--dsw-alias-brand-primary);
+  color: var(--dsw-alias-brand-primary);
+}
+
+@media (max-width: 1100px) {
+  .moshu-root .book-trigger-meta { display: none; }
+  .moshu-root .menu-popover { width: min(92vw, 340px); }
+}
+
+@media (max-width: 760px) {
+  .moshu-root .book-trigger { max-width: 42vw; }
+  .moshu-root .menu-popover {
+    position: fixed;
+    top: 64px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+    max-width: none;
+  }
+}
+
+/* ---------- 窄屏 ---- */
+@media (max-width: 1100px) {
+  .moshu-root .statusbar { display: none; }
+  .moshu-root .writing-stats { display: none; }
+  .moshu-root .search-trigger span,
+  .moshu-root .search-trigger kbd { display: none; }
+  .moshu-root .search-trigger { width: 30px; justify-content: center; padding: 0; }
+  .moshu-root .topbar { padding: 8px 16px; row-gap: 4px; }
+  .moshu-root .page-heading { padding: 20px 20px 14px; }
+  .moshu-root .workspace { padding: 0 18px 14px; }
+  .moshu-root .skeleton-grid { grid-template-columns: minmax(0, 1fr); }
+  .moshu-root .skeleton-col { display: none; }
+  .moshu-root .skeleton-col.tall { display: block; }
+}
+
+@media (max-width: 760px) {
+  .moshu-root .breadcrumbs { display: none; }
+  .moshu-root .page-heading h1 { font-size: 20px; }
+  .moshu-root .model-status { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moshu-root .skeleton,
+  .moshu-root .is-spinning,
+  .moshu-root .spin,
+  .moshu-root .modal-backdrop,
+  .moshu-root .search-modal,
+  .moshu-root .toast { animation: none; }
+}
+
+/* 顶栏保存徽标：有未保存修改时变色（以前永远显示「已保存」） */
+.moshu-root .saved.is-dirty{color:var(--dsw-alias-state-warn-primary)}
+.moshu-root .save-dirty-dot{
+  width:7px;height:7px;border-radius:50%;flex-shrink:0;
+  background:var(--dsw-alias-state-warn-primary)}
+
+
+/* 地图页专用：工作区不留白，画布吃满可用宽度与高度。 */
+.moshu-root .workspace-flush{padding:0}
+
+
+/* 头部「全屏」入口：图标 + 文字，和旁边的搜索/保存同一行。 */
+.moshu-root .fullscreen-trigger{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:8px;cursor:pointer;
+  border:1px solid var(--moshu-line);background:var(--moshu-surface-2);
+  font-size:11.5px;color:var(--moshu-ink);white-space:nowrap}
+.moshu-root .fullscreen-trigger:hover{
+  border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 42%,var(--moshu-line));
+  background:var(--moshu-hover)}

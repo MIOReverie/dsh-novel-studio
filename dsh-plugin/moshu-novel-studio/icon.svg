@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="墨枢">
+  <rect x="3" y="3" width="58" height="58" rx="17" fill="#365e4e"/>
+  <rect x="3" y="3" width="58" height="58" rx="17" fill="none" stroke="#26463a" stroke-width="1.5"/>
+  <path d="M19 45.5c7.4-1.8 12.6-6 16-12.4l4.9-9.3 3.6 1.9-4.9 9.6c-3.4 6.7-8.8 11.1-17.2 13z" fill="#f4f6e9"/>
+  <path d="M41.8 20.4l4.6 2.4" stroke="#f4f6e9" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+  <circle cx="20.5" cy="45.6" r="3.1" fill="#e2c995"/>
+</svg>

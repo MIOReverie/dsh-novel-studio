@@ -1,0 +1,160 @@
+/* 小说工具卡：渲染在 Harness 对话里（不在 .moshu-root 子树内），
+   所以前缀用 .moshu-toolcard 自己一套，颜色仍然只取宿主主题变量。 */
+
+.moshu-toolcard {
+  --tc-line: var(--dsw-alias-border-l1);
+  --tc-line-strong: var(--dsw-alias-border-l2);
+  --tc-surface: var(--dsw-alias-bg-layer-1);
+  --tc-surface-soft: var(--dsw-alias-bg-layer-2);
+  --tc-ink: var(--dsw-alias-label-primary);
+  --tc-muted: var(--dsw-alias-label-secondary);
+  --tc-faint: var(--dsw-alias-label-tertiary);
+  --tc-brand: var(--dsw-alias-brand-primary);
+  --tc-warn: var(--dsw-alias-state-warn-primary);
+  --tc-error: var(--dsw-alias-state-error-primary);
+  --tc-ok: var(--dsw-alias-state-success-primary);
+  --tc-mono: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 6px 0;
+  padding: 11px 13px;
+  border: 1px solid var(--tc-line);
+  border-radius: 10px;
+  background: var(--tc-surface);
+  color: var(--tc-ink);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.moshu-toolcard.is-running { border-style: dashed; }
+.moshu-toolcard.is-error {
+  border-color: color-mix(in oklab, var(--tc-error) 45%, var(--tc-line));
+  background: color-mix(in oklab, var(--tc-error) 6%, var(--tc-surface));
+}
+
+.moshu-toolcard-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.moshu-toolcard-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: color-mix(in oklab, var(--tc-brand) 12%, transparent);
+  color: var(--tc-brand);
+  flex-shrink: 0;
+}
+
+.moshu-toolcard-title {
+  font-weight: 600;
+  font-size: 12.5px;
+}
+
+.moshu-toolcard-badge {
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--tc-line-strong);
+  color: var(--tc-muted);
+  font-size: 10.5px;
+  white-space: nowrap;
+}
+
+.moshu-toolcard-badge.is-warn {
+  border-color: color-mix(in oklab, var(--tc-warn) 50%, var(--tc-line));
+  color: var(--tc-warn);
+  background: color-mix(in oklab, var(--tc-warn) 10%, transparent);
+}
+
+.moshu-toolcard-badge.is-ok {
+  border-color: color-mix(in oklab, var(--tc-ok) 45%, var(--tc-line));
+  color: var(--tc-ok);
+  background: color-mix(in oklab, var(--tc-ok) 8%, transparent);
+}
+
+.moshu-toolcard-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  color: var(--tc-faint);
+  font-size: 11px;
+}
+
+.moshu-toolcard.is-error .moshu-toolcard-state { color: var(--tc-error); }
+
+.moshu-toolcard-rows {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+}
+
+.moshu-toolcard-row {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+}
+
+.moshu-toolcard-row dt {
+  color: var(--tc-faint);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.moshu-toolcard-row dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--tc-ink);
+  font-size: 12px;
+}
+
+.moshu-toolcard-row dd.is-mono {
+  font-family: var(--tc-mono);
+  font-size: 11.5px;
+  color: var(--tc-muted);
+}
+
+.moshu-toolcard-note {
+  margin: 0;
+  color: var(--tc-muted);
+  font-size: 11.5px;
+}
+
+.moshu-toolcard-text {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--tc-surface-soft);
+  border: 1px solid var(--tc-line);
+  color: var(--tc-muted);
+  font-family: var(--tc-mono);
+  font-size: 11px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.moshu-toolcard .is-spinning {
+  animation: moshu-toolcard-spin 0.9s linear infinite;
+}
+
+@keyframes moshu-toolcard-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 620px) {
+  .moshu-toolcard-row {
+    grid-template-columns: 62px minmax(0, 1fr);
+  }
+}

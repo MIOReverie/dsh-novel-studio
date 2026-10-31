@@ -1,0 +1,1216 @@
+/* 墨枢 · AI 工作台 + 设置页共用样式。
+   约定（CONTRACT v1/v2）：
+   - 每条规则都挂在 .moshu-root 下，不污染宿主的全局样式；
+   - 颜色只用 --dsw-alias-* 主题变量（可配合 color-mix），不写 dark 分支、不写死色值；
+   - 两个视图各自独立挂载样式块，同一时刻只显示一个，不会互相叠加。 */
+
+/* ------------------------------------------------------------------ *
+ * 局部变量
+ * ------------------------------------------------------------------ */
+
+.moshu-root .studio-view {
+  /* 全部别名回 --moshu-*（唯一定义在 styles.css）。
+     以前这里把 --dsw-* 的推导又抄了一遍：基色一改，两处必然漂移。 */
+  --studio-ink: var(--moshu-ink);
+  --studio-muted: var(--moshu-muted);
+  --studio-faint: var(--moshu-faint);
+  --studio-line: var(--moshu-line);
+  --studio-line-strong: var(--moshu-line-strong);
+  --studio-surface: var(--moshu-surface);
+  --studio-surface-2: var(--moshu-surface-2);
+  --studio-overlay: var(--moshu-surface-3);
+  --studio-brand: var(--moshu-brand);
+  --studio-brand-ink: var(--moshu-brand-ink);
+  --studio-tint: var(--moshu-tint);
+  --studio-tint-strong: var(--moshu-tint-strong);
+  --studio-hover: var(--moshu-hover);
+  --studio-warn: var(--moshu-warn);
+  --studio-error: var(--moshu-error);
+  --studio-success: var(--moshu-success);
+  --studio-serif: var(--moshu-serif);
+  --studio-mono: var(--moshu-mono);
+
+  min-width: 0;
+  padding-bottom: 16px;
+  color: var(--studio-ink);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.moshu-root .studio-view *,
+.moshu-root .studio-view *::before,
+.moshu-root .studio-view *::after { box-sizing: border-box; }
+
+.moshu-root .studio-view h1,
+.moshu-root .studio-view h2,
+.moshu-root .studio-view h3,
+.moshu-root .studio-view p,
+.moshu-root .studio-view blockquote,
+.moshu-root .studio-view pre { margin: 0; }
+
+.moshu-root .studio-view button { font: inherit; color: inherit; cursor: pointer; }
+.moshu-root .studio-view button:disabled { cursor: not-allowed; opacity: 0.55; }
+.moshu-root .studio-view input,
+.moshu-root .studio-view textarea,
+.moshu-root .studio-view select { font: inherit; color: inherit; }
+.moshu-root .studio-view code { font-family: var(--studio-mono); }
+.moshu-root .studio-view svg { flex-shrink: 0; }
+
+.moshu-root .studio-view button:focus-visible,
+.moshu-root .studio-view input:focus-visible,
+.moshu-root .studio-view textarea:focus-visible,
+.moshu-root .studio-view select:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--dsw-alias-brand-primary) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.moshu-root .studio-view ::selection {
+  background: color-mix(in oklab, var(--dsw-alias-brand-primary) 22%, transparent);
+}
+
+.moshu-root .studio-view .is-spinning { animation: studio-spin 1s linear infinite; }
+
+@keyframes studio-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .moshu-root .studio-view * { animation: none !important; transition: none !important; }
+}
+
+/* ------------------------------------------------------------------ *
+ * 页头
+ * ------------------------------------------------------------------ */
+
+.moshu-root .studio-view .studio-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 13px;
+}
+
+.moshu-root .studio-view .studio-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--studio-faint);
+}
+
+/* 页面标题由外壳（page.jsx 的 page-heading）提供，这里只放一句引导语与模型状态，
+   避免同一屏出现两个 H1。 */
+.moshu-root .studio-view .studio-lead {
+  font-size: 11.5px;
+  line-height: 1.65;
+  color: var(--studio-muted);
+  margin-top: 4px;
+  max-width: 62ch;
+}
+
+.moshu-root .studio-view .studio-header-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  min-width: 0;
+}
+
+.moshu-root .studio-view .studio-header-note {
+  font-size: 9.5px;
+  color: var(--studio-faint);
+}
+
+/* 模型胶囊 */
+.moshu-root .studio-view .studio-model {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 46ch;
+  padding: 4px 10px;
+  border: 1px solid var(--studio-line);
+  border-radius: 999px;
+  background: var(--studio-surface-2);
+  color: var(--studio-muted);
+  font-size: 10.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.moshu-root .studio-view .studio-model i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--studio-success);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--dsw-alias-state-success-primary) 22%, transparent);
+}
+
+.moshu-root .studio-view .studio-model.is-off { color: var(--studio-warn); }
+.moshu-root .studio-view .studio-model.is-off i {
+  background: var(--studio-warn);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--dsw-alias-state-warn-primary) 22%, transparent);
+}
+
+.moshu-root .studio-view .studio-model.is-large { font-size: 11.5px; padding: 6px 12px; }
+
+/* ------------------------------------------------------------------ *
+ * 横幅 / 提示 / 错误
+ * ------------------------------------------------------------------ */
+
+.moshu-root .studio-view .studio-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 10px 13px;
+  margin-bottom: 12px;
+  border: 1px solid color-mix(in oklab, var(--dsw-alias-state-warn-primary) 30%, transparent);
+  border-radius: 9px;
+  background: color-mix(in oklab, var(--dsw-alias-state-warn-primary) 9%, transparent);
+  color: var(--studio-ink);
+}
+
+.moshu-root .studio-view .studio-banner > svg { color: var(--studio-warn); margin-top: 1px; }
+.moshu-root .studio-view .studio-banner strong { display: block; font-size: 11.5px; font-weight: 600; }
+.moshu-root .studio-view .studio-banner p { font-size: 10.5px; line-height: 1.7; color: var(--studio-muted); margin-top: 2px; }
+
+.moshu-root .studio-view .studio-banner.is-soft {
+  border-color: var(--studio-line);
+  background: var(--studio-surface-2);
+}
+
+.moshu-root .studio-view .studio-banner.is-soft > svg { color: var(--studio-faint); }
+
+.moshu-root .studio-view .studio-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  border: 1px solid color-mix(in oklab, var(--dsw-alias-state-error-primary) 28%, transparent);
+  border-radius: 9px;
+  background: color-mix(in oklab, var(--dsw-alias-state-error-primary) 10%, transparent);
+  color: var(--studio-error);
+}
+
+.moshu-root .studio-view .studio-error > svg { margin-top: 1px; }
+.moshu-root .studio-view .studio-error strong { display: block; font-size: 11.5px; font-weight: 600; }
+.moshu-root .studio-view .studio-error p { font-size: 10.5px; line-height: 1.7; margin-top: 2px; }
+.moshu-root .studio-view .studio-error > div { min-width: 0; flex: 1 1 auto; }
+.moshu-root .studio-view .studio-error > .studio-btn { margin-left: 4px; flex-shrink: 0; }
+
+.moshu-root .studio-view .studio-hint-warn {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in oklab, var(--dsw-alias-state-warn-primary) 26%, transparent);
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--dsw-alias-state-warn-primary) 8%, transparent);
+  color: var(--studio-warn);
+  font-size: 10.5px;
+  line-height: 1.7;
+}
+
+.moshu-root .studio-view .studio-help {
+  display: block;
+  font-size: 10px;
+  line-height: 1.7;
+  color: var(--studio-faint);
+}
+
+.moshu-root .studio-view .studio-help.is-warn { color: var(--studio-warn); }
+
+.moshu-root .studio-view .studio-muted { color: var(--studio-faint); font-size: 9.5px; margin-left: auto; }
+
+.moshu-root .studio-view .studio-state {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 10.5px;
+  line-height: 1.7;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+}
+
+.moshu-root .studio-view .studio-state.is-ok {
+  color: var(--studio-brand-ink);
+  background: var(--studio-tint);
+  border-color: color-mix(in oklab, var(--dsw-alias-brand-primary) 22%, transparent);
+}
+
+.moshu-root .studio-view .studio-state.is-error {
+  color: var(--studio-error);
+  background: color-mix(in oklab, var(--dsw-alias-state-error-primary) 10%, transparent);
+  border-color: color-mix(in oklab, var(--dsw-alias-state-error-primary) 24%, transparent);
+}
+
+.moshu-root .studio-view .studio-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  color: var(--studio-muted);
+  flex-wrap: wrap;
+}
+
+.moshu-root .studio-view .studio-inline-spread { justify-content: space-between; margin: 6px 0 0; }
+
+/* ------------------------------------------------------------------ *
+ * 布局
+ * ------------------------------------------------------------------ */
+
+.moshu-root .studio-view .studio-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 460px) minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.moshu-root .studio-view .studio-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.moshu-root .studio-view .studio-col-result { gap: 0; }
+
+.moshu-root .studio-view .studio-result-card {
+  border: 1px solid var(--studio-line);
+  border-radius: 11px;
+  background: var(--studio-surface);
+  padding: 16px 17px 17px;
+  min-width: 0;
+}
+
+@media (min-width: 1181px) {
+  .moshu-root .studio-view .studio-result-card {
+    position: sticky;
+    top: 0;
+    max-height: calc(100vh - 190px);
+    overflow: auto;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * 卡片 / 卡头
+ * ------------------------------------------------------------------ */
+
+.moshu-root .studio-view .studio-card {
+  border: 1px solid var(--studio-line);
+  border-radius: 11px;
+  background: var(--studio-surface);
+  padding: 15px 16px 16px;
+  min-width: 0;
+}
+
+.moshu-root .studio-view .studio-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.moshu-root .studio-view .studio-card-head h2 {
+  display: flex;
+  align-items: center;
+  font-family: var(--studio-serif);
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  color: var(--studio-ink);
+}
+
+.moshu-root .studio-view .studio-card-head h2 > svg {
+  margin-right: 6px;
+  color: var(--studio-faint);
+}
+
+.moshu-root .studio-view .studio-card-head p {
+  font-size: 10px;
+  line-height: 1.65;
+  color: var(--studio-faint);
+  margin-top: 3px;
+}
+
+.moshu-root .studio-view .studio-step {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: var(--studio-tint);
+  color: var(--studio-brand-ink);
+  font-family: "Inter", "PingFang SC", system-ui, sans-serif;
+  font-size: 9.5px;
+  font-weight: 600;
+}
+
+.moshu-root .studio-view .studio-count {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border: 1px solid var(--studio-line);
+  border-radius: 999px;
+  color: var(--studio-faint);
+  font-size: 9.5px;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ *
+ * 按钮 / 链接 / 徽章
+ * ------------------------------------------------------------------ */
+
+.moshu-root .studio-view .studio-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid var(--studio-line);
+  border-radius: 7px;
+  background: var(--studio-surface);
+  color: var(--studio-muted);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+  transition: background-color 0.16s, border-color 0.16s, color 0.16s;
+}
+
+.moshu-root .studio-view .studio-btn:hover:not(:disabled) {
+  background: var(--studio-hover);
+  border-color: var(--studio-line-strong);
+  color: var(--studio-brand-ink);
+}
+
+.moshu-root .studio-view .studio-btn.is-primary {
+  border-color: var(--studio-brand);
+  background: var(--studio-brand);
+  color: var(--dsw-alias-bg-base);
+}
+
+.moshu-root .studio-view .studio-btn.is-primary:hover:not(:disabled) {
+  background: var(--studio-brand-ink);
+  border-color: var(--studio-brand-ink);
+  color: var(--dsw-alias-bg-base);
+}
+
+.moshu-root .studio-view .studio-btn.is-danger {
+  border-color: color-mix(in oklab, var(--dsw-alias-state-error-primary) 34%, transparent);
+  background: color-mix(in oklab, var(--dsw-alias-state-error-primary) 10%, transparent);
+  color: var(--studio-error);
+}
+
+.moshu-root .studio-view .studio-btn.is-run { padding: 9px 16px; font-size: 11.5px; }
+
+.moshu-root .studio-view .studio-link {
+  border: 0;
+  background: transparent;
+  padding: 2px 3px;
+  color: var(--studio-brand-ink);
+  font-size: 10.5px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+
+.moshu-root .studio-view .studio-link:hover:not(:disabled) { color: var(--studio-ink); }
+
+.moshu-root .studio-view .studio-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border: 1px solid var(--studio-line);
+  border-radius: 999px;
+  background: var(--studio-surface-2);
+  color: var(--studio-muted);
+  font-size: 9.5px;
+  line-height: 1.7;
+  white-space: nowrap;
+}
+
+.moshu-root .studio-view .studio-badge.is-annotations,
+.moshu-root .studio-view .studio-badge.is-report,
+.moshu-root .studio-view .studio-badge.is-document,
+.moshu-root .studio-view .studio-badge.is-memory {
+  border-color: color-mix(in oklab, var(--dsw-alias-brand-primary) 24%, transparent);
+  background: var(--studio-tint);
+  color: var(--studio-brand-ink);
+}
+
+.moshu-root .studio-view .studio-badge.is-document {
+  border-color: var(--studio-line-strong);
+  background: var(--studio-surface-2);
+  color: var(--studio-muted);
+}
+
+.moshu-root .studio-view .studio-badge.is-required {
+  border-color: color-mix(in oklab, var(--dsw-alias-state-warn-primary) 32%, transparent);
+  background: color-mix(in oklab, var(--dsw-alias-state-warn-primary) 12%, transparent);
+  color: var(--studio-warn);
+}
+
+.moshu-root .studio-view .studio-badge.is-lore,
+.moshu-root .studio-view .studio-badge.is-note,
+.moshu-root .studio-view .studio-badge.is-plot,
+.moshu-root .studio-view .studio-badge.is-logic,
+.moshu-root .studio-view .studio-badge.is-person,
+.moshu-root .studio-view .studio-badge.is-lang {
+  border-color: var(--studio-line-strong);
+  color: var(--studio-muted);
+}
+
+.moshu-root .studio-view .studio-badge.is-severe {
+  border-color: color-mix(in oklab, var(--dsw-alias-state-error-primary) 32%, transparent);
+  background: color-mix(in oklab, var(--dsw-alias-state-error-primary) 12%, transparent);
+  color: var(--studio-error);
+}
+
+.moshu-root .studio-view .studio-badge.is-warn {
+  border-color: color-mix(in oklab, var(--dsw-alias-state-warn-primary) 32%, transparent);
+  background: color-mix(in oklab, var(--dsw-alias-state-warn-primary) 12%, transparent);
+  color: var(--studio-warn);
+}
+
+/* ------------------------------------------------------------------ *
+ * 表单控件
+ * ------------------------------------------------------------------ */
+
+.moshu-root .studio-view .studio-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 6px;
+  min-width: 0;
+}
+
+.moshu-root .studio-view .studio-field-wide { flex: 1 1 200px; min-width: 170px; margin-bottom: 0; }
+
+.moshu-root .studio-view .studio-label {
+  font-size: 10.5px;
+  color: var(--studio-muted);
+  letter-spacing: 0.02em;
+}
+
+.moshu-root .studio-view .studio-input,
+.moshu-root .studio-view .studio-textarea,
+.moshu-root .studio-view .studio-select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--studio-line);
+  border-radius: 7px;
+  background: var(--studio-surface-2);
+  color: var(--studio-ink);
+  font-size: 11.5px;
+  outline: none;
+  transition: border-color 0.16s, box-shadow 0.16s;
+}
+
+.moshu-root .studio-view .studio-input:focus,
+.moshu-root .studio-view .studio-textarea:focus,
+.moshu-root .studio-view .studio-select:focus {
+  border-color: color-mix(in oklab, var(--dsw-alias-brand-primary) 45%, var(--studio-line));
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--dsw-alias-brand-primary) 12%, transparent);
+}
+
+.moshu-root .studio-view .studio-textarea {
+  min-height: 96px;
+  line-height: 1.8;
+  resize: vertical;
+}
+
+.moshu-root .studio-view .studio-select {
+  appearance: none;
+  padding-right: 26px;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 14px) 15px, calc(100% - 9px) 15px;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+
+.moshu-root .studio-view .studio-readonly {
+  flex-shrink: 0;
+  max-width: 55%;
+  padding: 4px 8px;
+  border: 1px solid var(--studio-line);
+  border-radius: 6px;
+  background: var(--studio-surface-2);
+  color: var(--studio-muted);
+  font-size: 10.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ *
+ * 任务卡
+ * ------------------------------------------------------------------ */
+
+.moshu-root .studio-view .studio-recipes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.moshu-root .studio-view .studio-recipe {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px 11px;
+  border: 1px solid var(--studio-line);
+  border-radius: 9px;
+  background: var(--studio-surface-2);
+  text-align: left;
+  transition: border-color 0.16s, background-color 0.16s, box-shadow 0.16s;
+}
+
+.moshu-root .studio-view .studio-recipe:hover {
+  border-color: var(--studio-line-strong);
+  background: var(--studio-hover);
+}
+
+.moshu-root .studio-view .studio-recipe.is-active {
+  border-color: color-mix(in oklab, var(--dsw-alias-brand-primary) 46%, var(--studio-line));
+  background: var(--studio-tint);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--dsw-alias-brand-primary) 16%, transparent);
+}
+
+.moshu-root .studio-view .studio-recipe-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.moshu-root .studio-view .studio-recipe-top strong {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--studio-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.moshu-root .studio-view .studio-recipe-summary {
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--studio-muted);
+}
+
+.moshu-root .studio-view .studio-recipe-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 9.5px;
+  color: var(--studio-faint);
+}
+
+.moshu-root .studio-view .studio-recipe-required { color: var(--studio-warn); }
+
+/* 整本视角说明 */
+.moshu-root .studio-view .studio-novel-target {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 11px 12px;
+  border: 1px solid var(--studio-line);
+  border-radius: 9px;
+  background: var(--studio-surface-2);
+  color: var(--studio-brand-ink);
+}
+
+.moshu-root .studio-view .studio-novel-target strong { display: block; font-size: 11.5px; font-weight: 600; }
+.moshu-root .studio-view .studio-novel-target p {
+  font-size: 10px;
+  line-height: 1.7;
+  color: var(--studio-faint);
+  margin-top: 3px;
+}
+
+/* ------------------------------------------------------------------ *
+ * 常用指令片段
+ * ------------------------------------------------------------------ */
+
+.moshu-root .studio-view .studio-snips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.moshu-root .studio-view .studio-snip {
+  padding: 4px 9px;
+  border: 1px solid var(--studio-line);
+  border-radius: 999px;
+  background: var(--studio-surface-2);
+  color: var(--studio-muted);
+  font-size: 10px;
+  transition: border-color 0.16s, color 0.16s, background-color 0.16s;
+}
+
+.moshu-root .studio-view .studio-snip:hover {
+  border-color: var(--studio-line-strong);
+  background: var(--studio-tint);
+  color: var(--studio-brand-ink);
+}
+
+/* ------------------------------------------------------------------ *
+ * 上下文选择
+ * ------------------------------------------------------------------ */
+
+.moshu-root .studio-view .studio-count-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--studio-ink);
+  margin-bottom: 4px;
+}
+
+.moshu-root .studio-view .studio-count-line > svg { color: var(--studio-faint); }
+
+.moshu-root .studio-view .studio-context-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 9px 0 8px;
+}
+
+.moshu-root .studio-view .studio-context-col { min-width: 0; }
+
+.moshu-root .studio-view .studio-context-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 5px;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--studio-faint);
+}
+
+.moshu-root .studio-view .studio-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 208px;
+  overflow: auto;
+  padding-right: 2px;
+  scrollbar-width: thin;
+}
+
+.moshu-root .studio-view .studio-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: var(--studio-surface-2);
+  cursor: pointer;
+  transition: border-color 0.16s, background-color 0.16s;
+}
+
+.moshu-root .studio-view .studio-list-item:hover { border-color: var(--studio-line-strong); }
+
+.moshu-root .studio-view .studio-list-item.is-on {
+  border-color: color-mix(in oklab, var(--dsw-alias-brand-primary) 32%, transparent);
+  background: var(--studio-tint);
+}
+
+.moshu-root .studio-view .studio-list-item input,
+.moshu-root .studio-view .studio-memory input {
+  margin: 2px 0 0;
+  accent-color: var(--studio-brand);
+  flex-shrink: 0;
+}
+
+.moshu-root .studio-view .studio-list-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.moshu-root .studio-view .studio-list-main strong {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--studio-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.moshu-root .studio-view .studio-list-main small {
+  font-size: 9.5px;
+  line-height: 1.5;
+  color: var(--studio-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.moshu-root .studio-view .studio-empty-inline {
+  padding: 12px 4px;
+  font-size: 10.5px;
+  color: var(--studio-faint);
+  line-height: 1.7;
+}
+
+/* ------------------------------------------------------------------ *
+ * 运行区
+ * ------------------------------------------------------------------ */
+
+.moshu-root .studio-view .studio-run-card { padding: 13px 16px 14px; }
+
+.moshu-root .studio-view .studio-run-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.moshu-root .studio-view .studio-run-row .studio-help { flex: 1 1 150px; min-width: 0; }
+
+/* ------------------------------------------------------------------ *
+ * 结果区
+ * ------------------------------------------------------------------ */
+
+.moshu-root .studio-view .studio-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.moshu-root .studio-view .studio-chip {
+  padding: 2px 8px;
+  border: 1px solid var(--studio-line);
+  border-radius: 999px;
+  background: var(--studio-surface-2);
+  color: var(--studio-muted);
+  font-size: 9.5px;
+  white-space: nowrap;
+}
+
+.moshu-root .studio-view .studio-running {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 16px;
+  border: 1px dashed var(--studio-line-strong);
+  border-radius: 10px;
+  background: var(--studio-surface-2);
+  color: var(--studio-brand-ink);
+}
+
+.moshu-root .studio-view .studio-running strong { font-size: 12px; font-weight: 600; }
+.moshu-root .studio-view .studio-running p { font-size: 10.5px; color: var(--studio-muted); margin-top: 3px; }
+
+.moshu-root .studio-view .studio-output {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* 空状态 */
+.moshu-root .studio-view .studio-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 22px 16px;
+  border: 1px dashed var(--studio-line-strong);
+  border-radius: 9px;
+  color: var(--studio-faint);
+  text-align: center;
+  font-size: 10.5px;
+  line-height: 1.7;
+}
+
+.moshu-root .studio-view .studio-empty h3 {
+  font-family: var(--studio-serif);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--studio-brand-ink);
+  margin-top: 8px;
+}
+
+.moshu-root .studio-view .studio-empty p { max-width: 42ch; color: var(--studio-muted); }
+
+.moshu-root .studio-view .studio-empty-result { padding: 44px 22px; }
+
+/* 批注 */
+.moshu-root .studio-view .studio-annotations {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 54vh;
+  overflow: auto;
+  padding-right: 2px;
+  scrollbar-width: thin;
+}
+
+.moshu-root .studio-view .studio-annotation {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 11px 12px;
+  border: 1px solid var(--studio-line);
+  border-radius: 9px;
+  background: var(--studio-surface);
+}
+
+.moshu-root .studio-view .studio-annotation-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.moshu-root .studio-view .studio-quote {
+  padding: 7px 10px;
+  border-left: 2px solid color-mix(in oklab, var(--dsw-alias-brand-primary) 55%, transparent);
+  border-radius: 0 6px 6px 0;
+  background: var(--studio-surface-2);
+  color: var(--studio-muted);
+  font-family: var(--studio-serif);
+  font-size: 11.5px;
+  line-height: 1.85;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.moshu-root .studio-view .studio-annotation-body {
+  font-size: 11.5px;
+  line-height: 1.8;
+  color: var(--studio-ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.moshu-root .studio-view .studio-suggestion {
+  padding: 7px 9px;
+  border-radius: 7px;
+  background: var(--studio-surface-2);
+  color: var(--studio-muted);
+  font-size: 11px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.moshu-root .studio-view .studio-suggestion span {
+  display: inline-block;
+  margin-right: 6px;
+  color: var(--studio-faint);
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+}
+
+.moshu-root .studio-view .studio-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.moshu-root .studio-view .studio-actions .studio-help { flex: 1 1 180px; min-width: 0; }
+
+/* 报告 / Markdown（纯文本，等宽排版，只保留换行与缩进） */
+.moshu-root .studio-view .studio-pre {
+  max-height: 54vh;
+  overflow: auto;
+  padding: 13px 14px;
+  border: 1px solid var(--studio-line);
+  border-radius: 9px;
+  background: var(--studio-surface-2);
+  color: var(--studio-ink);
+  font-family: var(--studio-mono);
+  font-size: 11px;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  word-break: break-word;
+  tab-size: 2;
+  scrollbar-width: thin;
+}
+
+.moshu-root .studio-view .studio-save-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* 记忆 */
+.moshu-root .studio-view .studio-memory-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  max-height: 54vh;
+  overflow: auto;
+  padding-right: 2px;
+  scrollbar-width: thin;
+}
+
+.moshu-root .studio-view .studio-memory {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px 10px;
+  border: 1px solid var(--studio-line);
+  border-radius: 9px;
+  background: var(--studio-surface);
+  cursor: pointer;
+}
+
+.moshu-root .studio-view .studio-memory.is-on {
+  border-color: color-mix(in oklab, var(--dsw-alias-brand-primary) 32%, transparent);
+  background: var(--studio-tint);
+}
+
+.moshu-root .studio-view .studio-memory-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.moshu-root .studio-view .studio-memory-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.moshu-root .studio-view .studio-memory-head strong { font-size: 11.5px; font-weight: 600; }
+
+.moshu-root .studio-view .studio-memory-body {
+  font-size: 11px;
+  line-height: 1.75;
+  color: var(--studio-muted);
+  word-break: break-word;
+}
+
+/* ------------------------------------------------------------------ *
+ * 设置页
+ * ------------------------------------------------------------------ */
+
+.moshu-root .studio-view .studio-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+.moshu-root .studio-view .studio-current-model {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+  flex-wrap: wrap;
+}
+
+.moshu-root .studio-view .studio-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 0;
+  border-top: 1px solid var(--studio-line);
+}
+
+.moshu-root .studio-view .studio-card > .studio-row:first-child { border-top: 0; }
+
+.moshu-root .studio-view .studio-row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.moshu-root .studio-view .studio-row-label {
+  font-size: 11.5px;
+  color: var(--studio-ink);
+}
+
+.moshu-root .studio-view .studio-row-help {
+  font-size: 10px;
+  line-height: 1.65;
+  color: var(--studio-faint);
+}
+
+.moshu-root .studio-view .studio-row-help.is-warn { color: var(--studio-warn); }
+
+.moshu-root .studio-view .studio-slider {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+}
+
+.moshu-root .studio-view .studio-slider input[type="range"] {
+  width: 128px;
+  accent-color: var(--studio-brand);
+  cursor: pointer;
+}
+
+.moshu-root .studio-view .studio-slider-value {
+  min-width: 62px;
+  font-family: var(--studio-mono);
+  font-size: 10.5px;
+  color: var(--studio-brand-ink);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 开关 */
+.moshu-root .studio-view .studio-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: transparent;
+  padding: 2px;
+  flex-shrink: 0;
+  color: var(--studio-muted);
+}
+
+.moshu-root .studio-view .studio-switch-track {
+  position: relative;
+  display: block;
+  width: 34px;
+  height: 19px;
+  border-radius: 999px;
+  border: 1px solid var(--studio-line-strong);
+  background: var(--studio-surface-2);
+  transition: background-color 0.18s, border-color 0.18s;
+}
+
+.moshu-root .studio-view .studio-switch-thumb {
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--studio-faint);
+  transform: translateY(-50%);
+  transition: left 0.18s, background-color 0.18s;
+}
+
+.moshu-root .studio-view .studio-switch.is-on { color: var(--studio-brand-ink); }
+.moshu-root .studio-view .studio-switch.is-on .studio-switch-track {
+  border-color: color-mix(in oklab, var(--dsw-alias-brand-primary) 55%, transparent);
+  background: color-mix(in oklab, var(--dsw-alias-brand-primary) 26%, transparent);
+}
+.moshu-root .studio-view .studio-switch.is-on .studio-switch-thumb {
+  left: 17px;
+  background: var(--studio-brand);
+}
+
+.moshu-root .studio-view .studio-switch-text { font-size: 10px; }
+
+/* 分段控件 */
+.moshu-root .studio-view .studio-segmented {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 8px;
+  background: var(--studio-surface-2);
+  flex-shrink: 0;
+}
+
+.moshu-root .studio-view .studio-segmented button {
+  border: 0;
+  background: transparent;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: var(--studio-muted);
+  font-size: 10.5px;
+  transition: background-color 0.16s, color 0.16s;
+}
+
+.moshu-root .studio-view .studio-segmented button:hover:not(:disabled) { color: var(--studio-brand-ink); }
+
+.moshu-root .studio-view .studio-segmented button.is-active {
+  background: var(--studio-overlay);
+  color: var(--studio-brand-ink);
+  box-shadow: 0 1px 4px color-mix(in oklab, var(--dsw-alias-label-primary) 12%, transparent);
+}
+
+/* 页脚：保存状态 + 恢复默认值 */
+.moshu-root .studio-view .studio-settings-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding: 10px 13px;
+  border: 1px solid var(--studio-line);
+  border-radius: 10px;
+  background: var(--studio-overlay);
+  position: sticky;
+  bottom: 0;
+}
+
+.moshu-root .studio-view .studio-save-state {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 10.5px;
+  color: var(--studio-muted);
+}
+
+.moshu-root .studio-view .studio-save-state .is-ok { color: var(--studio-brand-ink); }
+.moshu-root .studio-view .studio-save-state .is-error { color: var(--studio-error); }
+
+.moshu-root .studio-view .studio-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* ------------------------------------------------------------------ *
+ * 窄屏：左配置 / 右结果改为上下堆叠
+ * ------------------------------------------------------------------ */
+
+@media (max-width: 1180px) {
+  .moshu-root .studio-view .studio-layout { grid-template-columns: minmax(0, 1fr); }
+  .moshu-root .studio-view .studio-annotations,
+  .moshu-root .studio-view .studio-memory-list,
+  .moshu-root .studio-view .studio-pre { max-height: 62vh; }
+}
+
+@media (max-width: 720px) {
+  .moshu-root .studio-view .studio-recipes { grid-template-columns: minmax(0, 1fr); }
+  .moshu-root .studio-view .studio-context-grid { grid-template-columns: minmax(0, 1fr); }
+  .moshu-root .studio-view .studio-header-meta { align-items: flex-start; }
+  .moshu-root .studio-view .studio-card-head { flex-direction: column; gap: 6px; }
+  .moshu-root .studio-view .studio-row { flex-direction: column; align-items: stretch; gap: 7px; }
+  .moshu-root .studio-view .studio-slider { justify-content: space-between; }
+  .moshu-root .studio-view .studio-slider input[type="range"] { width: 100%; }
+  .moshu-root .studio-view .studio-settings-footer { flex-direction: column; align-items: stretch; }
+  .moshu-root .studio-view .studio-footer-actions { justify-content: flex-start; }
+}

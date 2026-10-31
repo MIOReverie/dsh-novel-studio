@@ -1,0 +1,293 @@
+/* 墨枢 · AI 记忆页。所有规则限定在 .moshu-root 内，颜色走宿主主题变量。 */
+
+.moshu-root .memory-page{
+  --m-ink:var(--moshu-ink);
+  --m-muted:var(--moshu-muted);
+  --m-faint:var(--moshu-faint);
+  --m-green:var(--moshu-brand);
+  --m-green-dark:var(--moshu-brand-ink);
+  --m-pale:var(--moshu-tint);
+  --m-line:var(--moshu-line);
+  --m-paper:var(--moshu-surface);
+  --m-amber:var(--moshu-warn);
+  min-width:0;color:var(--m-ink);padding-bottom:22px;font-size:12px}
+.moshu-root .memory-page *{box-sizing:border-box}
+.moshu-root .memory-page button{transition:background .16s,border-color .16s,color .16s,box-shadow .16s}
+.moshu-root .memory-page h1,.moshu-root .memory-page h2,
+.moshu-root .memory-page h3,.moshu-root .memory-page h4{color:var(--m-ink);margin-top:0}
+.moshu-root .memory-page p{margin-top:0}
+.moshu-root .memory-page h1,.moshu-root .memory-page h2,.moshu-root .memory-page h3{
+  font-family:var(--moshu-serif)}
+.moshu-root .memory-header{
+  display:flex;align-items:center;justify-content:space-between;gap:20px;margin:0 0 19px}
+.moshu-root .memory-header h1{font-size:23px;font-weight:650;letter-spacing:-.5px;margin:5px 0 6px}
+.moshu-root .memory-header p{font-size:11px;color:var(--m-muted);margin:0;line-height:1.65}
+
+.moshu-root .memory-notice{
+  display:flex;align-items:center;gap:8px;border:1px solid var(--m-line);border-radius:7px;
+  background:var(--moshu-tint);color:var(--moshu-brand-ink);font-size:11px;padding:9px 12px;margin:12px 0}
+.moshu-root .memory-notice>span{flex:1}
+.moshu-root .memory-notice>svg{color:var(--moshu-brand-ink)}
+.moshu-root .memory-page .icon-button{
+  width:28px;height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center;
+  background:transparent;border:0;border-radius:6px;color:var(--m-muted);flex-shrink:0}
+.moshu-root .memory-page .icon-button:hover{background:var(--moshu-hover);color:var(--m-green-dark)}
+.moshu-root .memory-page .panel{
+  border:1px solid var(--m-line);border-radius:11px;background:var(--m-paper);
+  box-shadow:0 3px 12px color-mix(in oklab,#000 4%,transparent);min-width:0;overflow:hidden}
+.moshu-root .memory-page .panel-heading{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 18px 14px}
+.moshu-root .memory-page .panel-heading h2{
+  font-size:13px;font-weight:650;margin:0;display:flex;gap:7px;align-items:center}
+.moshu-root .memory-page .panel-heading h2 svg{color:var(--m-muted)}
+.moshu-root .memory-page .panel-heading p{font-size:10px;color:var(--m-muted);margin:5px 0 0}
+
+/* 上下文健康度 */
+.moshu-root .memory-health-panel{
+  border:1px solid var(--m-line);border-radius:11px;
+  background:linear-gradient(110deg,var(--moshu-tint),var(--moshu-surface-2));
+  padding:19px 22px;display:flex;align-items:center;gap:25px;justify-content:space-between;
+  margin-bottom:18px;overflow:hidden;position:relative}
+.moshu-root .memory-health-panel:after{
+  content:"";position:absolute;right:-60px;top:-120px;width:270px;height:270px;
+  background:var(--moshu-tint);border-radius:50%;pointer-events:none}
+.moshu-root .health-score{
+  display:flex;align-items:center;gap:14px;min-width:225px;position:relative;z-index:1}
+.moshu-root .health-ring{
+  width:65px;height:65px;flex-shrink:0;padding:5px;border-radius:50%;
+  background:conic-gradient(var(--moshu-brand) var(--health-score,0deg),var(--moshu-surface-2) 0);
+  position:relative}
+.moshu-root .health-ring:after{
+  content:"";position:absolute;inset:0;border-radius:50%;
+  border:1px solid color-mix(in oklab,var(--dsw-alias-brand-primary) 22%,transparent)}
+.moshu-root .health-ring>div{
+  width:100%;height:100%;border-radius:50%;background:var(--moshu-surface);
+  display:flex;flex-direction:column;align-items:center;justify-content:center}
+.moshu-root .health-ring strong{font-size:20px;line-height:1;font-weight:600;letter-spacing:-.5px}
+.moshu-root .health-ring span{font-size:8px;color:var(--m-muted);margin-top:4px}
+.moshu-root .health-score h2{font-size:13px;font-weight:600;margin:0 0 5px}
+.moshu-root .health-score p{font-size:10px;color:var(--m-muted);margin:0;white-space:nowrap}
+.moshu-root .health-metrics{
+  display:grid;grid-template-columns:repeat(4,minmax(90px,1fr));flex:1;position:relative;z-index:1}
+.moshu-root .health-metrics>div{
+  padding:2px 20px;border-left:1px solid var(--m-line);
+  display:grid;grid-template-columns:18px 1fr;gap:4px 7px;align-items:center}
+.moshu-root .health-metrics svg{color:var(--m-muted);grid-row:span 2}
+.moshu-root .health-metrics span{font-size:9px;color:var(--m-muted);white-space:nowrap}
+.moshu-root .health-metrics strong{font-size:18px;font-weight:550;line-height:1.2}
+.moshu-root .health-metrics strong small{font-size:8px;font-weight:400;color:var(--m-faint)}
+.moshu-root .health-metrics .text-warning{color:var(--moshu-warn)}
+
+/* 记忆库 */
+.moshu-root .memory-layout{
+  display:grid;grid-template-columns:minmax(430px,1.45fr) minmax(310px,.85fr);gap:17px;align-items:start}
+.moshu-root .memory-category-tabs{
+  display:flex;align-items:center;gap:3px;padding:0 14px 13px;border-bottom:1px solid var(--m-line);overflow:auto}
+.moshu-root .memory-category-tabs button{
+  display:flex;align-items:center;gap:5px;border:0;background:transparent;border-radius:5px;
+  padding:7px 8px;color:var(--m-muted);white-space:nowrap;font-size:10px}
+.moshu-root .memory-category-tabs button:hover{background:var(--moshu-hover)}
+.moshu-root .memory-category-tabs button.active{background:var(--moshu-tint);color:var(--moshu-brand-ink)}
+.moshu-root .memory-category-tabs .count{
+  font-size:8px;padding:1px 4px;background:var(--moshu-surface-2);border-radius:3px;color:var(--m-faint)}
+.moshu-root .memory-category-tabs button.active .count{
+  background:var(--moshu-tint-strong);color:var(--moshu-brand-ink)}
+.moshu-root .memory-toolbar{display:flex;gap:8px;padding:12px 14px 9px}
+.moshu-root .memory-toolbar .search-field{flex:1}
+.moshu-root .memory-list{
+  padding:2px 10px 11px;display:flex;flex-direction:column;gap:7px;max-height:650px;overflow:auto;
+  scrollbar-width:thin;scrollbar-color:var(--moshu-line-strong) transparent}
+.moshu-root .memory-card{
+  border:1px solid var(--m-line);background:var(--m-paper);border-radius:8px;position:relative;
+  display:flex;flex-wrap:wrap;transition:border-color .15s,box-shadow .15s}
+.moshu-root .memory-card:hover{
+  border-color:var(--moshu-line-strong);box-shadow:0 3px 10px color-mix(in oklab,#000 5%,transparent)}
+.moshu-root .memory-card.selected{
+  border-color:var(--moshu-brand);background:var(--m-paper);
+  box-shadow:0 0 0 1px var(--moshu-tint)}
+.moshu-root .memory-card.pending{
+  border-color:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 32%,var(--m-line));
+  background:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 5%,var(--m-paper))}
+.moshu-root .memory-card-main{
+  flex:1;text-align:left;border:0;background:none;padding:13px 13px 10px;min-width:0}
+.moshu-root .memory-card-main:active{transform:none}
+.moshu-root .memory-card-heading{display:flex;align-items:center;gap:6px;min-height:18px;color:var(--m-muted)}
+.moshu-root .memory-type{
+  display:inline-flex;padding:3px 6px;border-radius:4px;font-size:8px;line-height:1.2;
+  letter-spacing:.3px;background:var(--moshu-tint);color:var(--moshu-brand-ink)}
+.moshu-root .type-character{background:var(--moshu-tint);color:var(--moshu-brand-ink)}
+.moshu-root .type-summary{background:var(--moshu-surface-2);color:var(--m-muted)}
+.moshu-root .type-foreshadowing{
+  background:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 14%,transparent);color:var(--moshu-warn)}
+.moshu-root .memory-card h3{font-size:12px;font-weight:600;margin:7px 0 5px;line-height:1.5}
+.moshu-root .memory-card-main>p{
+  font-size:10px;line-height:1.8;color:var(--m-muted);margin:0;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.moshu-root .memory-source{
+  display:flex;align-items:center;gap:5px;margin-top:9px;font-size:8px;color:var(--m-faint)}
+.moshu-root .memory-source>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%}
+.moshu-root .memory-source time{margin-left:auto;white-space:nowrap}
+.moshu-root .memory-card-actions{display:flex;gap:3px;align-items:flex-start;padding:11px 8px 0 0}
+.moshu-root .memory-card-actions .button{margin-top:24px}
+.moshu-root .memory-page .status-badge{
+  display:inline-flex;align-items:center;gap:4px;padding:3px 6px;border-radius:4px;
+  font-size:8px;white-space:nowrap;border:0}
+.moshu-root .memory-page .status-badge.pending{
+  background:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 20%,transparent);color:var(--moshu-warn)}
+.moshu-root .memory-editor{
+  width:100%;border-top:1px solid var(--m-line);padding:13px;background:var(--moshu-surface-2)}
+.moshu-root .memory-editor label{
+  display:flex;flex-direction:column;gap:7px;font-size:10px;color:var(--m-muted)}
+.moshu-root .memory-editor textarea{
+  resize:vertical;border:1px solid var(--m-line);border-radius:6px;background:var(--m-paper);
+  padding:9px 10px;color:var(--m-ink);font-size:11px;line-height:1.9;outline:0}
+.moshu-root .memory-editor textarea:focus{border-color:var(--moshu-line-strong)}
+.moshu-root .memory-editor>div{display:flex;justify-content:flex-end;gap:7px;margin-top:10px}
+
+/* 详情与上下文装配 */
+.moshu-root .memory-inspector{display:flex;flex-direction:column;gap:15px;min-width:0}
+.moshu-root .memory-detail{padding-bottom:13px}
+.moshu-root .memory-detail .panel-heading{padding-bottom:11px}
+.moshu-root .memory-detail>.memory-type{margin:0 18px 7px}
+.moshu-root .memory-detail>h3{font-size:14px;margin:0 18px 8px}
+.moshu-root .memory-full-content{
+  margin:0 18px 14px;font-size:11px;line-height:1.9;color:var(--m-muted);white-space:pre-wrap}
+.moshu-root .memory-detail dl{margin:0 18px;border-top:1px solid var(--m-line);padding-top:6px}
+.moshu-root .memory-detail dl>div{
+  display:flex;justify-content:space-between;gap:12px;padding:5px 0;font-size:9px}
+.moshu-root .memory-detail dt{color:var(--m-faint)}
+.moshu-root .memory-detail dd{margin:0;color:var(--m-muted);text-align:right;overflow-wrap:anywhere}
+.moshu-root .live-badge{display:flex;align-items:center;gap:4px;font-size:8px;color:var(--m-muted)}
+.moshu-root .live-badge>span{
+  width:5px;height:5px;border-radius:50%;background:var(--moshu-success);
+  box-shadow:0 0 0 3px var(--moshu-tint)}
+.moshu-root .context-budget{
+  margin:0 15px 12px;border:1px solid var(--m-line);border-radius:7px;
+  background:var(--moshu-surface-2);padding:11px}
+.moshu-root .context-budget>div:first-child{
+  display:flex;justify-content:space-between;align-items:center;font-size:9px;color:var(--m-muted)}
+.moshu-root .context-budget strong{
+  font-size:10px;font-weight:500;font-variant-numeric:tabular-nums;color:var(--moshu-brand-ink)}
+.moshu-root .memory-page .progress-track{
+  height:4px;background:var(--moshu-surface-2);border-radius:4px;margin:9px 0 7px;
+  overflow:hidden;border:0}
+.moshu-root .memory-page .progress-track>span{
+  display:block;height:100%;background:var(--moshu-brand);border-radius:4px;
+  max-width:100%;transition:width .25s}
+.moshu-root .context-budget p{font-size:8px;color:var(--m-faint);margin:0}
+.moshu-root .context-tabs{display:flex;margin:0 15px 10px;border-bottom:1px solid var(--m-line);gap:17px}
+.moshu-root .context-tabs button{
+  border:0;background:transparent;padding:0 0 8px;font-size:10px;color:var(--m-muted);position:relative}
+.moshu-root .context-tabs button.active{color:var(--moshu-brand-ink)}
+.moshu-root .context-tabs button.active:after{
+  content:"";position:absolute;bottom:-1px;height:2px;background:var(--moshu-brand);
+  left:0;right:0;border-radius:2px}
+.moshu-root .context-list{
+  max-height:260px;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--moshu-line-strong) transparent}
+.moshu-root .context-item{
+  display:flex;align-items:center;gap:7px;padding:9px 15px;cursor:pointer;
+  transition:background .15s;position:relative}
+.moshu-root .context-item:hover{background:var(--moshu-hover)}
+.moshu-root .context-item input{position:absolute;opacity:0;pointer-events:none}
+.moshu-root .custom-checkbox{
+  height:14px;width:14px;flex-shrink:0;border:1px solid var(--m-line);border-radius:4px;
+  display:grid;place-items:center;color:transparent;background:var(--m-paper)}
+.moshu-root .context-item input:checked+.custom-checkbox{
+  background:var(--moshu-brand);border-color:var(--moshu-brand);
+  color:var(--dsw-alias-label-primary-foreground)}
+.moshu-root .context-item>svg{color:var(--m-muted)}
+.moshu-root .context-item>span:nth-last-child(2){flex:1;min-width:0}
+.moshu-root .context-item strong{
+  font-size:10px;font-weight:500;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.moshu-root .context-item small{
+  font-size:8px;color:var(--m-faint);display:block;margin-top:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.moshu-root .context-tokens{font-size:8px;color:var(--m-faint);white-space:nowrap}
+.moshu-root .context-priority{
+  border-top:1px solid var(--m-line);background:var(--moshu-surface-2);display:flex;gap:8px;
+  padding:11px 15px;color:var(--m-muted)}
+.moshu-root .context-priority p{margin:0}
+.moshu-root .context-priority strong{display:block;font-size:9px;font-weight:500;color:var(--moshu-brand-ink)}
+.moshu-root .context-priority span{display:block;font-size:8px;color:var(--m-faint);line-height:1.6;margin-top:3px}
+
+/* 新建记忆对话框 */
+.moshu-root .memory-page .modal-backdrop{
+  position:fixed;inset:0;background:color-mix(in oklab,#000 32%,transparent);
+  backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);z-index:80;
+  display:grid;place-items:center;padding:24px}
+.moshu-root .memory-page .modal{
+  width:min(480px,100%);border:1px solid var(--m-line);background:var(--moshu-surface-3);
+  border-radius:14px;box-shadow:0 24px 90px color-mix(in oklab,#000 30%,transparent);
+  overflow:hidden;animation:memory-modal-in .2s ease-out}
+.moshu-root .memory-page .empty-state h3{font-size:12px;font-weight:550;margin:10px 0 5px}
+.moshu-root .memory-page .empty-state p{font-size:10px;line-height:1.8;color:var(--m-muted);margin:0 0 13px}
+.moshu-root .memory-page .empty-state.compact{padding:22px 10px}
+@keyframes memory-modal-in{
+  from{opacity:0;transform:translateY(8px) scale(.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+@media(min-width:1600px){
+  .moshu-root .memory-layout{grid-template-columns:minmax(540px,1.55fr) minmax(370px,.8fr);gap:20px}
+  .moshu-root .memory-list{max-height:720px}
+  .moshu-root .memory-card-main{padding:15px}
+  .moshu-root .memory-card-main>p{font-size:11px}
+  .moshu-root .context-list{max-height:330px}
+}
+@media(max-width:1250px){
+  .moshu-root .health-metrics>div{padding-inline:12px}
+  .moshu-root .health-score{min-width:205px}
+  .moshu-root .health-score p{white-space:normal}
+  .moshu-root .memory-layout{grid-template-columns:minmax(360px,1.25fr) minmax(280px,.85fr);gap:12px}
+  .moshu-root .memory-category-tabs{padding-inline:10px}
+  .moshu-root .memory-category-tabs button{padding-inline:6px}
+  .moshu-root .memory-category-tabs button svg{display:none}
+}
+@media(max-width:1050px){
+  .moshu-root .memory-health-panel{flex-direction:column;align-items:stretch;gap:17px}
+  .moshu-root .health-score{justify-content:flex-start}
+  .moshu-root .health-metrics>div:first-child{border-left:0;padding-left:0}
+  .moshu-root .memory-layout{grid-template-columns:1fr}
+  .moshu-root .memory-inspector{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+  .moshu-root .memory-inspector>.context-panel:only-child{grid-column:1/-1}
+  .moshu-root .memory-list{max-height:520px}
+}
+@media(max-width:760px){
+  .moshu-root .memory-header{align-items:flex-start}
+  .moshu-root .memory-header h1{font-size:21px}
+  .moshu-root .memory-header .eyebrow{font-size:8px}
+  .moshu-root .memory-health-panel{padding:16px}
+  .moshu-root .health-metrics{grid-template-columns:repeat(2,1fr);gap:15px 0}
+  .moshu-root .health-metrics>div:nth-child(3){border-left:0;padding-left:0}
+  .moshu-root .memory-inspector{grid-template-columns:1fr}
+  .moshu-root .memory-list{max-height:460px}
+}
+@media(max-width:520px){
+  .moshu-root .memory-page{font-size:11px}
+  .moshu-root .memory-header{gap:10px}
+  .moshu-root .memory-header p{max-width:240px}
+  .moshu-root .memory-header .button{padding:8px;font-size:0;gap:0}
+  .moshu-root .memory-header .button svg{width:18px;height:18px}
+  .moshu-root .health-score{min-width:0}
+  .moshu-root .health-metrics>div{padding-inline:10px}
+  .moshu-root .health-metrics strong{font-size:16px}
+  .moshu-root .memory-toolbar{flex-wrap:wrap}
+  .moshu-root .memory-toolbar .search-field{flex-basis:100%}
+  .moshu-root .memory-card-actions{
+    padding-top:0;padding-left:12px;width:100%;justify-content:flex-end;
+    border-top:1px solid var(--m-line);padding-bottom:7px}
+  .moshu-root .memory-card-actions .button{margin-top:7px}
+  .moshu-root .memory-card-main{width:100%;flex-basis:100%}
+  .moshu-root .memory-page .modal-backdrop{padding:15px}
+}
+@media(prefers-reduced-motion:reduce){
+  .moshu-root .memory-page *{animation:none!important;transition:none!important}
+}
+
+
+/* 断点跟**容器**走而不是视口：工作台会以 500px 宽的对话内嵌面板出现，
+   这时视口仍是 1440px，@media 不触发 → 面板里出现横向滚动条。 */
+.moshu-root .memory-view{container-type:inline-size}
+@container (max-width: 700px){
+  .moshu-root .memory-grid{grid-template-columns:minmax(0,1fr)}
+}

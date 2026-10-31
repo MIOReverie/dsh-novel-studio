@@ -1,0 +1,75 @@
+/* 总览页：只读统计，风格与其它视图一致（全用 --moshu-* / --dsw-alias-*）。 */
+
+.moshu-root.overview-page{
+  display:flex;flex-direction:column;gap:18px;
+  height:100%;min-height:0;overflow:auto;
+  padding:4px 2px 28px;color:var(--moshu-ink)}
+
+/* 统计 */
+.moshu-root .ov-stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px}
+.moshu-root .ov-stat{
+  display:flex;flex-direction:column;gap:2px;
+  padding:12px 14px;border-radius:11px;
+  border:1px solid var(--moshu-line);background:var(--moshu-surface)}
+.moshu-root .ov-stat span{font-size:11px;color:var(--moshu-muted)}
+.moshu-root .ov-stat strong{font-size:19px;font-weight:600;letter-spacing:-.01em}
+
+/* 进度 */
+.moshu-root .ov-progress{
+  padding:14px 16px;border-radius:11px;
+  border:1px solid var(--moshu-line);background:var(--moshu-surface)}
+.moshu-root .ov-progress-head{
+  display:flex;align-items:baseline;justify-content:space-between;
+  font-size:12px;color:var(--moshu-muted);margin-bottom:8px}
+.moshu-root .ov-progress-head b{font-size:14px;color:var(--moshu-ink)}
+.moshu-root .ov-progress-track{
+  height:6px;border-radius:999px;overflow:hidden;
+  background:color-mix(in oklab,var(--dsw-alias-label-primary) 12%,transparent)}
+.moshu-root .ov-progress-track i{
+  display:block;height:100%;border-radius:999px;
+  background:var(--dsw-alias-state-business-primary)}
+.moshu-root .ov-progress p{margin:8px 0 0;font-size:11px;color:var(--moshu-faint)}
+
+/* 区块 */
+.moshu-root .ov-block{display:flex;flex-direction:column;gap:8px}
+.moshu-root .ov-block-head{display:flex;align-items:center;gap:7px;color:var(--moshu-muted)}
+.moshu-root .ov-block-head h2{margin:0;font-size:12.5px;font-weight:600;color:var(--moshu-ink)}
+.moshu-root .ov-empty{margin:0;font-size:11.5px;color:var(--moshu-faint)}
+
+/* 章节表 */
+.moshu-root .ov-chapters{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.moshu-root .ov-chapter{
+  width:100%;display:grid;grid-template-columns:34px minmax(0,1fr) auto auto;align-items:center;gap:10px;
+  padding:8px 10px;border:0;border-radius:8px;background:transparent;
+  color:inherit;text-align:left;cursor:pointer;font:inherit}
+.moshu-root .ov-chapter:hover{background:var(--moshu-hover)}
+.moshu-root .ov-chapter-no{font-family:var(--moshu-mono);font-size:10.5px;color:var(--moshu-faint)}
+.moshu-root .ov-chapter-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px}
+.moshu-root .ov-chapter-words{font-family:var(--moshu-mono);font-size:10.5px;color:var(--moshu-muted)}
+.moshu-root .ov-chapter-status{
+  font-size:10px;padding:2px 7px;border-radius:999px;
+  border:1px solid var(--moshu-line);color:var(--moshu-muted)}
+.moshu-root .ov-chapter-status.is-已完成{
+  color:var(--dsw-alias-state-success-primary);
+  border-color:color-mix(in oklab,var(--dsw-alias-state-success-primary) 40%,transparent)}
+.moshu-root .ov-chapter-status.is-草稿{
+  color:var(--dsw-alias-state-business-primary);
+  border-color:color-mix(in oklab,var(--dsw-alias-state-business-primary) 40%,transparent)}
+
+/* 最近改动 */
+.moshu-root .ov-recent{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.moshu-root .ov-recent button{
+  width:100%;display:flex;align-items:baseline;gap:10px;
+  padding:7px 10px;border:0;border-radius:8px;background:transparent;
+  color:inherit;text-align:left;cursor:pointer;font:inherit}
+.moshu-root .ov-recent button:hover{background:var(--moshu-hover)}
+.moshu-root .ov-recent-title{font-size:12px}
+.moshu-root .ov-recent-path{
+  margin-left:auto;font-size:10.5px;color:var(--moshu-faint);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+@media (max-width: 720px){
+  .moshu-root .ov-chapter{grid-template-columns:28px minmax(0,1fr) auto}
+  .moshu-root .ov-chapter-words{display:none}
+}

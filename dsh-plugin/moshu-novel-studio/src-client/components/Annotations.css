@@ -1,0 +1,137 @@
+/* 墨枢 · 批注侧栏（WPS 式）。所有规则限定在 .moshu-root 内。 */
+
+/* --moshu-* 只在 styles.css 里定义一份（页面根组件最先渲染，整页继承）。
+   侧栏从前的 token 副本已删除，直接继承 .moshu-root 上的值。 */
+.moshu-root .annotations-panel{
+  min-width:0;min-height:0;border:1px solid var(--moshu-line);border-radius:14px;
+  display:flex;flex-direction:column;overflow:hidden;
+  background:color-mix(in oklab,var(--dsw-alias-bg-layer-2) 78%,transparent)}
+.moshu-root .annotations-header{
+  display:flex;align-items:center;justify-content:space-between;padding:20px 17px 13px;flex-shrink:0}
+.moshu-root .annotations-eyebrow{font-size:8px;letter-spacing:.16em;color:var(--moshu-faint)}
+.moshu-root .annotations-header h2{
+  font-family:var(--moshu-serif);font-size:17px;font-weight:600;margin:4px 0 0;
+  display:flex;align-items:center;gap:7px;color:var(--moshu-ink)}
+.moshu-root .annotations-count{
+  display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;
+  padding:0 5px;border-radius:9px;background:var(--moshu-tint);color:var(--moshu-brand-ink);
+  font-family:var(--moshu-sans);font-size:10px;font-weight:500}
+.moshu-root .annotations-add-button{
+  width:30px;height:30px;display:grid;place-items:center;border:1px solid var(--moshu-line);
+  background:var(--moshu-surface-2);border-radius:7px;color:var(--moshu-muted)}
+.moshu-root .annotations-add-button:hover{background:var(--moshu-tint);color:var(--moshu-brand-ink)}
+.moshu-root .annotations-filter{
+  display:flex;align-items:center;gap:3px;margin:0 13px 12px;padding:4px;
+  background:var(--moshu-surface-2);border-radius:7px;color:var(--moshu-faint);flex-shrink:0}
+.moshu-root .annotations-filter>svg{margin:0 4px 0 5px}
+.moshu-root .annotations-filter button{
+  flex:1;min-width:0;border:0;border-radius:5px;background:transparent;padding:6px 2px;font-size:9.5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color:var(--moshu-muted)}
+.moshu-root .annotations-filter button.is-active{
+  background:var(--moshu-surface-3);color:var(--moshu-brand-ink);
+  box-shadow:0 1px 4px color-mix(in oklab,#000 10%,transparent)}
+.moshu-root .annotations-list{
+  padding:0 12px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;
+  scrollbar-width:thin;scrollbar-color:var(--moshu-line-strong) transparent}
+.moshu-root .annotation-card{
+  padding:13px 13px 9px;border:1px solid var(--moshu-line);border-radius:10px;
+  background:var(--moshu-surface);position:relative;
+  box-shadow:0 3px 10px color-mix(in oklab,#000 5%,transparent)}
+.moshu-root .annotation-card.is-resolved{opacity:.67;background:var(--moshu-surface-2)}
+/* 失效批注：引用的原文已经定位不到。视觉上比普通 open 更“需要处理”，但不可误点成已解决。 */
+.moshu-root .annotation-card.is-stale{
+  border-style:dashed;
+  border-color:color-mix(in oklab,var(--dsw-alias-state-warn-primary,var(--moshu-warn)) 55%,var(--moshu-line));
+  background:color-mix(in oklab,var(--dsw-alias-state-warn-primary,var(--moshu-warn)) 7%,var(--moshu-surface))}
+.moshu-root .annotation-stale-note{
+  display:flex;align-items:flex-start;gap:5px;margin:0 0 9px;padding:6px 8px;border-radius:6px;
+  background:color-mix(in oklab,var(--dsw-alias-state-warn-primary,var(--moshu-warn)) 13%,transparent);
+  color:var(--dsw-alias-state-warn-primary,var(--moshu-warn));font-size:9px;line-height:1.75}
+.moshu-root .annotation-stale-note svg{margin-top:1px}
+.moshu-root .annotation-stale-note span{min-width:0;overflow-wrap:anywhere}
+.moshu-root .annotation-card.is-stale .annotation-quote{
+  border-left-style:dashed;text-decoration:line-through;
+  text-decoration-color:color-mix(in oklab,var(--moshu-faint) 70%,transparent);
+  text-decoration-thickness:1px}
+.moshu-root .annotation-card.severity-严重{
+  border-left:2px solid var(--dsw-alias-state-error-primary,var(--moshu-error))}
+.moshu-root .annotation-card.severity-注意{
+  border-left:2px solid var(--dsw-alias-state-warn-primary,var(--moshu-warn))}
+.moshu-root .annotation-card-header{
+  display:flex;align-items:center;justify-content:space-between;gap:5px;margin-bottom:10px}
+.moshu-root .annotation-source{
+  display:flex;align-items:center;gap:5px;font-size:10px;color:var(--moshu-muted)}
+.moshu-root .annotation-source.is-ai{color:var(--moshu-brand-ink)}
+.moshu-root .annotation-type{font-size:8px;color:var(--moshu-faint)}
+.moshu-root .annotation-quote{
+  margin:0 0 9px;padding:7px 9px;border-left:2px solid var(--moshu-line-strong);
+  background:var(--moshu-surface-2);color:var(--moshu-muted);font-family:var(--moshu-serif);
+  font-size:10px;line-height:1.8;display:-webkit-box;-webkit-line-clamp:3;
+  -webkit-box-orient:vertical;overflow:hidden}
+.moshu-root .annotation-content{
+  margin:0;color:var(--moshu-ink);font-size:11px;line-height:1.9;
+  white-space:pre-wrap;overflow-wrap:anywhere}
+.moshu-root .annotation-suggestion{
+  padding:8px 9px;margin:9px 0 0;background:var(--moshu-tint);border-radius:6px;
+  color:var(--moshu-muted);font-size:10px;line-height:1.8}
+.moshu-root .annotation-suggestion strong{
+  display:block;color:var(--moshu-brand-ink);font-weight:500;margin-bottom:3px}
+.moshu-root .annotation-actions{
+  display:flex;align-items:center;gap:4px;margin-top:9px;padding-top:8px;
+  border-top:1px solid var(--moshu-line)}
+.moshu-root .annotation-actions button{
+  display:flex;align-items:center;gap:4px;border:0;border-radius:4px;background:transparent;
+  color:var(--moshu-muted);padding:4px 5px;font-size:9px}
+.moshu-root .annotation-actions button:hover{background:var(--moshu-hover);color:var(--moshu-brand-ink)}
+.moshu-root .annotation-actions .annotation-resolve{margin-left:auto;color:var(--moshu-brand-ink)}
+.moshu-root .annotation-actions .annotation-reopen{margin-left:auto}
+.moshu-root .annotation-actions .annotation-delete{padding:4px}
+.moshu-root .annotation-actions .annotation-relocate{color:var(--moshu-brand-ink)}
+.moshu-root .annotation-actions .annotation-relocate svg{opacity:.8}
+.moshu-root .annotation-actions .annotation-delete.has-text{margin-left:auto;color:var(--moshu-muted)}
+.moshu-root .annotation-actions .annotation-delete.has-text:hover{
+  color:var(--dsw-alias-state-error-primary,var(--moshu-error));
+  background:color-mix(in oklab,var(--dsw-alias-state-error-primary,var(--moshu-error)) 10%,transparent)}
+.moshu-root .annotation-empty,.moshu-root .annotations-empty{
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  color:var(--moshu-muted);padding:45px 14px}
+.moshu-root .annotations-empty h3{
+  font-family:var(--moshu-serif);font-size:13px;font-weight:500;
+  color:var(--moshu-brand-ink);margin:15px 0 7px}
+.moshu-root .annotations-empty p{font-size:10px;line-height:1.9;margin:0;color:var(--moshu-muted)}
+.moshu-root .annotation-composer{
+  margin:0 12px 12px;padding:12px;background:var(--moshu-surface);
+  border:1px solid var(--moshu-line);border-radius:9px;flex-shrink:0}
+.moshu-root .annotation-composer label{font-size:11px;color:var(--moshu-brand-ink)}
+.moshu-root .annotation-composer blockquote{
+  margin:8px 0;padding:7px;border-left:2px solid var(--moshu-line-strong);
+  color:var(--moshu-muted);font-size:10px;line-height:1.7}
+.moshu-root .annotation-composer textarea{
+  width:100%;resize:vertical;margin-top:8px;padding:9px;border:1px solid var(--moshu-line);
+  border-radius:6px;background:var(--moshu-surface-2);color:var(--moshu-ink);
+  font-size:11px;line-height:1.8;outline:none}
+.moshu-root .annotation-composer textarea:focus{border-color:var(--moshu-line-strong)}
+.moshu-root .annotation-composer-footer{
+  display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.moshu-root .annotation-composer-footer>span{font-size:9px;color:var(--moshu-faint)}
+.moshu-root .annotation-submit{
+  border:0;border-radius:5px;background:var(--moshu-brand);color:var(--dsw-alias-label-primary-foreground);padding:6px 10px;font-size:10px}
+.moshu-root .annotation-submit:hover{background:var(--moshu-brand-ink)}
+.moshu-root .annotations-error{
+  font-size:10px;line-height:1.7;color:var(--moshu-error);margin:0 14px 10px}
+
+/* 删除批注后的 5 秒撤销条 */
+.moshu-root .annotations-undo{
+  position:sticky;bottom:0;z-index:5;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin:8px 10px 10px;padding:8px 12px;border-radius:9px;
+  background:var(--dsw-alias-bg-layer-3);
+  border:1px solid var(--dsw-alias-border-l2);
+  box-shadow:0 6px 20px color-mix(in oklab,#000 16%,transparent);
+  font-size:11.5px;color:var(--dsw-alias-label-secondary)}
+.moshu-root .annotations-undo button{
+  border:0;background:none;padding:2px 6px;border-radius:6px;
+  color:var(--dsw-alias-state-business-primary);font-size:11.5px;font-weight:600;cursor:pointer}
+.moshu-root .annotations-undo button:hover{
+  background:color-mix(in oklab,var(--dsw-alias-state-business-primary) 12%,transparent)}

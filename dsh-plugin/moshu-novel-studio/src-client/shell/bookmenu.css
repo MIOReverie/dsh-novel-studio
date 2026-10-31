@@ -1,0 +1,396 @@
+/* 墨枢 · 当前书籍弹层（BookMenu）的第三轮补充样式：彻底删除 + 回收站。
+   约定：
+   - 每条规则都挂在 .moshu-root 下（不污染宿主全局样式）；
+   - 颜色只用 --dsw-alias-* 主题变量（本地变量只是别名，不写 dark 分支、不写死色值）；
+   - 基础弹层 / 行 / 按钮样式仍在 styles.css，这里只补新增的三处危险交互与回收站。 */
+
+/* ------------------------------------------------------------------ *
+ * 局部变量（全部指向宿主 token）
+ * ------------------------------------------------------------------ */
+
+.moshu-root .book-menu {
+  --book-ink: var(--dsw-alias-label-primary);
+  --book-muted: var(--dsw-alias-label-secondary);
+  --book-faint: var(--dsw-alias-label-tertiary);
+  --book-line: var(--dsw-alias-border-l1);
+  --book-line-strong: var(--dsw-alias-border-l2);
+  --book-surface-2: var(--dsw-alias-bg-layer-2);
+  --book-field: var(--dsw-alias-bg-base);
+  --book-brand: var(--dsw-alias-brand-primary);
+  --book-error: var(--dsw-alias-state-error-primary);
+  --book-warn: var(--dsw-alias-state-warn-primary);
+  --book-success: var(--dsw-alias-state-success-primary);
+}
+
+.moshu-root .book-menu button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 弹层单独挂载时也要有旋转，不依赖 styles.css 是否已挂。 */
+.moshu-root .book-menu .is-spinning {
+  animation: moshu-bookmenu-spin 1.1s linear infinite;
+}
+
+@keyframes moshu-bookmenu-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ------------------------------------------------------------------ *
+ * 行内动作：改名 / 移到回收站 / 彻底删除
+ * 三档危险度靠"形状"区分：无边框文字 → 悬停变红的文字 → 药丸描边 + 三角标
+ * ------------------------------------------------------------------ */
+
+.moshu-root .book-menu .book-row-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  row-gap: 4px;
+}
+
+.moshu-root .book-menu .book-link-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px 2px 7px;
+  border: 1px solid color-mix(in oklab, var(--book-error) 46%, transparent);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--book-error) 12%, transparent);
+  color: var(--book-error);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.moshu-root .book-menu .book-link-danger:hover:not(:disabled) {
+  border-color: var(--book-error);
+  background: color-mix(in oklab, var(--book-error) 22%, transparent);
+}
+
+.moshu-root .book-menu .book-link-danger:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--book-error) 55%, transparent);
+  outline-offset: 1px;
+}
+
+/* 纯 CSS 的警示三角（currentColor，跟着按钮/提示自动变色），不引图标、不加依赖。 */
+.moshu-root .book-menu .book-danger-mark {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 0;
+  height: 0;
+  margin-right: 5px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 7px solid currentColor;
+  vertical-align: 0;
+  transform: translateY(-1px);
+}
+
+.moshu-root .book-menu .menu-confirm-hint .book-danger-mark {
+  color: var(--book-error);
+  margin-right: 4px;
+}
+
+.moshu-root .book-menu .menu-row.is-confirming {
+  background: color-mix(in oklab, var(--book-error) 6%, transparent);
+  border-color: color-mix(in oklab, var(--book-error) 22%, transparent);
+}
+
+/* ------------------------------------------------------------------ *
+ * 彻底删除的输入确认区（比普通确认更重：左侧警示条 + 红色输入框）
+ * ------------------------------------------------------------------ */
+
+.moshu-root .book-menu .book-confirm {
+  border-left-width: 3px;
+  border-left-color: var(--book-error);
+  border-color: color-mix(in oklab, var(--book-error) 40%, transparent);
+  background: color-mix(in oklab, var(--book-error) 9%, transparent);
+}
+
+.moshu-root .book-menu .book-confirm-label {
+  margin-top: 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--book-muted);
+}
+
+.moshu-root .book-menu .book-confirm-input {
+  display: block;
+  width: 100%;
+  height: 28px;
+  margin-top: 4px;
+  padding: 0 9px;
+  border: 1px solid color-mix(in oklab, var(--book-error) 45%, transparent);
+  border-radius: 7px;
+  background: var(--book-field);
+  color: var(--book-ink);
+  font: inherit;
+  font-size: 12px;
+}
+
+.moshu-root .book-menu .book-confirm-input::placeholder {
+  color: var(--book-faint);
+}
+
+.moshu-root .book-menu .book-confirm-input:focus {
+  outline: none;
+  border-color: var(--book-error);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--book-error) 18%, transparent);
+}
+
+.moshu-root .book-menu .book-confirm-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.moshu-root .book-menu .book-confirm-hint.is-warn {
+  color: var(--book-warn);
+  font-weight: 500;
+}
+
+.moshu-root .book-menu .book-confirm-hint.is-ok {
+  color: var(--book-success);
+  font-weight: 500;
+}
+
+/* 实心危险按钮：与描边的「移到回收站」确认按钮在形状上就不同（实心 vs 空心）。 */
+.moshu-root .book-menu .menu-danger.book-danger-solid {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 7px;
+  background: var(--book-error);
+  border-color: var(--book-error);
+  color: var(--book-field);
+  font-weight: 600;
+}
+
+.moshu-root .book-menu .menu-danger.book-danger-solid:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--book-error) 86%, var(--book-ink));
+  border-color: color-mix(in oklab, var(--book-error) 86%, var(--book-ink));
+}
+
+.moshu-root .book-menu .menu-danger.book-danger-solid:disabled {
+  background: color-mix(in oklab, var(--book-error) 22%, transparent);
+  border-color: color-mix(in oklab, var(--book-error) 32%, transparent);
+  color: color-mix(in oklab, var(--book-error) 72%, var(--book-ink));
+}
+
+/* ------------------------------------------------------------------ *
+ * 回收站区块（底部可折叠）
+ * ------------------------------------------------------------------ */
+
+.moshu-root .book-menu .book-trash {
+  flex: 0 0 auto;
+  padding-top: 6px;
+  border-top: 1px solid var(--book-line);
+}
+
+.moshu-root .book-menu .book-trash-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--book-muted);
+  font-size: 11px;
+  font-weight: 500;
+  text-align: left;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.moshu-root .book-menu .book-trash-toggle:hover {
+  background: var(--book-surface-2);
+  color: var(--book-ink);
+}
+
+.moshu-root .book-menu .book-trash-toggle[aria-expanded='true'] {
+  color: var(--book-ink);
+}
+
+.moshu-root .book-menu .book-trash-toggle svg {
+  color: var(--book-faint);
+}
+
+.moshu-root .book-menu .book-trash-toggle:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--book-brand) 55%, transparent);
+  outline-offset: 1px;
+}
+
+.moshu-root .book-menu .book-trash-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 170px;
+  margin-top: 2px;
+  padding: 2px;
+  overflow: auto;
+  overflow-x: hidden;
+}
+
+.moshu-root .book-menu .book-trash-loading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 9px;
+  font-size: 10.5px;
+  color: var(--book-faint);
+}
+
+.moshu-root .book-menu .book-trash-empty {
+  padding: 10px 9px;
+  border: 1px dashed var(--book-line-strong);
+  border-radius: 8px;
+  font-size: 10.5px;
+  line-height: 1.65;
+  color: var(--book-faint);
+  overflow-wrap: anywhere;
+}
+
+.moshu-root .book-menu .book-trash-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 9px;
+  border: 1px solid color-mix(in oklab, var(--book-error) 34%, transparent);
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--book-error) 8%, transparent);
+  color: var(--book-error);
+  font-size: 10.5px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.moshu-root .book-menu .book-trash-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.moshu-root .book-menu .book-trash-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.moshu-root .book-menu .book-trash-row:hover {
+  background: var(--book-surface-2);
+}
+
+.moshu-root .book-menu .book-trash-row.is-confirming {
+  background: color-mix(in oklab, var(--book-error) 7%, transparent);
+  border-color: color-mix(in oklab, var(--book-error) 26%, transparent);
+}
+
+.moshu-root .book-menu .book-trash-name {
+  flex: 1 1 110px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11.5px;
+  color: var(--book-ink);
+}
+
+.moshu-root .book-menu .book-trash-meta {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--book-faint);
+}
+
+.moshu-root .book-menu .book-trash-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.moshu-root .book-menu .book-trash-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 7px;
+  border: 1px solid var(--book-line);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--book-muted);
+  font-size: 10.5px;
+  white-space: nowrap;
+  transition: color 0.12s ease, background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.moshu-root .book-menu .book-trash-link:hover:not(:disabled) {
+  border-color: var(--book-line-strong);
+  color: var(--book-ink);
+}
+
+.moshu-root .book-menu .book-trash-link:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--book-brand) 55%, transparent);
+  outline-offset: 1px;
+}
+
+.moshu-root .book-menu .book-trash-link.is-danger {
+  border-color: color-mix(in oklab, var(--book-error) 40%, transparent);
+  color: var(--book-error);
+}
+
+.moshu-root .book-menu .book-trash-link.is-danger:hover:not(:disabled) {
+  border-color: var(--book-error);
+  background: color-mix(in oklab, var(--book-error) 14%, transparent);
+}
+
+.moshu-root .book-menu .book-trash-confirm {
+  flex: 1 1 100%;
+  margin-top: 4px;
+  border-left-width: 3px;
+}
+
+/* 操作结果（成功）提示：失败提示沿用 styles.css 的 .menu-error。 */
+.moshu-root .book-menu .book-notice {
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--book-success);
+  overflow-wrap: anywhere;
+}
+
+/* ------------------------------------------------------------------ *
+ * 窄屏：名字独占一行，时间和动作换行，不挤成一团
+ * ------------------------------------------------------------------ */
+
+@media (max-width: 720px) {
+  .moshu-root .book-menu .book-trash-row {
+    align-items: flex-start;
+  }
+
+  .moshu-root .book-menu .book-trash-name {
+    flex: 1 1 100%;
+  }
+
+  .moshu-root .book-menu .book-trash-meta {
+    flex: 1 1 auto;
+  }
+
+  .moshu-root .book-menu .book-trash-actions {
+    margin-left: auto;
+  }
+
+  .moshu-root .book-menu .book-trash-body {
+    max-height: 140px;
+  }
+}

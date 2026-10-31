@@ -1,0 +1,18 @@
+{
+  "name": "dsh-novel-studio",
+  "version": "0.2.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "墨枢 · DSH 小说工作台（插件源码 + 构建脚本；运行形态是 DSH 里的一个整页插件）",
+  "keywords": ["dsh","deepseekruntime","novel","writing","plugin","react"],
+  "repository": {"type":"git","url":"git+https://github.com/USER/dsh-novel-studio.git"},
+  "scripts": {
+    "build:plugin": "node dsh-plugin/build.mjs",
+    "check:plugin": "node --check dsh-plugin/moshu-novel-studio/client.js"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@babel/preset-react": "^7.29.7"
+  }
+}

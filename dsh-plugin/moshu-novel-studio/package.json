@@ -1,0 +1,32 @@
+{
+  "name": "@local/moshu-novel-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "墨枢 · DSH 小说工作台：在 DSH Web 里打开一个独立的小说创作与审阅页面。",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./novel-tools": "./host/novel-tools.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "host/*.js",
+    "host/novel-tools.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true
+    }
+  }
+}

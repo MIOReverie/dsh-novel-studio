@@ -1,0 +1,773 @@
+/* 墨枢 · 世界地图（v2）
+   整份地图由数据绘制：颜色一律从宿主 --dsw-alias-* 派生（或 --moshu-* 别名），
+   不写死任何色值，深色 / 浅色主题都跟着宿主走。
+   注意：这段 CSS 由组件里的 style 标签以纯文本注入，所以全文不出现尖括号与引号。 */
+
+/* ---------- 外框 ---------- */
+
+.moshu-root .map-view{
+  /* min-height:0 + height:100%：地图吃掉容器给的高度，不再用固定 560px 把页面撑出滚动条。
+     窗口矮的时候画布跟着缩，而不是让「完成」按钮掉到折叠线以下。 */
+  position:relative;display:flex;flex-direction:column;height:100%;min-height:0;
+  /* 滚轮由页面自己接管（缩放/吞掉），这里再兜一层，避免边缘回弹到外层滚动容器。 */
+  overscroll-behavior:contain;
+  /* 不再画外框：那圈 border + 圆角会让画布看起来被"框住"了。
+     地图本身就该是满铺的。 */
+  overflow:hidden;border-radius:0;border:0;
+  background:var(--moshu-surface-2);color:var(--moshu-ink)}
+
+/* ---------- 顶栏 ---------- */
+
+.moshu-root .map-header{
+  /* 顶栏压薄：地图页要尽量把高度留给画布。 */
+  position:relative;z-index:20;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;
+  padding:6px 12px;border-bottom:1px solid var(--moshu-line);background:var(--moshu-surface)}
+.moshu-root .map-brand{display:flex;align-items:center;gap:12px;min-width:0;margin-right:auto}
+.moshu-root .map-brand-icon{
+  width:28px;height:28px;display:grid;place-items:center;border-radius:9px;flex-shrink:0;
+  background:var(--moshu-tint);color:var(--moshu-brand-ink)}
+.moshu-root .map-brand-main{display:flex;flex-direction:column;gap:2px;min-width:0}
+.moshu-root .map-name-input{
+  width:min(260px,42vw);border:1px solid transparent;border-radius:7px;background:transparent;
+  padding:2px 5px;margin-left:-5px;font-family:var(--moshu-serif);font-size:15px;letter-spacing:.06em;
+  color:var(--moshu-ink);outline:none;transition:background .16s,border-color .16s}
+.moshu-root .map-name-input:hover{background:var(--moshu-hover)}
+.moshu-root .map-name-input:focus{background:var(--moshu-surface-2);border-color:var(--moshu-brand)}
+.moshu-root .map-stats{margin:0;padding-left:1px;font-size:11px;letter-spacing:.04em;color:var(--moshu-muted)}
+
+.moshu-root .map-scale-field{
+  display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:9px;
+  border:1px solid var(--moshu-line);background:var(--moshu-surface-2);
+  font-size:11px;color:var(--moshu-muted);white-space:nowrap}
+.moshu-root .map-scale-field input{
+  width:66px;border:0;border-radius:6px;background:var(--moshu-surface);padding:4px 6px;
+  font-family:var(--moshu-mono);font-size:12px;color:var(--moshu-ink);outline:none;text-align:center}
+.moshu-root .map-scale-field input:focus{background:var(--moshu-tint)}
+
+.moshu-root .map-header-actions{display:flex;align-items:center;gap:8px}
+
+.moshu-root .map-btn-ghost{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  border:1px solid var(--moshu-line);border-radius:8px;background:transparent;
+  padding:8px 12px;font-size:12px;color:var(--moshu-muted);transition:background .16s,color .16s}
+.moshu-root .map-btn-ghost:hover:not(:disabled){background:var(--moshu-hover);color:var(--moshu-ink)}
+.moshu-root .map-btn-ghost:disabled{cursor:not-allowed;opacity:.42}
+
+.moshu-root .map-btn-solid{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  border:0;border-radius:8px;background:var(--moshu-brand);padding:8px 14px;
+  font-size:12px;font-weight:500;color:var(--dsw-alias-label-primary-foreground);
+  transition:background .16s,opacity .16s}
+.moshu-root .map-btn-solid:hover:not(:disabled){background:var(--moshu-brand-ink)}
+.moshu-root .map-btn-solid:disabled{cursor:not-allowed;opacity:.45}
+
+.moshu-root .map-save{
+  display:inline-flex;align-items:center;gap:8px;border:0;border-radius:9px;
+  background:var(--moshu-brand);color:var(--dsw-alias-label-primary-foreground);
+  padding:9px 16px;font-size:12px;font-weight:500;transition:background .16s,opacity .16s}
+.moshu-root .map-save:hover:not(:disabled){background:var(--moshu-brand-ink)}
+.moshu-root .map-save:disabled{cursor:not-allowed;opacity:.45}
+
+/* ---------- 工具条 ---------- */
+
+.moshu-root .map-toolbar{
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:8px 18px;
+  border-bottom:1px solid var(--moshu-line);background:var(--moshu-surface-soft)}
+.moshu-root .map-toolbar-group{
+  display:flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:9px;background:var(--moshu-surface-2)}
+.moshu-root .map-tool{
+  display:inline-flex;align-items:center;gap:6px;border:0;border-radius:7px;background:transparent;
+  padding:7px 11px;font-size:12px;color:var(--moshu-muted);transition:background .16s,color .16s}
+.moshu-root .map-tool:hover{background:var(--moshu-hover);color:var(--moshu-brand-ink)}
+.moshu-root .map-tool.is-active{background:var(--moshu-brand);color:var(--dsw-alias-label-primary-foreground)}
+.moshu-root .map-toolbar-hint{
+  margin:0;flex:1;min-width:160px;font-size:11px;line-height:1.6;color:var(--moshu-faint);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---------- 画布 / 侧栏 ---------- */
+
+.moshu-root .map-body{display:flex;flex:1;min-height:0}
+.moshu-root .map-canvas{
+  /* 高度只吃父容器给的空间：以前 min-height:min(56vh,420px) 在小窗口里
+     会把地图页撑得比可视区还高，于是整页出现滚动条。 */
+  position:relative;flex:1;min-width:0;min-height:0;overflow:hidden;
+  /* 兜底海色：波浪只铺到 SEA_PAD，再往外靠这层底色，永远不会露白。 */
+  background:color-mix(in oklab,var(--dsw-alias-bg-layer-2) 70%,var(--dsw-alias-label-primary) 30%)}
+.moshu-root .map-svg{display:block;width:100%;height:100%;touch-action:none;user-select:none;-webkit-user-select:none}
+.moshu-root .map-svg.is-select{cursor:default}
+.moshu-root .map-svg.is-space{cursor:grab}
+.moshu-root .map-svg.is-space:active{cursor:grabbing}
+.moshu-root .map-svg.is-land,.moshu-root .map-svg.is-river,.moshu-root .map-svg.is-route,
+.moshu-root .map-svg.is-mountain,.moshu-root .map-svg.is-forest,
+.moshu-root .map-svg.is-location{cursor:crosshair}
+
+.moshu-root .map-side{
+  width:272px;flex:0 0 272px;display:flex;flex-direction:column;min-height:0;
+  border-left:1px solid var(--moshu-line);background:var(--moshu-surface);overflow-y:auto}
+.moshu-root .map-side-block{padding:12px 14px;border-bottom:1px solid var(--moshu-line)}
+.moshu-root .map-side-block:last-child{border-bottom:0;flex:1;display:flex;flex-direction:column;min-height:0}
+.moshu-root .map-side-head{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--moshu-brand-ink)}
+.moshu-root .map-side-head strong{font-weight:550}
+.moshu-root .map-side-toggle{
+  margin-left:auto;border:0;border-radius:6px;background:transparent;padding:3px;
+  display:grid;place-items:center;color:var(--moshu-muted)}
+.moshu-root .map-side-toggle:hover{background:var(--moshu-hover);color:var(--moshu-ink)}
+.moshu-root .map-side-count{
+  margin-left:auto;font-family:var(--moshu-mono);font-size:11px;color:var(--moshu-faint)}
+
+/* ---------- 图层 ---------- */
+
+.moshu-root .map-layer-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:8px}
+.moshu-root .map-layer{
+  display:flex;align-items:center;gap:6px;border:1px solid transparent;border-radius:7px;
+  background:transparent;padding:6px 7px;font-size:11px;color:var(--moshu-faint);
+  transition:background .16s,color .16s,border-color .16s}
+.moshu-root .map-layer:hover{background:var(--moshu-hover);color:var(--moshu-ink)}
+.moshu-root .map-layer.is-on{background:var(--moshu-tint);border-color:var(--moshu-tint-strong);color:var(--moshu-ink)}
+.moshu-root .map-layer-count{
+  margin-left:auto;font-style:normal;font-family:var(--moshu-mono);font-size:10px;opacity:.75}
+
+/* ---------- 属性面板 ---------- */
+
+.moshu-root .map-side-inspector{flex:0 1 auto}
+.moshu-root .map-inspector{display:flex;flex-direction:column;gap:10px}
+.moshu-root .map-inspector-head{display:flex;align-items:center;gap:8px;min-height:18px}
+.moshu-root .map-kicker{font-size:10px;letter-spacing:.18em;color:var(--moshu-brand-ink)}
+.moshu-root .map-inspector-close{
+  margin-left:auto;border:0;border-radius:6px;background:transparent;padding:3px;
+  display:grid;place-items:center;color:var(--moshu-muted)}
+.moshu-root .map-inspector-close:hover{background:var(--moshu-hover);color:var(--moshu-ink)}
+.moshu-root .map-inspector-lead{margin:0;font-size:11px;line-height:1.8;color:var(--moshu-muted)}
+.moshu-root .map-counts{
+  display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;padding-top:10px;
+  border-top:1px solid var(--moshu-line);font-size:11px;color:var(--moshu-muted)}
+.moshu-root .map-counts div{display:flex;align-items:center;justify-content:space-between;padding:2px 0}
+.moshu-root .map-counts span:last-child{font-family:var(--moshu-mono);color:var(--moshu-ink)}
+
+.moshu-root .map-keys{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.moshu-root .map-keys li{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--moshu-muted)}
+.moshu-root .map-keys kbd{
+  font-family:var(--moshu-mono);font-size:10px;padding:2px 6px;border-radius:5px;
+  border:1px solid var(--moshu-line);background:var(--moshu-surface-2);color:var(--moshu-ink)}
+
+.moshu-root .map-field{display:block;font-size:11px;color:var(--moshu-muted)}
+.moshu-root .map-field span{display:block;margin-bottom:5px}
+.moshu-root .map-field input,.moshu-root .map-field select,.moshu-root .map-field textarea{
+  width:100%;border:1px solid var(--moshu-line);border-radius:8px;background:var(--moshu-surface-2);
+  padding:7px 9px;font-size:12px;color:var(--moshu-ink);outline:none;resize:vertical}
+.moshu-root .map-field input:focus,.moshu-root .map-field select:focus,.moshu-root .map-field textarea:focus{
+  border-color:var(--moshu-brand)}
+.moshu-root .map-field textarea{line-height:1.8;font-size:11px}
+.moshu-root .map-note{
+  margin:0;font-size:11px;line-height:1.7;color:var(--moshu-faint);
+  padding:7px 9px;border-radius:8px;background:var(--moshu-surface-2)}
+
+.moshu-root .map-btn-danger{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  border:1px solid color-mix(in oklab,var(--dsw-alias-state-error-primary) 35%,transparent);
+  border-radius:8px;background:transparent;padding:8px;font-size:12px;
+  color:var(--moshu-error);transition:background .16s}
+.moshu-root .map-btn-danger:hover{
+  background:color-mix(in oklab,var(--dsw-alias-state-error-primary) 12%,transparent)}
+.moshu-root .map-btn-block{width:100%}
+
+/* ---------- 地点列表 ---------- */
+
+.moshu-root .map-search{
+  position:relative;display:flex;align-items:center;margin-top:10px;
+  border:1px solid var(--moshu-line);border-radius:8px;background:var(--moshu-surface-2)}
+.moshu-root .map-search svg{position:absolute;left:10px;color:var(--moshu-faint);pointer-events:none}
+.moshu-root .map-search input{
+  width:100%;border:0;background:transparent;padding:7px 10px 7px 30px;
+  font-size:12px;color:var(--moshu-ink);outline:none}
+.moshu-root .map-search input::placeholder{color:var(--moshu-faint)}
+.moshu-root .map-location-list{min-height:0;flex:1;overflow-y:auto;margin-top:6px;padding-right:2px}
+.moshu-root .map-location-item{
+  display:flex;align-items:center;gap:8px;width:100%;border:0;border-radius:8px;
+  background:transparent;padding:7px 8px;text-align:left;font-size:12px;
+  color:var(--moshu-muted);transition:background .16s,color .16s}
+.moshu-root .map-location-item:hover{background:var(--moshu-hover);color:var(--moshu-ink)}
+.moshu-root .map-location-item.is-active{background:var(--moshu-tint);color:var(--moshu-brand-ink)}
+.moshu-root .map-location-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.moshu-root .map-location-item svg:last-of-type{margin-left:auto;opacity:.45}
+.moshu-root .map-location-empty{padding:14px 4px;text-align:center;font-size:11px;color:var(--moshu-faint)}
+.moshu-root .map-dot{
+  width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:var(--dsw-alias-label-tertiary)}
+.moshu-root .map-cat-city{background:color-mix(in oklab,var(--dsw-alias-brand-primary) 70%,var(--dsw-alias-state-warn-primary))}
+.moshu-root .map-cat-landmark{background:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 70%,var(--dsw-alias-label-primary))}
+.moshu-root .map-cat-region{background:color-mix(in oklab,var(--dsw-alias-state-success-primary) 65%,var(--dsw-alias-label-primary))}
+.moshu-root .map-cat-dungeon{background:color-mix(in oklab,var(--dsw-alias-state-error-primary) 60%,var(--dsw-alias-label-primary))}
+.moshu-root .map-cat-other{background:var(--dsw-alias-label-secondary)}
+
+/* ---------- 浮层通用 ---------- */
+
+.moshu-root .map-float{
+  background:color-mix(in oklab,var(--dsw-alias-bg-layer-1) 93%,transparent);
+  border:1px solid var(--moshu-line);border-radius:12px;
+  box-shadow:0 12px 34px color-mix(in oklab,var(--dsw-alias-label-primary) 22%,transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:var(--moshu-ink)}
+
+.moshu-root .map-zoom{
+  position:absolute;left:16px;bottom:16px;display:flex;flex-direction:column;overflow:hidden;z-index:6}
+.moshu-root .map-zoom button{
+  border:0;background:transparent;padding:9px;color:var(--moshu-muted);
+  display:grid;place-items:center;font-size:15px;line-height:1;transition:background .16s,color .16s}
+.moshu-root .map-zoom button+button{border-top:1px solid var(--moshu-line)}
+.moshu-root .map-zoom button:hover{background:var(--moshu-hover);color:var(--moshu-ink)}
+.moshu-root .map-zoom-glyph{font-size:16px;line-height:1}
+
+.moshu-root .map-status{
+  position:absolute;right:16px;bottom:16px;display:flex;align-items:center;gap:12px;
+  padding:7px 13px;font-size:10px;color:var(--moshu-muted);pointer-events:none;z-index:6}
+.moshu-root .map-status-sep{width:1px;height:11px;background:var(--moshu-line)}
+.moshu-root .map-status-hint{white-space:nowrap}
+.moshu-root .map-scalebar{display:flex;align-items:center;gap:7px}
+.moshu-root .map-scalebar i{display:block;height:1px;width:44px;background:var(--moshu-muted)}
+
+.moshu-root .map-hint{
+  position:absolute;left:50%;top:16px;transform:translateX(-50%);z-index:7;pointer-events:none;
+  display:flex;align-items:center;gap:6px;border-radius:999px;padding:8px 18px;
+  background:var(--moshu-brand);color:var(--dsw-alias-label-primary-foreground);font-size:12px;
+  box-shadow:0 10px 26px color-mix(in oklab,var(--dsw-alias-label-primary) 24%,transparent)}
+
+/* ---------- 绘制卡 ---------- */
+
+.moshu-root .map-draftbar{
+  position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:8;
+  width:min(460px,calc(100% - 32px));padding:12px 14px}
+.moshu-root .map-draftbar-head{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--moshu-ink)}
+.moshu-root .map-draftbar-head strong{font-weight:550}
+.moshu-root .map-draftbar-count{
+  font-family:var(--moshu-mono);font-size:10px;color:var(--moshu-faint)}
+.moshu-root .map-draftbar-close{
+  margin-left:auto;border:0;border-radius:6px;background:transparent;padding:3px;
+  display:grid;place-items:center;color:var(--moshu-muted)}
+.moshu-root .map-draftbar-close:hover{background:var(--moshu-hover);color:var(--moshu-ink)}
+.moshu-root .map-draftbar-name{
+  width:100%;margin-top:10px;border:1px solid var(--moshu-line);border-radius:8px;
+  background:var(--moshu-surface-2);padding:7px 10px;font-size:12px;color:var(--moshu-ink);outline:none}
+.moshu-root .map-draftbar-name:focus{border-color:var(--moshu-brand)}
+.moshu-root .map-draftbar-actions{display:flex;gap:8px;margin-top:10px}
+.moshu-root .map-draftbar-actions button{flex:1}
+.moshu-root .map-draftbar p{margin:8px 0 0;font-size:11px;color:var(--moshu-muted)}
+
+/* ---------- 空态 ---------- */
+
+.moshu-root .map-empty{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;
+  width:min(400px,calc(100% - 40px));pointer-events:none;text-align:center;
+  padding:22px 24px;border-radius:16px;border:1px dashed var(--moshu-line-strong);
+  background:color-mix(in oklab,var(--dsw-alias-bg-layer-1) 88%,transparent);
+  color:var(--moshu-ink);
+  box-shadow:0 16px 40px color-mix(in oklab,var(--dsw-alias-label-primary) 18%,transparent)}
+.moshu-root .map-empty-icon{
+  width:38px;height:38px;margin:0 auto 10px;display:grid;place-items:center;border-radius:11px;
+  background:var(--moshu-tint);color:var(--moshu-brand-ink)}
+.moshu-root .map-empty h2{
+  margin:0;font-family:var(--moshu-serif);font-size:16px;letter-spacing:.12em;color:var(--moshu-ink)}
+.moshu-root .map-empty p{margin:10px 0 0;font-size:12px;line-height:1.9;color:var(--moshu-muted)}
+.moshu-root .map-empty button{margin-top:16px;pointer-events:auto}
+
+/* ---------- 加载 ---------- */
+
+.moshu-root .map-loading{
+  position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;gap:10px;
+  font-size:13px;color:var(--dsw-alias-label-primary);
+  background:color-mix(in oklab,var(--dsw-alias-bg-layer-2) 70%,var(--dsw-alias-label-primary) 30%)}
+.moshu-root .is-spinning{animation:moshu-spin 1s linear infinite}
+@keyframes moshu-spin{to{transform:rotate(360deg)}}
+
+/* ---------- 新建地点对话框 ---------- */
+
+.moshu-root .map-modal{
+  position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px;
+  background:color-mix(in oklab,var(--dsw-alias-label-primary) 38%,transparent);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.moshu-root .map-modal-card{
+  width:100%;max-width:380px;border-radius:16px;border:1px solid var(--moshu-line);
+  background:var(--moshu-surface-3);padding:22px;color:var(--moshu-ink);
+  box-shadow:0 24px 70px color-mix(in oklab,var(--dsw-alias-label-primary) 32%,transparent);
+  display:flex;flex-direction:column;gap:12px}
+.moshu-root .map-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.moshu-root .map-modal-head h2{margin:4px 0 0;font-family:var(--moshu-serif);font-size:19px;color:var(--moshu-ink)}
+.moshu-root .map-modal-close{
+  border:0;border-radius:6px;background:transparent;padding:3px;color:var(--moshu-muted);
+  display:grid;place-items:center}
+.moshu-root .map-modal-close:hover{background:var(--moshu-hover);color:var(--moshu-ink)}
+.moshu-root .map-modal-actions{display:flex;gap:8px;margin-top:4px}
+.moshu-root .map-modal-actions button{flex:1}
+.moshu-root .map-modal-note{margin:0;text-align:center;font-family:var(--moshu-mono);font-size:10px;color:var(--moshu-faint)}
+
+/* ---------- 提示条 ---------- */
+
+.moshu-root .map-toast{
+  position:absolute;left:50%;bottom:72px;transform:translateX(-50%);z-index:40;
+  display:flex;align-items:center;gap:10px;max-width:min(560px,calc(100% - 32px));
+  border-radius:9px;border:1px solid var(--moshu-line);background:var(--moshu-surface-3);
+  padding:8px 14px;font-size:12px;line-height:1.6;color:var(--moshu-ink);
+  box-shadow:0 12px 34px color-mix(in oklab,var(--dsw-alias-label-primary) 24%,transparent)}
+.moshu-root .map-toast.is-error{
+  border-color:color-mix(in oklab,var(--dsw-alias-state-error-primary) 42%,transparent);
+  color:var(--moshu-ink)}
+.moshu-root .map-toast button{
+  border:0;background:transparent;color:var(--moshu-muted);padding:2px;display:grid;place-items:center;flex-shrink:0}
+.moshu-root .map-toast button:hover{color:var(--moshu-ink)}
+
+/* ================================================================
+   SVG 绘制层：山 / 树 / 水 / 路 / 图钉全部由数据定位，这里只管造型与配色。
+   ================================================================ */
+
+/* 海面 */
+.moshu-root .map-sea-stop{stop-color:var(--dsw-alias-bg-layer-2)}
+.moshu-root .sea-top{stop-color:color-mix(in oklab,var(--dsw-alias-bg-layer-2) 78%,var(--dsw-alias-label-primary) 22%)}
+.moshu-root .sea-bottom{stop-color:color-mix(in oklab,var(--dsw-alias-bg-layer-2) 52%,var(--dsw-alias-label-primary) 48%)}
+.moshu-root .map-sea-waves{opacity:.55}
+.moshu-root .map-wave-path{fill:none;stroke:color-mix(in oklab,var(--dsw-alias-label-primary) 16%,transparent);stroke-width:1.2}
+
+/* 画布上不再叠任何滤镜层：暗角在任何尺寸下都会在边缘形成一圈"框"，
+   而地图本身应该整片铺开。需要氛围就靠地形配色，不靠覆盖层。 */
+
+
+/* 陆地渐变：三套配色轮换，同一块陆地内部有明暗变化 */
+.moshu-root .map-land-stop{stop-color:color-mix(in oklab,var(--dsw-alias-bg-layer-1) 62%,var(--dsw-alias-state-warn-primary) 38%)}
+.moshu-root .land-a1{stop-color:color-mix(in oklab,var(--dsw-alias-bg-layer-1) 60%,var(--dsw-alias-state-success-primary) 40%)}
+.moshu-root .land-b1{stop-color:color-mix(in oklab,var(--dsw-alias-bg-layer-1) 48%,var(--dsw-alias-state-success-primary) 52%)}
+.moshu-root .land-c1{stop-color:color-mix(in oklab,var(--dsw-alias-bg-layer-2) 66%,var(--dsw-alias-state-warn-primary) 34%)}
+.moshu-root .land-a2{stop-color:color-mix(in oklab,var(--dsw-alias-bg-layer-1) 66%,var(--dsw-alias-state-warn-primary) 34%)}
+.moshu-root .land-b2{stop-color:color-mix(in oklab,var(--dsw-alias-bg-layer-1) 44%,var(--dsw-alias-state-warn-primary) 56%)}
+.moshu-root .land-c2{stop-color:color-mix(in oklab,var(--dsw-alias-bg-layer-2) 58%,var(--dsw-alias-state-success-primary) 42%)}
+.moshu-root .land-a0{stop-color:color-mix(in oklab,var(--dsw-alias-bg-layer-1) 58%,var(--dsw-alias-state-warn-primary) 42%)}
+.moshu-root .land-b0{stop-color:color-mix(in oklab,var(--dsw-alias-bg-layer-1) 50%,var(--dsw-alias-state-success-primary) 50%)}
+.moshu-root .land-c0{stop-color:color-mix(in oklab,var(--dsw-alias-bg-layer-2) 62%,var(--dsw-alias-state-warn-primary) 38%)}
+
+.moshu-root .map-land-shelf{
+  fill:none;stroke:color-mix(in oklab,var(--dsw-alias-bg-layer-1) 40%,var(--dsw-alias-brand-primary) 60%);
+  stroke-opacity:.18;stroke-width:26;stroke-linejoin:round;pointer-events:none}
+.moshu-root .map-land-body{
+  stroke:color-mix(in oklab,var(--dsw-alias-label-primary) 26%,var(--dsw-alias-bg-layer-1));
+  stroke-width:4;stroke-linejoin:round;cursor:grab}
+.moshu-root .map-svg:not(.is-select) .map-land-body{cursor:crosshair}
+.moshu-root .map-land-edge{
+  fill:none;stroke:color-mix(in oklab,var(--dsw-alias-label-primary) 34%,transparent);
+  stroke-width:1.4;stroke-linejoin:round;pointer-events:none}
+.moshu-root .map-land-selected{
+  fill:none;stroke:var(--dsw-alias-brand-primary);stroke-width:2.2;stroke-dasharray:10 7;
+  stroke-linejoin:round;vector-effect:non-scaling-stroke;pointer-events:none}
+.moshu-root .map-land.is-selected .map-land-body{
+  stroke:var(--dsw-alias-brand-primary);stroke-width:3.5}
+
+/* 山脉 */
+.moshu-root .map-mountain-body{
+  fill:color-mix(in oklab,var(--dsw-alias-label-primary) 34%,var(--dsw-alias-bg-layer-1));
+  stroke:color-mix(in oklab,var(--dsw-alias-label-primary) 44%,var(--dsw-alias-bg-layer-2));
+  stroke-width:1.3;stroke-linejoin:round}
+.moshu-root .map-mountain-snow{
+  fill:color-mix(in oklab,var(--dsw-alias-bg-base) 76%,var(--dsw-alias-label-primary) 24%)}
+.moshu-root .map-mountain-shade{
+  fill:color-mix(in oklab,var(--dsw-alias-label-primary) 24%,var(--dsw-alias-bg-layer-2));opacity:.5}
+.moshu-root .map-mountain-shade-second{
+  fill:color-mix(in oklab,var(--dsw-alias-bg-layer-2) 30%,var(--dsw-alias-label-primary) 70%);opacity:.24}
+
+/* 森林 */
+.moshu-root .map-tree-trunk{
+  stroke:color-mix(in oklab,var(--dsw-alias-label-primary) 46%,var(--dsw-alias-bg-layer-2));stroke-width:3}
+.moshu-root .map-tree-body{
+  fill:color-mix(in oklab,var(--dsw-alias-state-success-primary) 50%,var(--dsw-alias-bg-layer-1));
+  stroke:color-mix(in oklab,var(--dsw-alias-state-success-primary) 28%,var(--dsw-alias-label-primary));
+  stroke-width:1;stroke-linejoin:round}
+.moshu-root .map-tree-body.is-alt{
+  fill:color-mix(in oklab,var(--dsw-alias-state-success-primary) 68%,var(--dsw-alias-bg-layer-2))}
+.moshu-root .map-tree-vein{
+  stroke:color-mix(in oklab,var(--dsw-alias-bg-base) 55%,transparent);stroke-width:1.4}
+
+/* 河流 / 路线 */
+.moshu-root .map-river-halo{
+  /* 河岸：水色的一圈淡光，让河看起来嵌在地面上，而不是浮在上面。 */
+  fill:none;stroke:color-mix(in oklab, #7fc4ea 42%, transparent);
+  stroke-width:7;stroke-linecap:round;stroke-linejoin:round;opacity:.75;pointer-events:none}
+.moshu-root .map-river-core{
+  /* 以前用 brand（灰蓝）→ 和陆地、路线混在一起分不清。
+     换成明确的湖蓝色，并按主题微调明暗，深色/浅色下都能看出来。 */
+  fill:none;
+  stroke:color-mix(in oklab, #2f7fbf 72%, var(--dsw-alias-label-primary));
+  stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;
+  filter:drop-shadow(0 0 2px color-mix(in oklab, #2f7fbf 35%, transparent))}
+.moshu-root .map-route-halo{
+  fill:none;stroke:color-mix(in oklab,var(--dsw-alias-bg-base) 50%,transparent);
+  stroke-width:6;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.moshu-root .map-route-core{
+  fill:none;stroke:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 62%,var(--dsw-alias-label-primary));
+  stroke-width:2.4;stroke-dasharray:9 6;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.moshu-root .map-line-hit{
+  fill:none;stroke:transparent;stroke-width:18;stroke-linecap:round;stroke-linejoin:round;
+  pointer-events:stroke;cursor:pointer}
+.moshu-root .map-line-selected{
+  fill:none;stroke:var(--dsw-alias-brand-primary);stroke-width:2;stroke-dasharray:3 5;
+  stroke-linecap:round;vector-effect:non-scaling-stroke;pointer-events:none}
+.moshu-root .map-line-point{
+  fill:var(--dsw-alias-bg-base);stroke:var(--dsw-alias-brand-primary);stroke-width:1.6;
+  vector-effect:non-scaling-stroke;pointer-events:none}
+
+/* 图章 / 图钉的命中区与选中环 */
+.moshu-root .map-svg.is-select .map-stamp{cursor:grab}
+.moshu-root .map-svg.is-select .map-location{cursor:grab}
+.moshu-root .map-stamp:active,.moshu-root .map-location:active,.moshu-root .map-land-body:active{cursor:grabbing}
+.moshu-root .map-hit{fill:transparent;stroke:none}
+.moshu-root .map-svg:not(.is-select) .map-hit{cursor:crosshair;pointer-events:none}
+.moshu-root .map-select-ring{
+  fill:none;stroke:var(--dsw-alias-brand-primary);stroke-width:1.8;stroke-dasharray:4 4;
+  vector-effect:non-scaling-stroke;pointer-events:none}
+
+/* 地点 */
+.moshu-root .map-location{color:var(--dsw-alias-brand-primary)}
+.moshu-root .map-location-city{color:color-mix(in oklab,var(--dsw-alias-brand-primary) 72%,var(--dsw-alias-state-warn-primary))}
+.moshu-root .map-location-landmark{color:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 64%,var(--dsw-alias-label-primary))}
+.moshu-root .map-location-region{color:color-mix(in oklab,var(--dsw-alias-state-success-primary) 60%,var(--dsw-alias-label-primary))}
+.moshu-root .map-location-dungeon{color:color-mix(in oklab,var(--dsw-alias-state-error-primary) 56%,var(--dsw-alias-label-primary))}
+.moshu-root .map-location-other{color:var(--dsw-alias-label-secondary)}
+.moshu-root .map-location-glare{
+  fill:color-mix(in oklab,var(--dsw-alias-bg-base) 62%,transparent);opacity:.3;pointer-events:none}
+.moshu-root .map-location-ring{
+  fill:none;stroke:var(--dsw-alias-brand-primary);stroke-width:1.8;stroke-dasharray:4 5;
+  vector-effect:non-scaling-stroke;pointer-events:none}
+.moshu-root .map-symbol{
+  fill:currentColor;stroke:color-mix(in oklab,var(--dsw-alias-bg-base) 76%,var(--dsw-alias-label-primary));
+  stroke-width:1.3;stroke-linejoin:round}
+.moshu-root .map-location-label{
+  /* 标签永远压在地貌之上（地点层最后渲染），再加一圈厚描边 + 轻微阴影：
+     不管底下是沙丘纹理还是森林小树，名字都读得清。 */
+  fill:var(--dsw-alias-label-primary);
+  stroke:color-mix(in oklab,var(--dsw-alias-bg-base) 92%,transparent);
+  stroke-width:5;stroke-linejoin:round;paint-order:stroke;
+  filter:drop-shadow(0 1px 1px color-mix(in oklab, var(--dsw-alias-bg-base) 45%, transparent));
+  font-family:var(--moshu-sans);font-size:13px;font-weight:600;letter-spacing:.08em}
+
+/* 顶点手柄 */
+.moshu-root .map-vertex{
+  fill:var(--dsw-alias-bg-base);stroke:var(--dsw-alias-brand-primary);stroke-width:2;
+  vector-effect:non-scaling-stroke;cursor:grab}
+.moshu-root .map-vertex.is-active{fill:var(--dsw-alias-brand-primary);stroke:var(--dsw-alias-bg-base)}
+.moshu-root .map-vertex:active{cursor:grabbing}
+
+/* 绘制中的预览 */
+.moshu-root .map-draft-shape{
+  fill:color-mix(in oklab,var(--dsw-alias-brand-primary) 14%,transparent);
+  stroke:var(--dsw-alias-brand-primary);stroke-width:1.8;stroke-dasharray:7 6;
+  stroke-linejoin:round;vector-effect:non-scaling-stroke;pointer-events:none}
+.moshu-root .map-draft-shape.is-solid{
+  fill:color-mix(in oklab,var(--dsw-alias-brand-primary) 22%,transparent);stroke-dasharray:none}
+.moshu-root .map-draft-line{
+  fill:none;stroke:var(--dsw-alias-brand-primary);stroke-width:2.4;stroke-linecap:round;
+  vector-effect:non-scaling-stroke;pointer-events:none}
+.moshu-root .map-draft-line.is-ghost{opacity:.45;stroke-width:1.6;stroke-dasharray:6 6}
+.moshu-root .map-draft-rubber{
+  fill:none;stroke:var(--dsw-alias-brand-primary);stroke-width:1.6;stroke-dasharray:6 5;
+  vector-effect:non-scaling-stroke;opacity:.85;pointer-events:none}
+.moshu-root .map-draft-rubber.is-ghost{opacity:.32}
+.moshu-root .map-draft-point circle{
+  fill:var(--dsw-alias-brand-primary);stroke:var(--dsw-alias-bg-base);stroke-width:1.6;
+  vector-effect:non-scaling-stroke;pointer-events:none}
+.moshu-root .map-draft-point text{
+  fill:var(--dsw-alias-label-primary-foreground);font-family:var(--moshu-mono);
+  font-size:9px;font-weight:600;pointer-events:none}
+.moshu-root .map-draft-cursor{
+  fill:none;stroke:var(--dsw-alias-brand-primary);stroke-width:1.5;
+  vector-effect:non-scaling-stroke;pointer-events:none}
+
+/* ---------- 窄屏 ---------- */
+
+@media(max-width:1000px){
+  .moshu-root .map-side{width:264px;flex-basis:264px}
+  .moshu-root .map-toolbar-hint{display:none}
+}
+@media(max-width:780px){
+  .moshu-root .map-body{flex-direction:column}
+  .moshu-root .map-canvas{min-height:340px}
+  .moshu-root .map-side{
+    width:auto;flex:1 1 auto;max-height:46%;border-left:0;border-top:1px solid var(--moshu-line)}
+  .moshu-root .map-status-hint{display:none}
+  .moshu-root .map-brand-icon{display:none}
+  .moshu-root .map-name-input{width:min(200px,52vw)}
+}
+
+/* ---------- 让 AI 画（创作模式入口） ---------- */
+
+.moshu-root .map-ai{
+  border-color:color-mix(in oklab,var(--moshu-brand) 38%,var(--moshu-line));
+  color:var(--moshu-brand-ink);
+  background:color-mix(in oklab,var(--moshu-brand) 10%,transparent)}
+.moshu-root .map-ai:hover{
+  background:color-mix(in oklab,var(--moshu-brand) 18%,transparent);
+  border-color:var(--moshu-brand)}
+
+/* 河流 / 路线上的顶点：可拖动 */
+.moshu-root .map-line-point{cursor:grab}
+.moshu-root .map-line-point:hover{fill:var(--dsw-alias-brand-primary)}
+
+
+/* ---------- 顶栏的绘制动作 ---------- */
+
+.moshu-root .map-toolbar{flex-wrap:wrap;gap:6px 10px;padding-top:6px;padding-bottom:6px}
+/* 提示行占一整行高度；按钮 title 里已经有同样的信息，这里收掉。 */
+.moshu-root .map-toolbar-hint{display:none}
+.moshu-root .map-toolbar-draft{
+  display:flex;align-items:center;gap:6px;
+  padding:4px 6px 4px 10px;border-radius:9px;
+  border:1px solid color-mix(in oklab,var(--dsw-alias-brand-primary) 34%,var(--moshu-line));
+  background:color-mix(in oklab,var(--dsw-alias-brand-primary) 8%,transparent)}
+.moshu-root .map-toolbar-draft-label{
+  display:inline-flex;align-items:baseline;gap:6px;font-size:11.5px;color:var(--moshu-ink)}
+.moshu-root .map-toolbar-draft-label b{
+  font-family:var(--moshu-mono);font-size:10px;font-weight:500;color:var(--moshu-faint)}
+.moshu-root .map-toolbar-draft button{padding:4px 10px;font-size:11.5px}
+
+/* 矮窗口：收紧上下留白，优先保证画布高度 */
+@media (max-height: 720px){
+  .moshu-root .map-toolbar{padding-top:6px;padding-bottom:6px}
+  .moshu-root .map-canvas{min-height:min(48vh,340px)}
+}
+
+
+/* ---------- 顶栏：撤销 / 重做 / 适应 / 网格 / 吸附 ---------- */
+
+.moshu-root .map-toolbar-actions{
+  margin-left:auto;display:flex;align-items:center;gap:4px}
+.moshu-root .map-icon-btn{
+  display:inline-flex;align-items:center;gap:4px;
+  height:26px;padding:0 7px;border-radius:7px;cursor:pointer;
+  border:1px solid var(--moshu-line);background:var(--moshu-surface);
+  color:var(--moshu-muted);font-size:11px;line-height:1}
+.moshu-root .map-icon-btn:hover:not(:disabled){background:var(--moshu-hover);color:var(--moshu-ink)}
+.moshu-root .map-icon-btn:disabled{opacity:.42;cursor:not-allowed}
+.moshu-root .map-icon-btn.is-on{
+  color:var(--moshu-brand-ink);border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 40%,var(--moshu-line));
+  background:color-mix(in oklab,var(--dsw-alias-brand-primary) 12%,transparent)}
+
+/* ---------- 网格 ---------- */
+
+.moshu-root .map-grid{opacity:.5}
+.moshu-root .map-grid-path{
+  fill:none;stroke:color-mix(in oklab,var(--dsw-alias-label-primary) 16%,transparent);
+  stroke-width:1;vector-effect:non-scaling-stroke}
+
+/* ---------- 检查器分组 ---------- */
+
+.moshu-root .map-field-group{
+  display:flex;flex-direction:column;gap:7px;padding-top:10px;
+  border-top:1px solid var(--moshu-line)}
+.moshu-root .map-field-group-head{
+  display:flex;align-items:center;gap:6px;font-size:10.5px;
+  letter-spacing:.08em;color:var(--moshu-faint);text-transform:uppercase}
+.moshu-root .map-order-buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.moshu-root .map-order-buttons button{
+  padding:5px 0;border-radius:7px;cursor:pointer;font-size:11px;
+  border:1px solid var(--moshu-line);background:var(--moshu-surface);color:var(--moshu-muted)}
+.moshu-root .map-order-buttons button:hover{background:var(--moshu-hover);color:var(--moshu-ink)}
+
+/* 陆地配色 */
+.moshu-root .map-tone-row{display:flex;gap:6px}
+.moshu-root .map-tone{
+  flex:1;height:22px;border-radius:7px;cursor:pointer;padding:0;
+  border:1px solid var(--moshu-line);background:var(--moshu-surface-2)}
+.moshu-root .map-tone.is-0{background:color-mix(in oklab,#8fa07a 70%,var(--moshu-surface-2))}
+.moshu-root .map-tone.is-1{background:color-mix(in oklab,#b9a888 70%,var(--moshu-surface-2))}
+.moshu-root .map-tone.is-2{background:color-mix(in oklab,#93a8a0 70%,var(--moshu-surface-2))}
+.moshu-root .map-tone.is-active{
+  border-color:var(--moshu-brand);
+  box-shadow:0 0 0 2px color-mix(in oklab,var(--dsw-alias-brand-primary) 26%,transparent)}
+
+/* 合并出来的附加环顶点：稍微淡一点，便于区分主环 */
+.moshu-root .map-vertex.is-extra{opacity:.82}
+
+/* 光标坐标 */
+.moshu-root .map-status-coord{font-family:var(--moshu-mono);font-size:10px;color:var(--moshu-faint)}
+
+
+/* ---------- 地貌（丘陵 / 高原 / 沙漠 / 沼泽 / 苔原 / 冰川 / 火山 / 峡谷 / 草原） ---------- */
+
+.moshu-root .map-terrain{cursor:default}
+.moshu-root .map-terrain .map-hit{fill:transparent}
+.moshu-root .map-terrain-body{
+  fill:color-mix(in oklab, var(--map-terrain-a, #8d9b7a) 78%, transparent);
+  stroke:color-mix(in oklab, var(--map-terrain-b, #5d6a4d) 70%, transparent);
+  stroke-width:1.2;stroke-linejoin:round}
+.moshu-root .map-terrain-body.is-second{opacity:.75}
+.moshu-root .map-terrain-edge{
+  fill:none;stroke:color-mix(in oklab, var(--map-terrain-b, #5d6a4d) 72%, transparent);
+  stroke-width:1.1;stroke-linecap:round}
+.moshu-root .map-terrain-crater{stroke:color-mix(in oklab,#7a3b2a 80%,transparent);stroke-width:2;stroke-linecap:round}
+
+/* 每种地貌一套配色 */
+.moshu-root .map-terrain-hill{--map-terrain-a:#93a07c;--map-terrain-b:#5f6b4d}
+.moshu-root .map-terrain-plateau{--map-terrain-a:#a89a7f;--map-terrain-b:#6d6152}
+.moshu-root .map-terrain-desert{--map-terrain-a:#d9c48d;--map-terrain-b:#b09a63}
+.moshu-root .map-terrain-swamp{--map-terrain-a:#7c8f74;--map-terrain-b:#4f5f4a}
+.moshu-root .map-terrain-tundra{--map-terrain-a:#a9b3ae;--map-terrain-b:#6f7a76}
+.moshu-root .map-terrain-glacier{--map-terrain-a:#bcd5dd;--map-terrain-b:#7d99a4}
+.moshu-root .map-terrain-volcano{--map-terrain-a:#8c5a4a;--map-terrain-b:#5d3629}
+.moshu-root .map-terrain-canyon{--map-terrain-a:#b98868;--map-terrain-b:#7d5540}
+.moshu-root .map-terrain-grass{--map-terrain-a:#a3b183;--map-terrain-b:#6a7a52}
+
+.moshu-root .map-terrain.is-selected .map-terrain-body{filter:brightness(1.12)}
+
+/* ---------- 地貌种类选择（顶栏） ---------- */
+
+.moshu-root .map-toolbar-kinds{display:flex;flex-wrap:wrap;gap:4px}
+.moshu-root .map-kind{
+  padding:4px 9px;border-radius:999px;cursor:pointer;font-size:11px;
+  border:1px solid var(--moshu-line);background:var(--moshu-surface);color:var(--moshu-muted)}
+.moshu-root .map-kind:hover{background:var(--moshu-hover);color:var(--moshu-ink)}
+.moshu-root .map-kind.is-active{
+  color:var(--moshu-brand-ink);border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 42%,var(--moshu-line));
+  background:color-mix(in oklab,var(--dsw-alias-brand-primary) 14%,transparent)}
+
+/* 范围滑块（河宽 / 图章大小） */
+.moshu-root .map-field input[type="range"]{
+  width:100%;height:18px;accent-color:var(--dsw-alias-brand-primary)}
+
+
+/* 右侧属性面板自己滚（页面不再滚动了，长内容要能到达）。 */
+.moshu-root .map-side{
+  min-height:0;overflow:auto;overscroll-behavior:contain}
+
+
+/* 只有窗口确实够高时才保证画布下限；窗口矮时让它继续缩，绝不撑出整页滚动。 */
+@media (min-height: 680px){
+  .moshu-root .map-canvas{min-height:320px}
+}
+
+
+/* 收起右侧面板：宽度全部给画布。 */
+.moshu-root .map-body.is-side-hidden .map-side{display:none}
+/* 画布内边距收紧一点，视觉上更大 */
+.moshu-root .map-toolbar{padding-left:12px;padding-right:12px}
+
+
+/* ---------- 地貌「面」：按类型上色的地面，不再是图标 ---------- */
+
+.moshu-root .map-terrain-fill{
+  /* 比以前更实一点（46% → 58%）：一片沙漠应该一眼看出是沙漠，不像蒙了层雾。 */
+  fill:color-mix(in oklab, var(--map-terrain-a, #8d9b7a) 58%, transparent);
+  stroke:none}
+/* 纹理笔触：跟着地貌类型换图案，平铺在色块上 */
+.moshu-root .map-terrain-texture{opacity:.42;pointer-events:none}
+.moshu-root .map-tex{
+  fill:none;stroke:color-mix(in oklab, var(--map-terrain-b, #5d6a4d) 78%, transparent);
+  stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round}
+.moshu-root .map-tex-tundra,
+.moshu-root .map-tex-desert circle,
+.moshu-root .map-tex-canyon{fill:color-mix(in oklab, var(--map-terrain-b, #5d6a4d) 62%, transparent);stroke:none}
+.moshu-root .map-tex-volcano{fill:color-mix(in oklab, var(--map-terrain-b, #5d2b1d) 42%, transparent);stroke:none}
+.moshu-root .map-tex-glacier{stroke-width:1.3}
+.moshu-root .map-tex-plateau{stroke-width:.9;opacity:.8}
+.moshu-root .map-terrain-outline{
+  fill:none;
+  stroke:color-mix(in oklab, var(--map-terrain-b, #5d6a4d) 55%, transparent);
+  stroke-width:1.2;stroke-linejoin:round}
+.moshu-root .map-terrain-selected{
+  fill:none;stroke:var(--dsw-alias-brand-primary);stroke-width:1.6;stroke-dasharray:6 4}
+
+/* 点状地貌（旧数据 / AI 盖章）：一块柔和的色斑，不画任何图形符号 */
+.moshu-root .map-terrain-patch{
+  fill:color-mix(in oklab, var(--map-terrain-a, #8d9b7a) 40%, transparent);
+  stroke:none}
+
+/* 面形态也复用同一套配色 */
+.moshu-root .map-terrain-area.map-terrain-hill{--map-terrain-a:#93a07c;--map-terrain-b:#5f6b4d}
+.moshu-root .map-terrain-area.map-terrain-plateau{--map-terrain-a:#a89a7f;--map-terrain-b:#6d6152}
+.moshu-root .map-terrain-area.map-terrain-desert{--map-terrain-a:#d9c48d;--map-terrain-b:#b09a63}
+.moshu-root .map-terrain-area.map-terrain-swamp{--map-terrain-a:#7c8f74;--map-terrain-b:#4f5f4a}
+.moshu-root .map-terrain-area.map-terrain-tundra{--map-terrain-a:#a9b3ae;--map-terrain-b:#6f7a76}
+.moshu-root .map-terrain-area.map-terrain-glacier{--map-terrain-a:#bcd5dd;--map-terrain-b:#7d99a4}
+.moshu-root .map-terrain-area.map-terrain-volcano{--map-terrain-a:#8c5a4a;--map-terrain-b:#5d3629}
+.moshu-root .map-terrain-area.map-terrain-canyon{--map-terrain-a:#b98868;--map-terrain-b:#7d5540}
+.moshu-root .map-terrain-area.map-terrain-grass{--map-terrain-a:#a3b183;--map-terrain-b:#6a7a52}
+
+
+/* 森林：并入地貌后的一套绿色配色（和地形的 hill 区分开） */
+.moshu-root .map-terrain-area.map-terrain-forest{--map-terrain-a:#7f9c6b;--map-terrain-b:#42603a}
+.moshu-root .map-tex-forest{stroke-width:1.3;opacity:.85}
+
+
+/* ---------- 地貌面里自动铺的符号 ---------- */
+
+.moshu-root .map-terrain-symbols{opacity:.9;pointer-events:none}
+.moshu-root .map-sym-tree{fill:color-mix(in oklab, var(--map-terrain-b, #42603a) 88%, #ffffff 6%)}
+.moshu-root .map-sym-trunk{fill:none;stroke:color-mix(in oklab, var(--map-terrain-b,#42603a) 92%, transparent);stroke-width:2;stroke-linecap:round}
+.moshu-root .map-sym-hill{fill:color-mix(in oklab, var(--map-terrain-b, #5d6a4d) 46%, transparent);stroke:color-mix(in oklab, var(--map-terrain-b,#5d6a4d) 80%, transparent);stroke-width:1.1;stroke-linejoin:round}
+.moshu-root .map-sym-line{fill:none;stroke:color-mix(in oklab, var(--map-terrain-b,#5d6a4d) 78%, transparent);stroke-width:1.2;stroke-linecap:round}
+.moshu-root .map-sym-reed{fill:none;stroke:color-mix(in oklab, var(--map-terrain-b,#4f5f4a) 85%, transparent);stroke-width:1.4;stroke-linecap:round}
+.moshu-root .map-sym-crater{stroke:color-mix(in oklab,#7a3b2a 85%,transparent);stroke-width:2;stroke-linecap:round}
+
+/* ---------- 独立图章 ---------- */
+
+.moshu-root .map-prop-body{fill:color-mix(in oklab, var(--dsw-alias-label-secondary) 62%, transparent);stroke:color-mix(in oklab, var(--dsw-alias-label-primary) 45%, transparent);stroke-width:1.2;stroke-linejoin:round}
+.moshu-root .map-prop-snow{fill:color-mix(in oklab, var(--dsw-alias-bg-layer-1) 88%, transparent)}
+.moshu-root .map-prop-trunk{fill:none;stroke:color-mix(in oklab,#6b4a2f 80%,transparent);stroke-width:2.4;stroke-linecap:round}
+.moshu-root .map-prop-line{fill:none;stroke:color-mix(in oklab, var(--dsw-alias-label-primary) 55%, transparent);stroke-width:1.4;stroke-linecap:round}
+.moshu-root .map-prop-pine .map-prop-body{fill:color-mix(in oklab,#4f6b41 82%,transparent);stroke:color-mix(in oklab,#33502c 70%,transparent)}
+.moshu-root .map-prop-dead .map-prop-line{stroke:color-mix(in oklab,#6b5a48 85%,transparent)}
+.moshu-root .map-prop-cactus .map-prop-body{fill:color-mix(in oklab,#5f7f52 85%,transparent);stroke:color-mix(in oklab,#405d36 70%,transparent)}
+.moshu-root .map-prop-cone .map-prop-body{fill:color-mix(in oklab,#7d4a3a 85%,transparent);stroke:color-mix(in oklab,#552f22 70%,transparent)}
+.moshu-root .map-prop.is-selected .map-prop-body{filter:brightness(1.15)}
+
+
+/* ---------- 地点标记：底板保证任何地形上都看得清 ---------- */
+
+.moshu-root .map-location-plate{
+  fill:color-mix(in oklab, var(--dsw-alias-bg-layer-1) 84%, transparent);
+  stroke:color-mix(in oklab, var(--dsw-alias-label-primary) 32%, transparent);
+  stroke-width:1}
+.moshu-root .map-location .map-symbol{
+  fill:color-mix(in oklab, var(--dsw-alias-label-primary) 88%, transparent);
+  stroke:color-mix(in oklab, var(--dsw-alias-label-primary) 88%, transparent);
+  stroke-width:1.1;stroke-linejoin:round}
+/* 分类用不同的点缀色，但保持同一套明暗，深浅主题都读得清 */
+.moshu-root .map-location-capital .map-symbol,
+.moshu-root .map-location-fortress .map-symbol{fill:color-mix(in oklab,#b4453a 82%, var(--dsw-alias-label-primary))}
+.moshu-root .map-location-port .map-symbol,
+.moshu-root .map-location-ferry .map-symbol,
+.moshu-root .map-location-falls .map-symbol,
+.moshu-root .map-location-lighthouse .map-symbol{fill:color-mix(in oklab,#2f7fbf 82%, var(--dsw-alias-label-primary))}
+
+.moshu-root .map-location-mine .map-symbol,
+.moshu-root .map-location-cave .map-symbol,
+.moshu-root .map-location-dungeon .map-symbol{fill:color-mix(in oklab,#8a6a4a 84%, var(--dsw-alias-label-primary))}
+
+
+
+/* 地标：王陵 / 深渊 / 传送门（地图尺度上的大目标） */
+.moshu-root .map-location-temple .map-symbol,
+.moshu-root .map-location-academy .map-symbol,
+.moshu-root .map-location-tomb .map-symbol{fill:color-mix(in oklab,#7a6bb0 78%, var(--dsw-alias-label-primary))}
+.moshu-root .map-location-farm .map-symbol{fill:color-mix(in oklab,#5f8a52 84%, var(--dsw-alias-label-primary))}
+.moshu-root .map-location-abyss .map-symbol{fill:none;stroke:color-mix(in oklab,#3a3350 88%, var(--dsw-alias-label-primary));stroke-width:1.6}
+.moshu-root .map-location-portal .map-symbol{fill:none;stroke:color-mix(in oklab,#3f8f8a 88%, var(--dsw-alias-label-primary));stroke-width:1.5}
+
+
+/* ---------- 地点图标网格（内置 + AI 素材） ---------- */
+
+.moshu-root .map-icon-grid{
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;
+  max-height:188px;overflow-y:auto;padding:2px;
+  border:1px solid var(--moshu-line);border-radius:8px;background:var(--moshu-surface)}
+.moshu-root .map-icon-cell{
+  display:flex;flex-direction:column;align-items:center;gap:1px;
+  padding:4px 2px;border:1px solid transparent;border-radius:7px;
+  background:transparent;color:var(--moshu-muted);cursor:pointer}
+.moshu-root .map-icon-cell svg{width:22px;height:22px;fill:currentColor;stroke:currentColor;stroke-width:1}
+.moshu-root .map-icon-cell span{
+  font-size:8.5px;line-height:1.2;max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.moshu-root .map-icon-cell:hover{background:var(--moshu-hover);color:var(--moshu-ink)}
+.moshu-root .map-icon-cell.is-active{
+  border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 45%,var(--moshu-line));
+  background:color-mix(in oklab,var(--dsw-alias-brand-primary) 14%,transparent);
+  color:var(--moshu-brand-ink)}
+/* AI 画的素材：描边跟着主题，填充用它自己的颜色 */
+.moshu-root .map-icon-cell.is-asset svg{fill:none;stroke:currentColor;stroke-width:1.2}
+.moshu-root .map-icon-cell.is-asset{color:var(--dsw-alias-state-business-primary)}
+
+/* 地图上的装饰图：不做主题染色，保留 AI 画的原色 */
+.moshu-root .map-decor-art svg{display:block;overflow:visible}
+.moshu-root .map-location .map-symbol-asset svg{overflow:visible}
