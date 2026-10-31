@@ -212,6 +212,9 @@ ${definitions.join('\n\n')}
     /* 小说工具在 Harness 对话里的专用渲染：src-client/index.jsx 导出
        toolViews = [{ key: <wire tool name>, Component }]，这里逐个挂到
        conversation 的工具卡插槽上。 */
+    /* 侧边栏入口（sidebar.panellist + 对应的 main 面板）默认打开；
+       entry.sidebarPanel === false 就完全不注册——入口只留对话里的 tab 与全屏浮层。 */
+    const withSidebarPanel = entry.sidebarPanel !== false;
     const toolViews = Array.isArray(entry.toolViews) ? entry.toolViews : [];
     /* 工作台作为对话里的一个 View（和 对话 / 轨迹 / 上下文 / 网页预览 并排）。 */
     const conv = entry.conversationView;
@@ -222,16 +225,18 @@ ${definitions.join('\n\n')}
       inject: ['slots'],
       apply(ctx) {
         if (typeof entry.configure === 'function') entry.configure(ctx);
-        ctx.slots.inject('sidebar.panellist', () => ctx.slots.register({
-          name: 'sidebar.panellist',
-          id: panelId,
-          order: 25,
-          label: () => labelOf(ctx),
-        }, Icon));
-        ctx.slots.inject('main', () => ctx.slots.register({
-          name: 'main',
-          key: panelId,
-        }, Page));
+        if (withSidebarPanel) {
+          ctx.slots.inject('sidebar.panellist', () => ctx.slots.register({
+            name: 'sidebar.panellist',
+            id: panelId,
+            order: 25,
+            label: () => labelOf(ctx),
+          }, Icon));
+          ctx.slots.inject('main', () => ctx.slots.register({
+            name: 'main',
+            key: panelId,
+          }, Page));
+        }
         for (const item of toolViews) {
           if (!item || typeof item.key !== 'string' || typeof item.Component !== 'function') continue;
           const key = item.key;

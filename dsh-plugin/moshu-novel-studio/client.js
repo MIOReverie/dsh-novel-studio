@@ -10322,6 +10322,9 @@ const overlayView = {
   Component: WorkbenchOverlay
 };
 module.exports = {
+  /* **不在侧边栏加入口**：工作台只从对话里的「墨枢」tab 进入（点 tab 后进全屏浮层）。
+     侧边栏入口会和宿主自己的面板列抢位置，也没必要多一个入口。 */
+  sidebarPanel: false,
   /* 主区面板挂的是「带单实例守卫」的 SlotPage，而不是裸 Page。 */
   Page: SlotPage,
   Icon: Icon,
@@ -15383,6 +15386,9 @@ module.exports = "/* 墨枢 · DSH 整页外壳样式。\n   约定：所有选�
     /* 小说工具在 Harness 对话里的专用渲染：src-client/index.jsx 导出
        toolViews = [{ key: <wire tool name>, Component }]，这里逐个挂到
        conversation 的工具卡插槽上。 */
+    /* 侧边栏入口（sidebar.panellist + 对应的 main 面板）默认打开；
+       entry.sidebarPanel === false 就完全不注册——入口只留对话里的 tab 与全屏浮层。 */
+    const withSidebarPanel = entry.sidebarPanel !== false;
     const toolViews = Array.isArray(entry.toolViews) ? entry.toolViews : [];
     /* 工作台作为对话里的一个 View（和 对话 / 轨迹 / 上下文 / 网页预览 并排）。 */
     const conv = entry.conversationView;
@@ -15393,16 +15399,18 @@ module.exports = "/* 墨枢 · DSH 整页外壳样式。\n   约定：所有选�
       inject: ['slots'],
       apply(ctx) {
         if (typeof entry.configure === 'function') entry.configure(ctx);
-        ctx.slots.inject('sidebar.panellist', () => ctx.slots.register({
-          name: 'sidebar.panellist',
-          id: panelId,
-          order: 25,
-          label: () => labelOf(ctx),
-        }, Icon));
-        ctx.slots.inject('main', () => ctx.slots.register({
-          name: 'main',
-          key: panelId,
-        }, Page));
+        if (withSidebarPanel) {
+          ctx.slots.inject('sidebar.panellist', () => ctx.slots.register({
+            name: 'sidebar.panellist',
+            id: panelId,
+            order: 25,
+            label: () => labelOf(ctx),
+          }, Icon));
+          ctx.slots.inject('main', () => ctx.slots.register({
+            name: 'main',
+            key: panelId,
+          }, Page));
+        }
         for (const item of toolViews) {
           if (!item || typeof item.key !== 'string' || typeof item.Component !== 'function') continue;
           const key = item.key;

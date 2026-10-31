@@ -84,6 +84,9 @@ const overlayView = {
 };
 
 module.exports = {
+  /* **不在侧边栏加入口**：工作台只从对话里的「墨枢」tab 进入（点 tab 后进全屏浮层）。
+     侧边栏入口会和宿主自己的面板列抢位置，也没必要多一个入口。 */
+  sidebarPanel: false,
   /* 主区面板挂的是「带单实例守卫」的 SlotPage，而不是裸 Page。 */
   Page: SlotPage,
   Icon: Icon,
