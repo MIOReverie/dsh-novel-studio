@@ -14,7 +14,7 @@
 
 **要求**：DSH（DeepSeekRuntime）`0.2.1-rc.4` 或更高；能打开 DSH Web GUI。
 
-1. 下载本仓库（`git clone`，或 Releases 里的 zip）。
+1. `git clone https://github.com/MIOReverie/dsh-novel-studio.git`（或下载 Releases 里的 zip）。
 2. 把 `dsh-plugin/moshu-novel-studio` 整个目录放到你的 DSH profile 的 `node_modules/` 下，
    路径保持 `node_modules/@local/moshu-novel-studio`（或改成你自己的作用域名，
    同时改该目录 `package.json` 的 `name` 与 `cordis.patch.yml` 里的 `name`，两处必须一致）。

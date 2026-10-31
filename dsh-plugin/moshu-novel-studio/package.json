@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "description": "墨枢 · DSH 小说工作台：在 DSH Web 里打开一个独立的小说创作与审阅页面。",
+  "license": "MIT",
+  "repository": {"type":"git","url":"git+https://github.com/MIOReverie/dsh-novel-studio.git","directory":"dsh-plugin/moshu-novel-studio"},
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",
