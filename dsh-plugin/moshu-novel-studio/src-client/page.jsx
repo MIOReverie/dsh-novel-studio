@@ -1349,6 +1349,10 @@ function Page(props) {
       return (
         <Component
           onConnectDsh={undefined}
+          hideTopbar={hideTopbar}
+          hideRail={hideRail}
+          onToggleTopbar={function () { setHideTopbar(function (value) { return !value; }); }}
+          onToggleRail={function () { setHideRail(function (value) { return !value; }); }}
           chapters={chapters}
           activeChapterId={chapterId}
           onSelectChapter={setChapterId}
@@ -1607,27 +1611,6 @@ function Page(props) {
       <div className={'workspace' + (view === 'map' ? ' workspace-flush' : '')}>{renderWorkspace()}</div>
 
       <footer className="statusbar">
-        {/* 专注写作：把顶栏 / 左侧目录收起来，只留正文。快捷键 Ctrl+Shift+H / L。 */}
-        <div className="focus-toggles">
-          <button
-            type="button"
-            className={'focus-toggle' + (hideTopbar ? ' is-off' : '')}
-            onClick={function () { setHideTopbar(function (value) { return !value; }); }}
-            title={t('隐藏/显示顶栏（Ctrl+Shift+H）')}
-            aria-pressed={hideTopbar}
-          >
-            {t('顶栏')}
-          </button>
-          <button
-            type="button"
-            className={'focus-toggle' + (hideRail ? ' is-off' : '')}
-            onClick={function () { setHideRail(function (value) { return !value; }); }}
-            title={t('隐藏/显示左侧目录（Ctrl+Shift+L）')}
-            aria-pressed={hideRail}
-          >
-            {t('目录')}
-          </button>
-        </div>
         <div>
           <span className="local-indicator" />
           <span>{t('当前作品')}</span>

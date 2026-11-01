@@ -251,6 +251,10 @@ function HistoryIcon({ size = 17 }) {
 
 function Editor({
   onConnectDsh,
+  hideTopbar,
+  hideRail,
+  onToggleTopbar,
+  onToggleRail,
   chapters,
   activeChapterId,
   onSelectChapter,
@@ -284,6 +288,47 @@ function Editor({
   /* 行号面板要跟着 textarea 一起滚：以前它是独立 overflow:hidden 的容器，
      滚到第 200 行时左边还停在 1..30，按行号找批注全会错位。 */
   const gutterRef = useRef(null);
+  /* 行号要对齐的是**视觉行**：一段话在正文里折成 3 行，行号面板却只占 1 行高，
+     越往下错得越多。这里用同字体的离屏量尺量出每行实际占几行，再写回 span 高度。 */
+  const measureGutterRef = useRef(function () {});
+
+  function measureGutter() {
+    const gutter = gutterRef.current;
+    const area = textareaRef.current;
+    if (!gutter || !area) return;
+    const spans = gutter.querySelectorAll('span');
+    if (!spans.length) return;
+    /* 还没布局完（宽度为 0）时别量：那会算出一堆假高度，反而更乱。 */
+    if (!(area.clientWidth > 40)) return;
+    const computed = window.getComputedStyle(area);
+    const lineHeight = parseFloat(computed.lineHeight)
+      || (parseFloat(computed.fontSize) || 15) * 2.15;
+    if (!(lineHeight > 0)) return;
+
+    const probe = document.createElement('div');
+    probe.setAttribute('aria-hidden', 'true');
+    probe.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;pointer-events:none;'
+      + 'white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;padding:0;border:0;';
+    probe.style.fontFamily = computed.fontFamily;
+    probe.style.fontSize = computed.fontSize;
+    probe.style.lineHeight = computed.lineHeight;
+    probe.style.letterSpacing = computed.letterSpacing;
+    probe.style.width = Math.max(20, area.clientWidth
+      - (parseFloat(computed.paddingLeft) || 0)
+      - (parseFloat(computed.paddingRight) || 0)) + 'px';
+    document.body.appendChild(probe);
+
+    const raw = String(area.value || '').split('\n');
+    spans.forEach(function (span, index) {
+      const text = raw[index] === undefined ? '' : raw[index];
+      probe.textContent = text.length ? text : ' ';
+      const visual = Math.max(1, Math.round(probe.getBoundingClientRect().height / lineHeight));
+      span.style.height = (visual * lineHeight) + 'px';
+    });
+
+    document.body.removeChild(probe);
+  }
+  measureGutterRef.current = measureGutter;
   const menuRef = useRef(null);
   const saveRef = useRef(onSave);
   /* 批注的最新视图：异步流程（审阅）里不能用渲染闭包里的旧数组。 */
@@ -568,6 +613,22 @@ function Editor({
      飞行中切了章，旧章的回包不能把新章的 saveState 改成 saved（那会取消新章的自动保存）。 */
   const activePathRef = useRef(activePath);
   activePathRef.current = activePath;
+
+  /* 行号量尺：正文、字号、字体、行号开关、窗口宽度变化都重量一次（下一帧，等布局稳定）。 */
+  useEffect(function () {
+    if (!showLineNumbers) return undefined;
+    let frame = 0;
+    function schedule() {
+      if (frame) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(function () { measureGutterRef.current(); });
+    }
+    schedule();
+    window.addEventListener('resize', schedule);
+    return function () {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener('resize', schedule);
+    };
+  }, [activeChapter && activeChapter.content, showLineNumbers, editorFontSize, editorSerif]);
 
   const editorStyle = {
     '--moshu-editor-font-size': editorFontSize + 'px',
@@ -1392,6 +1453,29 @@ function Editor({
             </button>
           ) : null}
           <span>{chapterChars(activeChapter.content).toLocaleString()} 字 · {lines.length} 行</span>
+          {/* 专注写作：把顶栏 / 左侧目录临时收起来，按钮就放在编辑区这条栏上。 */}
+          {typeof onToggleTopbar === 'function' ? (
+            <button
+              type="button"
+              className={'editor-focus-toggle' + (hideTopbar ? ' is-off' : '')}
+              onClick={onToggleTopbar}
+              title={hideTopbar ? '显示顶栏（Ctrl+Shift+H）' : '隐藏顶栏（Ctrl+Shift+H）'}
+              aria-pressed={Boolean(hideTopbar)}
+            >
+              顶栏
+            </button>
+          ) : null}
+          {typeof onToggleRail === 'function' ? (
+            <button
+              type="button"
+              className={'editor-focus-toggle' + (hideRail ? ' is-off' : '')}
+              onClick={onToggleRail}
+              title={hideRail ? '显示左侧目录（Ctrl+Shift+L）' : '隐藏左侧目录（Ctrl+Shift+L）'}
+              aria-pressed={Boolean(hideRail)}
+            >
+              目录
+            </button>
+          ) : null}
         </div>
 
         <div className={`editor-text-container ${showLineNumbers ? 'has-line-numbers' : ''}`}>

@@ -459,3 +459,15 @@
 .moshu-root .markdown-preview hr,
 .moshu-root .editor-markdown-preview hr{
   border:0;border-top:1px solid var(--moshu-line);margin:18px 0}
+
+
+/* 编辑区信息栏上的专注开关（顶栏 / 目录） */
+.moshu-root .editor-focus-toggle{
+  border:1px solid var(--moshu-line);background:transparent;border-radius:6px;
+  padding:1px 8px;font-size:10px;line-height:1.7;color:var(--moshu-muted);cursor:pointer;
+  font-family:var(--moshu-sans);flex-shrink:0}
+.moshu-root .editor-focus-toggle:hover{background:var(--moshu-hover);color:var(--moshu-ink)}
+.moshu-root .editor-focus-toggle.is-off{
+  color:var(--moshu-brand-ink);
+  border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 45%,var(--moshu-line));
+  background:color-mix(in oklab,var(--dsw-alias-brand-primary) 12%,transparent)}
