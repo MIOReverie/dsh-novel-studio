@@ -622,6 +622,10 @@ function Editor({
   const [instructionEdited, setInstructionEdited] = useState(false);
   const [selection, setSelection] = useState({ start: 0, end: 0, text: '' });
   const [menuChapterId, setMenuChapterId] = useState(null);
+  /* 菜单用 fixed 定位、按触发按钮的矩形算坐标：
+     以前是 row 内的 absolute，而目录列表是 overflow-y:auto 的滚动容器 ——
+     菜单被裁在列表里，看着就是"点了没反应"或"跑到奇怪的位置"。 */
+  const [menuPos, setMenuPos] = useState(null);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [dialog, setDialog] = useState(null);
   const [dialogError, setDialogError] = useState('');
@@ -849,11 +853,17 @@ function Editor({
       if (menuRef.current && target && menuRef.current.contains(target)) return;
       setMenuChapterId(null);
     }
+    /* 目录是滚动容器：一滚菜单就该收起，否则 fixed 菜单会飘在别处 */
+    function onScroll() { setMenuChapterId(null); setMenuPos(null); }
     window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('resize', onScroll);
     document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('scroll', onScroll, true);
     return () => {
       window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('resize', onScroll);
       document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('scroll', onScroll, true);
     };
   }, [menuChapterId]);
 
@@ -1422,12 +1432,32 @@ function Editor({
                   aria-expanded={menuOpen}
                   aria-label={chapterTitle(chapter) + ' 的更多操作'}
                   title="更多操作"
-                  onClick={() => setMenuChapterId(menuOpen ? null : chapter.id)}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    if (menuOpen) {
+                      setMenuChapterId(null);
+                      setMenuPos(null);
+                      return;
+                    }
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    const width = 132;
+                    const left = Math.max(8, Math.min(rect.right - width, window.innerWidth - width - 8));
+                    /* 下方空间不够就往上开 */
+                    setMenuPos(rect.bottom + 152 > window.innerHeight
+                      ? { left, bottom: window.innerHeight - rect.top + 4 }
+                      : { left, top: rect.bottom + 4 });
+                    setMenuChapterId(chapter.id);
+                  }}
                 >
                   <MenuDots size={14} />
                 </button>
                 {menuOpen && (
-                  <div className={`editor-chapter-menu ${isLast ? 'is-upward' : ''}`} role="menu" ref={menuRef}>
+                  <div
+                    className="editor-chapter-menu"
+                    role="menu"
+                    ref={menuRef}
+                    style={menuPos || undefined}
+                  >
                     <button type="button" role="menuitem" onClick={() => openRenameDialog(chapter)}>重命名</button>
                     <button
                       type="button"

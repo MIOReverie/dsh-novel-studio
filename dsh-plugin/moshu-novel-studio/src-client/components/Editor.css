@@ -80,12 +80,14 @@
 .moshu-root .editor-chapter-list.has-open-menu{padding-bottom:150px}
 
 .moshu-root .editor-chapter-menu{
-  position:absolute;right:2px;top:calc(100% - 1px);z-index:6;min-width:126px;
+  /* fixed：脱离目录那个 overflow:auto 的滚动容器，否则会被裁掉。
+     坐标由 Editor.jsx 按触发按钮的矩形实时写入（top 或 bottom + left）。 */
+  position:fixed;z-index:80;min-width:132px;
   display:flex;flex-direction:column;gap:2px;padding:4px;
   border:1px solid var(--moshu-line-strong);border-radius:9px;
   background:var(--dsw-alias-bg-overlay);
   box-shadow:0 12px 28px color-mix(in oklab,var(--dsw-alias-label-primary) 18%,transparent)}
-.moshu-root .editor-chapter-menu.is-upward{top:auto;bottom:calc(100% - 1px)}
+/* 方向由 JS 决定（下方空间不够就往上开），这里不再需要 is-upward。 */
 .moshu-root .editor-chapter-menu button{
   width:100%;display:flex;align-items:center;gap:6px;padding:7px 9px;border:0;border-radius:6px;
   background:transparent;color:var(--moshu-ink);font-size:11px;text-align:left}
