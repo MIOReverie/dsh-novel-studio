@@ -652,20 +652,37 @@ function Editor({
     };
   }, [showLineNumbers, activeChapter && activeChapter.id]);
 
-  /* 行号量尺：正文、字号、字体、行号开关、窗口宽度变化都重量一次（下一帧，等布局稳定）。 */
+  /**
+   * 行号量尺 + 位移，统一在一个调度里跑。
+   *
+   * 只监听 window.resize 是不够的：隐藏顶栏/左侧目录、切全屏、面板开合，
+   * 都会让编辑区**宽度**变化而不触发 window.resize —— 正文重新折行，
+   * 量出来的行高立刻过期，行号又错位。所以额外用 ResizeObserver 盯住 textarea 本身。
+   */
   useEffect(function () {
     if (!showLineNumbers) return undefined;
     let frame = 0;
     function schedule() {
       if (frame) cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(function () { measureGutterRef.current(); });
+      frame = requestAnimationFrame(function () {
+        measureGutterRef.current();
+        syncGutterScrollRef.current();
+      });
     }
+
     schedule();
     window.addEventListener('resize', schedule);
-    syncGutterScrollRef.current();
+
+    let observer = null;
+    const area = textareaRef.current;
+    if (area && typeof ResizeObserver === 'function') {
+      observer = new ResizeObserver(schedule);
+      observer.observe(area);
+    }
     return function () {
       if (frame) cancelAnimationFrame(frame);
       window.removeEventListener('resize', schedule);
+      if (observer) observer.disconnect();
     };
   }, [activeChapter && activeChapter.content, showLineNumbers, editorFontSize, editorSerif]);
 
