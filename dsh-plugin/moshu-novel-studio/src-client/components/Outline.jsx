@@ -67,6 +67,11 @@ function chapterTemplate(number, title) {
   return `---\nchapter: ${number}\nstatus: 大纲中\nbeat: 铺垫\narc: 主线\n---\n\n# 第 ${number} 章 · ${title}\n\n## 本章目标\n\n## 核心冲突\n\n## 场景与信息增量\n\n## 结尾钩子\n`;
 }
 
+/** 只要正文部分（不含 front matter），给编辑器用。 */
+function chapterBody(number, title) {
+  return withoutMetadata(chapterTemplate(number, title)) || `## 本章要发生什么\n\n`;
+}
+
 function Outline({ documents, chapters: chapterDocuments, onSave, onOpenChapter, onDocumentsChanged }) {
   const outlines = useMemo(() => documents.filter(doc => doc.type === 'outline'), [documents]);
   const [collapsed, setCollapsed] = useState([]);
@@ -115,6 +120,11 @@ function Outline({ documents, chapters: chapterDocuments, onSave, onOpenChapter,
     try {
       await onSave(path, content);
       setMessage('已保存到项目');
+      /* 刷新一次文档列表：章节卡片的状态/摘要都来自 documents，
+         不刷新的话保存完看着像没生效。 */
+      if (typeof onDocumentsChanged === 'function') {
+        try { await onDocumentsChanged(); } catch (error) { /* 刷新失败不影响已保存 */ }
+      }
       if (close) setEditing(null);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : '保存失败，请重试');
@@ -155,7 +165,10 @@ function Outline({ documents, chapters: chapterDocuments, onSave, onOpenChapter,
 
   function openEditor(chapter) {
     setEditing(chapter);
-    setDraft((chapter.outline && chapter.outline.content) || chapterTemplate(chapter.number, chapter.title));
+    /* 文本域里只放"本章要发生什么"这部分：
+       以前把整篇（含 --- chapter: 1 --- 那几行）塞进去，用户看到一堆元数据，
+       再保存一次就会重复写 front matter。 */
+    setDraft(chapter.outline ? withoutMetadata(chapter.outline.content) : chapterBody(chapter.number, chapter.title));
     setBeat(chapter.outline ? metadata(chapter.outline.content, 'beat') || '铺垫' : '铺垫');
     setArc(chapter.outline ? metadata(chapter.outline.content, 'arc') || '主线' : '主线');
     setStatus(chapter.outline ? metadata(chapter.outline.content, 'status') || '大纲中' : chapter.document.status || '大纲中');
