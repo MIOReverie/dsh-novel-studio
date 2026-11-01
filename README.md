@@ -1,6 +1,7 @@
 # 墨枢 · DSH 小说工作台
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![English](https://img.shields.io/badge/README-English-blue.svg)](README.en.md)
 [![DSH](https://img.shields.io/badge/DSH-0.2.1--rc.5%2B-blue.svg)](https://www.npmjs.com/package/@deepseek-ai/dsh-harness)
 
 **一个给「人写小说」用的 AI 辅助工具。**
