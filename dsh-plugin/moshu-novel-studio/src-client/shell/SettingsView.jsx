@@ -667,7 +667,7 @@ function SettingsView(props) {
               <div className="studio-row-main">
                 <span className="studio-row-label">{t('数据目录')}</span>
                 <span className="studio-row-help">
-                  {t('每个对话的作品存放在 {root}/scopes/&lt;会话&gt;/novels/&lt;书名&gt;；换目录只改位置，不会自动搬已有文件。', {
+                  {t('作品存放在 {root}/.moshu/novels/&lt;书名&gt;：一个工作区服务一本小说，同一个工作区的不同对话共用这批书。换目录只改位置，不会自动搬已有文件。', {
                     root: storage.projectDir,
                   })}
                 </span>

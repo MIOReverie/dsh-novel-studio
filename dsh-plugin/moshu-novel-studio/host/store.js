@@ -15,7 +15,7 @@
  * 说明：本模块不读 `.dsh-connection.json`、不碰 cookie / token，
  * 作品根目录与模型通道只来自 `.moshu/settings.json` 与环境变量。
  */
-import { existsSync, lstatSync, readFileSync } from 'node:fs';
+import { existsSync, lstatSync, readFileSync, readdirSync } from 'node:fs';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { homedir } from 'node:os';
@@ -24,7 +24,7 @@ import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { seedDocuments, seedMap, seedMemories } from './seed.js';
 import { HttpError } from './errors.js';
-import { currentScope, scopedSettingsFile } from './scope.js';
+import { currentScope, legacyNovelsRoots, novelsRootOf, runInScope, sanitizeScope, scopedSettingsFile } from './scope.js';
 import { currentBook, fallbackBookRoot } from './current-book.js';
 import * as jsonstore from './jsonstore.js';
 import { renameWithRetry } from './jsonstore.js';
@@ -192,6 +192,67 @@ export async function setProjectDir(nextDir) {
   const next = { ...current, projectDir: resolved };
   await fsp.writeFile(targetFile, JSON.stringify(next, null, 2) + '\n', 'utf8');
   return storageInfo();
+}
+
+/**
+ * 老的图书位置 → `<工作区>/.moshu/novels`。
+ *
+ * 升级前书可能在两处：`<projectDir>/novels/`（共享库）和
+ * `.moshu/scopes/<会话>/novels/`（每个对话一个库）。现在统一到 `.moshu/novels/`，
+ * 第一次访问时把它们**复制**过来（保留原件，出问题还能回去找），同名不覆盖。
+ * 用标记文件保证只跑一次。
+ */
+export async function ensureNovelsMigrated() {
+  const loaded = loadSettings();
+  const projectDir = loaded.projectDir;
+  const target = novelsRootOf(projectDir);
+  const marker = path.join(projectDir, '.moshu', '.novels-migrated.json');
+  if (existsSync(marker)) return { migrated: 0, skipped: true };
+
+  const scopesDir = path.join(projectDir, '.moshu', 'scopes');
+  let sessionIds = [];
+  try {
+    sessionIds = existsSync(scopesDir) ? readdirSync(scopesDir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name) : [];
+  } catch { sessionIds = []; }
+
+  const sources = legacyNovelsRoots(projectDir, sessionIds);
+  await fsp.mkdir(target, { recursive: true });
+
+  const moved = [];
+  for (const source of sources) {
+    if (path.resolve(source) === path.resolve(target)) continue;
+    let entries = [];
+    try {
+      entries = readdirSync(source, { withFileTypes: true });
+    } catch { continue; }
+    for (const entry of entries) {
+      if (!entry.isDirectory() || entry.name.startsWith('.')) continue;
+      let destination = path.join(target, entry.name);
+      if (existsSync(destination)) {
+        /* 重名时给个能看懂的来源标记：共享库 / 某个会话 */
+        const tag = path.resolve(source) === path.resolve(path.join(projectDir, 'novels'))
+          ? '共享库'
+          : path.basename(path.dirname(source));
+        destination = path.join(target, entry.name + ' (' + tag + ')');
+        let suffix = 2;
+        while (existsSync(destination)) {
+          destination = path.join(target, entry.name + ' (' + tag + '-' + suffix + ')');
+          suffix += 1;
+        }
+      }
+      try {
+        await fsp.cp(path.join(source, entry.name), destination, { recursive: true, force: false, errorOnExist: false });
+        moved.push({ name: entry.name, from: source, to: destination });
+      } catch { /* 单个失败不影响其它书 */ }
+    }
+  }
+
+  try {
+    await fsp.writeFile(marker, JSON.stringify({ at: new Date().toISOString(), moved }, null, 2) + '\n', 'utf8');
+  } catch { /* 标记写不了就下次再跑，最多重复复制同名副本 */ }
+  return { migrated: moved.length, moved };
 }
 
 export function loadSettings() {
@@ -842,6 +903,8 @@ export async function appendTask(root, task) {
  * @param {{available:boolean,status:string,provider:string,model:string,message?:string}} dsh
  */
 export async function bootstrap(root, dsh) {
+  /* 老数据搬到 <工作区>/.moshu/novels（只跑一次；失败也不影响打开书） */
+  await ensureNovelsMigrated().catch(() => null);
   const [documents, annotations, memories, map, tasks] = await Promise.all([
     listDocuments(root), readAnnotations(root), readMemories(root), readMap(root), readList(root, 'tasks.json'),
   ]);

@@ -5,10 +5,11 @@
  * 于是所有对话共用同一个书架、同一个「当前作品」——A 窗口切书，B 窗口也跟着变；
  * 两个对话同时改稿会互相覆盖。
  *
- * 现在：每个对话（session）有自己的作用域目录
- *   `<projectDir>/.moshu/scopes/<sessionId>/`
- * 里面放自己的 `novels/` 与 `settings.json`。没有作用域（侧边栏面板）时用共享库
- * `<projectDir>/novels/`，也就是升级前的老数据还在那儿。
+ * 现在：**作品放在 `<工作区>/.moshu/novels/`**（一个工作区一本小说，不同对话共用）。
+ * 作用域只用来分隔**「当前作品」这类界面状态**：
+ *   `<projectDir>/.moshu/scopes/<sessionId>/settings.json`
+ * 老数据（`<projectDir>/novels/` 与 `.moshu/scopes/<id>/novels/`）会在第一次访问时
+ * 自动搬到新位置（见 store.ensureNovelsMigrated）。
  *
  * 作用域靠 AsyncLocalStorage 传播：HTTP 从 `X-Moshu-Scope` 头进，
  * 工具调用从 `exec.agent.session.id` 进，之后所有 `projectContext()` 自动用对目录。
@@ -44,12 +45,25 @@ export function scopeRootOf(projectDir, scope) {
 }
 
 /**
- * 作品根目录：有作用域就用自己的库，否则用共享库。
- * `projectDir` 永远是**全局**项目根，作用域只影响这一层。
+ * 作品根目录：`<工作区>/.moshu/novels`。
+ *
+ * **一个工作区 = 一本小说**：同一个工作区里的不同对话看到的是同一批书，
+ * 换对话（换话题）不用重新找书；作用域只决定「当前作品」这一项，不再分家。
+ * 以前是每个对话一个 `novels/`，同一本书在两个对话里各存一份，容易改重、
+ * 也不符合「一个工作区服务一本小说」的用法。
  */
 export function novelsRootOf(projectDir) {
-  const scopeDir = scopeRootOf(projectDir, currentScope());
-  return scopeDir ? path.join(scopeDir, 'novels') : path.join(projectDir, 'novels');
+  return path.join(projectDir, '.moshu', 'novels');
+}
+
+/** 旧位置（升级前）：共享库与「每个对话一个库」都可能存着老书，迁移时扫这里。 */
+export function legacyNovelsRoots(projectDir, sessionIds) {
+  const roots = [path.join(projectDir, 'novels')];
+  for (const id of sessionIds) {
+    const safe = sanitizeScope(id);
+    if (safe) roots.push(path.join(projectDir, '.moshu', 'scopes', safe, 'novels'));
+  }
+  return roots;
 }
 
 /** 当前作用域的 settings.json（没有作用域时返回空串，调用方回落到全局）。 */

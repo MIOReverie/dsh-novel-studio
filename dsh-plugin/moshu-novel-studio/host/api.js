@@ -456,6 +456,7 @@ async function handleExportGet(_req, res) {
 /* ------------------------------------------------------------------ 书籍 */
 
 async function handleBooksGet(_ctx, _req, res) {
+  await store.ensureNovelsMigrated().catch(() => null);
   const { projectDir } = store.projectContext();
   sendJson(res, 200, await books.describeBooks(projectDir));
 }
