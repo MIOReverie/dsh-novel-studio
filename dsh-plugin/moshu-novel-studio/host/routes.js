@@ -96,6 +96,9 @@ export const ROUTES = Object.freeze([
   { method: 'GET', path: '/models', handler: 'modelsGet', needsBook: false, write: false, json: true },
   { method: 'POST', path: '/models', handler: 'modelsPost', needsBook: false, write: true, json: true , bookScoped: false },
   { method: 'GET', path: '/settings', handler: 'settingsGet', needsBook: false, write: false, json: true },
+  /* 数据目录（自定义小说存放位置）：只读信息 + 修改 */
+  { method: 'GET', path: '/storage', handler: 'storageGet', needsBook: false, write: false, json: true, bookScoped: false },
+  { method: 'POST', path: '/storage', handler: 'storagePost', needsBook: false, write: true, json: true, bookScoped: false },
   { method: 'POST', path: '/settings', handler: 'settingsPost', needsBook: false, write: true, json: true , bookScoped: false },
 ]);
 

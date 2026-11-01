@@ -12,6 +12,7 @@
  */
 
 const React = require('react');
+const api = require('../api');
 const { useEffect, useRef, useState } = React;
 
 const strings = require('../strings');
@@ -142,6 +143,27 @@ function SettingsView(props) {
   const defaults = Object.assign({}, FALLBACK_DEFAULTS, meta.defaults || {});
   const editableKeys = Array.isArray(meta.editable) ? meta.editable : null;
 
+  async function saveStorage(nextDir) {
+    if (storageBusy) return;
+    setStorageBusy(true);
+    setStorageError('');
+    try {
+      const info = await api.request('/storage', {
+        method: 'POST',
+        body: JSON.stringify({ projectDir: nextDir }),
+      });
+      if (info) {
+        setStorage(info);
+        setStorageInput(info.projectDir || '');
+        notify(t('数据目录已改为 {dir}', { dir: info.projectDir }));
+      }
+    } catch (error) {
+      setStorageError(error && error.message ? error.message : String(error));
+    } finally {
+      setStorageBusy(false);
+    }
+  }
+
   function isEditable(key) {
     if (!editableKeys) return true;
     return editableKeys.indexOf(key) !== -1;
@@ -151,11 +173,27 @@ function SettingsView(props) {
   const [saveState, setSaveState] = useState({ status: 'idle', message: '' });
   const [confirmReset, setConfirmReset] = useState(false);
   const [modelBusy, setModelBusy] = useState(false);
+  /* 数据目录：自定义小说存放位置（全局，不属于某个会话的 settings） */
+  const [storage, setStorage] = useState(null);
+  const [storageInput, setStorageInput] = useState('');
+  const [storageBusy, setStorageBusy] = useState(false);
+  const [storageError, setStorageError] = useState('');
 
   const pendingRef = useRef({});
   const retryRef = useRef(0);
   const timerRef = useRef(0);
   const savedSnapshotRef = useRef(JSON.stringify(mergeSettings(settings, defaults)));
+
+  /* 数据目录：进页面拉一次，保存后刷新。 */
+  useEffect(function () {
+    let alive = true;
+    api.request('/storage').then(function (info) {
+      if (!alive || !info) return;
+      setStorage(info);
+      setStorageInput(info.projectDir || '');
+    }).catch(function () { /* 老后端没有这个接口就不显示 */ });
+    return function () { alive = false; };
+  }, []);
 
   /* 宿主侧改动（切书、外部改设置）回流到表单：只有本地没有待保存内容时才覆盖。 */
   useEffect(function () {
@@ -623,6 +661,47 @@ function SettingsView(props) {
             </div>
             <code className="studio-readonly">{String(draft.novelDir || t('（未设置）'))}</code>
           </div>
+
+          {storage ? (
+            <div className="studio-row studio-storage">
+              <div className="studio-row-main">
+                <span className="studio-row-label">{t('数据目录')}</span>
+                <span className="studio-row-help">
+                  {t('每个对话的作品存放在 {root}/scopes/&lt;会话&gt;/novels/&lt;书名&gt;；换目录只改位置，不会自动搬已有文件。', {
+                    root: storage.projectDir,
+                  })}
+                </span>
+              </div>
+              <div className="studio-storage-edit">
+                <input
+                  type="text"
+                  value={storageInput}
+                  spellCheck={false}
+                  placeholder={storage.defaultProjectDir}
+                  onChange={function (event) { setStorageInput(event.target.value); }}
+                  onKeyDown={function (event) { if (event.key === 'Enter') void saveStorage(storageInput.trim()); }}
+                />
+                <button
+                  type="button"
+                  className="studio-storage-save"
+                  disabled={storageBusy || !storageInput.trim() || storageInput.trim() === storage.projectDir}
+                  onClick={function () { void saveStorage(storageInput.trim()); }}
+                >
+                  {storageBusy ? t('保存中…') : t('保存')}
+                </button>
+                <button
+                  type="button"
+                  className="studio-storage-reset"
+                  disabled={storageBusy || storage.isDefault}
+                  title={storage.defaultProjectDir}
+                  onClick={function () { void saveStorage(storage.defaultProjectDir); }}
+                >
+                  {t('恢复默认')}
+                </button>
+              </div>
+              {storageError ? <p className="studio-storage-error" role="alert">{storageError}</p> : null}
+            </div>
+          ) : null}
         </section>
 
         {/* 5 语言 */}

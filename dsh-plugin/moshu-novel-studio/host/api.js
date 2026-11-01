@@ -548,6 +548,16 @@ function handleSettingsGet(_ctx, _req, res) {
   });
 }
 
+async function handleStorageGet(_ctx, _req, res) {
+  sendJson(res, 200, store.storageInfo());
+}
+
+async function handleStoragePost(_ctx, req, res) {
+  const body = await readJsonBody(req);
+  const next = await store.setProjectDir(body.projectDir);
+  sendJson(res, 200, next);
+}
+
 async function handleSettingsPost(_ctx, req, res) {
   const body = await readJsonBody(req);
   const settings = await writeSettingsPatch(body.patch);
@@ -688,6 +698,8 @@ const HANDLERS = {
   modelsPost: (ctx, req, res) => handleModelsPost(ctx, req, res),
   settingsGet: (ctx, req, res) => handleSettingsGet(ctx, req, res),
   settingsPost: (ctx, req, res) => handleSettingsPost(ctx, req, res),
+  storageGet: (ctx, req, res) => handleStorageGet(ctx, req, res),
+  storagePost: (ctx, req, res) => handleStoragePost(ctx, req, res),
 };
 
 /**

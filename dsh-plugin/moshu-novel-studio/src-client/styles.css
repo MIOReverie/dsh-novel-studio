@@ -86,8 +86,13 @@
 .moshu-root .topbar {
   display: flex;
   align-items: center;
-  /* 不再换行：以前标签多的时候顶栏会折成两行，白吃掉一整行高度。 */
+  /* 不再换行：以前标签多的时候顶栏会折成两行，白吃掉一整行高度。
+     但窄窗口里按钮会被挤出可视区——所以允许横向滚动，右侧的按钮总能滑到。 */
   flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  overscroll-behavior-x: contain;
   gap: 6px 16px;
   min-height: 48px;
   /* 兜底：正常情况下 .moshu-root 是定高 + overflow:hidden，只有中间 .workspace 滚；
@@ -1252,3 +1257,8 @@
   color:var(--moshu-brand-ink);
   border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 45%,var(--moshu-line));
   background:color-mix(in oklab,var(--dsw-alias-brand-primary) 12%,transparent)}
+
+
+/* 顶栏里的每个块都不压缩：宁可横向滚动，也不要按钮被挤没。 */
+.moshu-root .topbar > *{flex-shrink:0}
+.moshu-root .topbar::-webkit-scrollbar{height:4px}

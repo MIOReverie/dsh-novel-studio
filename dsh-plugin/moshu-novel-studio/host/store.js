@@ -18,6 +18,8 @@
 import { existsSync, lstatSync, readFileSync } from 'node:fs';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
+import { homedir } from 'node:os';
+import { promises as fsp } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { seedDocuments, seedMap, seedMemories } from './seed.js';
@@ -34,7 +36,15 @@ export { renameWithRetry };
 
 
 /** 契约固定默认值（宿主没有提供默认模型时的最后兜底）。 */
-export const DEFAULT_PROJECT_DIR = 'F:\\代码\\AI辅助小说平台';
+/**
+ * 默认数据目录。
+ *
+ * 以前这里写死成某个人的 `F:\代码\AI辅助小说平台`——换台机器就变成
+ * 「往一个不存在的路径写书」，或者更糟：恰好那个人也有同名目录。
+ * 现在默认放在**当前用户自己的目录**下（`~/.dsh-moshu`），
+ * 也可以在「设置 → 数据目录」里改。
+ */
+export const DEFAULT_PROJECT_DIR = path.join(homedir(), '.dsh-moshu');
 export const DEFAULT_NOVEL_NAME = '雾隐之城';
 export const DEFAULT_PROVIDER = 'wb-proxy';
 export const DEFAULT_MODEL = 'deepseek-v4.1-flash';
@@ -139,6 +149,51 @@ function settingsCandidates() {
  * 每次调用都重新读盘，改完 settings 不必重启 DSH。
  * @returns {{file:string,projectDir:string,novelDir:string,provider:string,model:string}}
  */
+/** 数据目录信息（给「设置 → 数据」显示，也用于校验）。 */
+export function storageInfo() {
+  const loaded = loadSettings();
+  return {
+    projectDir: loaded.projectDir,
+    novelsRoot: path.join(loaded.projectDir, 'novels'),
+    defaultProjectDir: DEFAULT_PROJECT_DIR,
+    settingsFile: loaded.file || '',
+    isDefault: path.resolve(loaded.projectDir) === path.resolve(DEFAULT_PROJECT_DIR),
+  };
+}
+
+/**
+ * 改数据目录：写成**全局** settings.json 里的 projectDir。
+ *
+ * 只改目录本身、不搬已有数据——搬文件是不可逆的重操作，留给用户自己决定。
+ * 目标目录必须可创建、可写，否则下次保存就是静默失败。
+ */
+export async function setProjectDir(nextDir) {
+  const wanted = asTrimmedString(nextDir);
+  if (!wanted) throw new HttpError(400, '目录不能为空。');
+  if (!path.isAbsolute(wanted)) throw new HttpError(400, '请填绝对路径，例如 D:\\小说 或 /home/me/novels。');
+  const resolved = path.resolve(wanted);
+
+  try {
+    const stat = await fsp.stat(resolved).catch(() => null);
+    if (stat && !stat.isDirectory()) throw new HttpError(400, '这个路径是个文件，不是目录。');
+    if (!stat) await fsp.mkdir(resolved, { recursive: true });
+    const probe = path.join(resolved, '.moshu-write-test');
+    await fsp.writeFile(probe, 'ok', 'utf8');
+    await fsp.rm(probe, { force: true });
+  } catch (error) {
+    if (error instanceof HttpError) throw error;
+    throw new HttpError(400, `这个目录用不了：${error instanceof Error ? error.message : String(error)}`);
+  }
+
+  const loaded = loadSettings();
+  const targetFile = loaded.file || path.join(resolved, '.moshu', 'settings.json');
+  await fsp.mkdir(path.dirname(targetFile), { recursive: true });
+  const current = readJsonSync(targetFile) || {};
+  const next = { ...current, projectDir: resolved };
+  await fsp.writeFile(targetFile, JSON.stringify(next, null, 2) + '\n', 'utf8');
+  return storageInfo();
+}
+
 export function loadSettings() {
   let file = '';
   let data = {};
