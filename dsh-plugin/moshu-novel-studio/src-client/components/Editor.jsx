@@ -1,4 +1,5 @@
 const React = require('react');
+const { Markdown } = require('./Markdown');
 const { Fragment, useEffect, useMemo, useRef, useState } = React;
 const {
   BookOpen, CheckCircle2, ChevronRight, FileText, Hash,
@@ -212,20 +213,8 @@ function inlineMarkdown(value) {
 }
 
 function MarkdownPreview({ content }) {
-  return (
-    <div className="editor-markdown-preview">
-      {content.replace(/\r/g, '').split('\n').map((line, index) => {
-        const heading = /^(#{1,3})\s+(.*)$/.exec(line);
-        if (heading) {
-          const Tag = `h${heading[1].length}`;
-          return <Tag key={index}>{inlineMarkdown(heading[2])}</Tag>;
-        }
-        if (/^>\s?/.test(line)) return <blockquote key={index}>{inlineMarkdown(line.replace(/^>\s?/, ''))}</blockquote>;
-        if (!line.trim()) return <div className="markdown-paragraph-space" key={index} />;
-        return <p key={index}>{inlineMarkdown(line)}</p>;
-      })}
-    </div>
-  );
+  /* 与资料页共用同一套解析：一行一段会把折行拆成多段，表格与代码块也渲染不出来。 */
+  return <Markdown content={content} className="editor-markdown-preview" />;
 }
 
 function MenuDots({ size = 14 }) {

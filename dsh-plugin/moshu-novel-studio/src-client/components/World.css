@@ -475,3 +475,53 @@ display:grid;grid-template-columns:265px minmax(0,1fr);min-height:530px;height:m
 .moshu-root .outline-empty p{margin:0;font-size:13px;color:var(--world-ink);font-weight:500}
 .moshu-root .outline-empty small{max-width:380px;line-height:1.8;font-size:11.5px;color:var(--world-muted)}
 .moshu-root .outline-empty .primary-button{margin-top:6px}
+
+/* ---------- Markdown 阅读样式（表格 / 代码块 / 列表 / 链接） ----------
+   以前只有 h/p/blockquote/分隔线，表格和代码块在预览里就是一堆竖线。
+   这里一次补齐，资料页与编辑器预览共用同一套。 */
+
+.moshu-root .markdown-preview ul,
+.moshu-root .markdown-preview ol,
+.moshu-root .editor-markdown-preview ul,
+.moshu-root .editor-markdown-preview ol{
+  margin:8px 0;padding-left:22px}
+.moshu-root .markdown-preview li,
+.moshu-root .editor-markdown-preview li{
+  font-family:var(--moshu-serif);font-size:13px;line-height:2;margin:2px 0}
+.moshu-root .markdown-preview li>input[type=checkbox],
+.moshu-root .editor-markdown-preview li>input[type=checkbox]{margin-right:6px;vertical-align:middle}
+
+.moshu-root .markdown-preview pre.md-code,
+.moshu-root .editor-markdown-preview pre.md-code{
+  margin:12px 0;padding:10px 12px;border-radius:9px;overflow:auto;
+  background:var(--moshu-surface-2);border:1px solid var(--moshu-line);
+  font-family:var(--moshu-mono);font-size:12px;line-height:1.7;
+  white-space:pre;tab-size:2;color:var(--moshu-ink)}
+
+.moshu-root .markdown-preview .md-table-wrap,
+.moshu-root .editor-markdown-preview .md-table-wrap{
+  margin:12px 0;overflow-x:auto}
+.moshu-root .markdown-preview table.md-table,
+.moshu-root .editor-markdown-preview table.md-table{
+  border-collapse:collapse;min-width:60%;font-size:12.5px}
+.moshu-root .markdown-preview table.md-table th,
+.moshu-root .markdown-preview table.md-table td,
+.moshu-root .editor-markdown-preview table.md-table th,
+.moshu-root .editor-markdown-preview table.md-table td{
+  border:1px solid var(--moshu-line);padding:5px 10px;text-align:left;vertical-align:top}
+.moshu-root .markdown-preview table.md-table th,
+.moshu-root .editor-markdown-preview table.md-table th{
+  background:var(--moshu-surface-2);font-weight:600;white-space:nowrap}
+
+.moshu-root .markdown-preview a,
+.moshu-root .editor-markdown-preview a{
+  color:var(--dsw-alias-brand-primary);text-decoration:none;border-bottom:1px dotted currentColor}
+.moshu-root .markdown-preview a:hover,
+.moshu-root .editor-markdown-preview a:hover{text-decoration:none;opacity:.85}
+.moshu-root .markdown-preview img,
+.moshu-root .editor-markdown-preview img{max-width:100%;border-radius:8px;margin:8px 0}
+.moshu-root .markdown-preview del,
+.moshu-root .editor-markdown-preview del{opacity:.6}
+.moshu-root .markdown-preview hr,
+.moshu-root .editor-markdown-preview hr{
+  border:0;border-top:1px solid var(--moshu-line);margin:18px 0}

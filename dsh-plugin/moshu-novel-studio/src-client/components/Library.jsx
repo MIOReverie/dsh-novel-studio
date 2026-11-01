@@ -1,4 +1,5 @@
 const React = require('react');
+const { Markdown } = require('./Markdown');
 const { Fragment, useEffect, useMemo, useRef, useState } = React;
 const {
   BookOpen, Check, ChevronRight, FileText, LibraryBig, Map: MapIcon,
@@ -57,20 +58,9 @@ function inlineMarkdown(value) {
 }
 
 function MarkdownPreview({ content }) {
-  const lines = content.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '').split(/\r?\n/);
-  return <>{lines.map((line, index) => {
-    const heading = /^(#{1,6})\s+/.exec(line);
-    if (heading) {
-      const level = Math.min(6, heading[1].length);
-      const Tag = `h${level}`;
-      return <Tag key={index}>{inlineMarkdown(line.replace(/^#{1,6}\s+/, ''))}</Tag>;
-    }
-    if (/^\s*[-*+]\s+/.test(line)) return <div className="markdown-list-item" key={index}><span>•</span><p>{inlineMarkdown(line.replace(/^\s*[-*+]\s+/, ''))}</p></div>;
-    if (/^>\s?/.test(line)) return <blockquote key={index}>{inlineMarkdown(line.replace(/^>\s?/, ''))}</blockquote>;
-    if (/^\s*([-*_])(\s*\1){2,}\s*$/.test(line)) return <hr key={index} />;
-    if (!line.trim()) return <div className="markdown-paragraph-space" key={index} aria-hidden="true" />;
-    return <p key={index}>{inlineMarkdown(line)}</p>;
-  })}</>;
+  /* 旧实现是「一行一段」，表格/代码块/有序列表都不成形，折行也会被拆成多段。
+     现在统一走共享的 Markdown 解析（块级分组 + 完整行内标记）。 */
+  return <Markdown content={content} className="markdown-preview" />;
 }
 
 function Library({ documents, onSave }) {
