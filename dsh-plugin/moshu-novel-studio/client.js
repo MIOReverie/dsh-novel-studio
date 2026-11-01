@@ -8733,18 +8733,26 @@ function Outline({
       setBusy('');
     }
   }
-  async function create(path, content, key) {
+  async function create(path, content, key, extra) {
     setBusy(key);
     setError('');
     setMessage('');
     try {
-      await request('/document', {
-        method: 'POST',
-        body: JSON.stringify({
-          path,
-          content
-        })
-      });
+      /* 优先用页面传进来的 onSave：它会更新本地文档状态、触发重新渲染。
+         以前这里直接 request('/document')，写完磁盘但页面状态没变 ——
+         用户看到的就是「点了没反应」。 */
+      if (typeof onSave === 'function') {
+        await onSave(path, content);
+      } else {
+        await request('/document', {
+          method: 'POST',
+          body: JSON.stringify({
+            path,
+            content,
+            ...(extra || {})
+          })
+        });
+      }
       setMessage('已创建到项目');
       /* 通知父级重新拉一次目录：不然「已创建」提示之后列表还是空的，
          再点一次就会用同一个文件名撞 409。 */
@@ -8778,10 +8786,12 @@ function Outline({
   }
   async function addChapter(volume) {
     const number = Math.max(0, ...chapters.map(chapter => chapter.number)) + 1;
-    const title = `未命名章节 ${number}`;
+    const title = `第 ${number} 章`;
     const path = `chapters/chapter-${String(number).padStart(3, '0')}.md`;
-    const content = `# 第 ${number} 章 · ${title}\n\n`;
-    if (await create(path, content, `add-${volume}`)) {
+    /* 正文留空、标题进元数据（章节标题不再写在正文第一行） */
+    if (await create(path, '', `add-${volume}`, {
+      title
+    })) {
       const outlineContent = setMetadata(chapterTemplate(number, title), {
         volume: String(volume)
       });
@@ -8876,7 +8886,9 @@ function Outline({
     type: "button",
     className: "primary-button",
     disabled: !!busy,
-    onClick: () => create('outline/volume-1.md', volumeTemplate(1), 'volume')
+    onClick: () => create('outline/volume-1.md', volumeTemplate(1), 'volume', {
+      title: '第 1 卷'
+    })
   }, /*#__PURE__*/React.createElement(Plus, {
     size: 16
   }), "\u65B0\u5EFA\u7B2C\u4E00\u5377")) : volumes.map(volume => {
