@@ -251,10 +251,8 @@ function HistoryIcon({ size = 17 }) {
 
 function Editor({
   onConnectDsh,
-  hideTopbar,
-  hideRail,
-  onToggleTopbar,
-  onToggleRail,
+  focus,
+  onToggleFocus,
   chapters,
   activeChapterId,
   onSelectChapter,
@@ -1478,7 +1476,19 @@ function Editor({
           </div>
         </header>
 
-        <div className="editor-document-meta">
+        <div className={'editor-document-meta' + (focus ? ' is-focus' : '')}>
+          {/* 一键专注：顶栏 + 左侧目录 + 这条栏的其它内容一起收起，只留这一个按钮能回来。 */}
+          {typeof onToggleFocus === 'function' ? (
+            <button
+              type="button"
+              className={'editor-focus-toggle' + (focus ? ' is-on' : '')}
+              onClick={onToggleFocus}
+              title={focus ? '退出专注（Esc）' : '一键专注：隐藏顶栏、左侧目录和上方信息（Ctrl+Shift+F）'}
+              aria-pressed={Boolean(focus)}
+            >
+              {focus ? '退出专注' : '专注'}
+            </button>
+          ) : null}
           <span className={`editor-save-state is-${saveState}`} aria-live="polite">
             {saveState === 'saved'
               ? <CheckCircle2 size={13} />
@@ -1509,29 +1519,6 @@ function Editor({
             </button>
           ) : null}
           <span>{chapterChars(activeChapter.content).toLocaleString()} 字 · {lines.length} 行</span>
-          {/* 专注写作：把顶栏 / 左侧目录临时收起来，按钮就放在编辑区这条栏上。 */}
-          {typeof onToggleTopbar === 'function' ? (
-            <button
-              type="button"
-              className={'editor-focus-toggle' + (hideTopbar ? ' is-off' : '')}
-              onClick={onToggleTopbar}
-              title={hideTopbar ? '显示顶栏（Ctrl+Shift+H）' : '隐藏顶栏（Ctrl+Shift+H）'}
-              aria-pressed={Boolean(hideTopbar)}
-            >
-              顶栏
-            </button>
-          ) : null}
-          {typeof onToggleRail === 'function' ? (
-            <button
-              type="button"
-              className={'editor-focus-toggle' + (hideRail ? ' is-off' : '')}
-              onClick={onToggleRail}
-              title={hideRail ? '显示左侧目录（Ctrl+Shift+L）' : '隐藏左侧目录（Ctrl+Shift+L）'}
-              aria-pressed={Boolean(hideRail)}
-            >
-              目录
-            </button>
-          ) : null}
         </div>
 
         <div className={`editor-text-container ${showLineNumbers ? 'has-line-numbers' : ''}`} ref={containerRef}>

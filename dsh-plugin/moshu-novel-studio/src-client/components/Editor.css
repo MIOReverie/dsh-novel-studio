@@ -462,13 +462,18 @@
   border:0;border-top:1px solid var(--moshu-line);margin:18px 0}
 
 
-/* 编辑区信息栏上的专注开关（顶栏 / 目录） */
+/* 专注模式下，信息栏只留「退出专注」这一个按钮（出错时的重试保存仍保留）。 */
+.moshu-root .editor-document-meta.is-focus > :not(.editor-focus-toggle):not(.editor-retry-save){
+  display:none}
+.moshu-root .editor-document-meta.is-focus{justify-content:flex-start}
+
+/* 编辑区信息栏上的专注开关 */
 .moshu-root .editor-focus-toggle{
-  border:1px solid var(--moshu-line);background:transparent;border-radius:6px;
-  padding:1px 8px;font-size:10px;line-height:1.7;color:var(--moshu-muted);cursor:pointer;
-  font-family:var(--moshu-sans);flex-shrink:0}
+  border:1px solid var(--moshu-line);background:transparent;border-radius:999px;
+  padding:2px 10px;font-size:10px;line-height:1.6;color:var(--moshu-muted);cursor:pointer;
+  font-family:var(--moshu-sans);flex-shrink:0;white-space:nowrap}
 .moshu-root .editor-focus-toggle:hover{background:var(--moshu-hover);color:var(--moshu-ink)}
-.moshu-root .editor-focus-toggle.is-off{
+.moshu-root .editor-focus-toggle.is-on{
   color:var(--moshu-brand-ink);
   border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 45%,var(--moshu-line));
   background:color-mix(in oklab,var(--dsw-alias-brand-primary) 12%,transparent)}

@@ -206,22 +206,30 @@ function Page(props) {
   const inOverlay = Boolean(props && props.inOverlay);
   const [project, setProject] = useState(null);
   const [view, setView] = useState('write');
-  /* 专注写作：可以分别把顶栏、左侧目录藏起来。
-     Ctrl+Shift+H 顶栏 · Ctrl+Shift+L 左侧栏（再按一次恢复）。 */
+  /* 专注写作：**一键**把顶栏、左侧目录、编辑区上方的栏一起收起来。
+     Ctrl+Shift+F（或 Esc 退出）。 */
   const [hideTopbar, setHideTopbar] = useState(false);
   const [hideRail, setHideRail] = useState(false);
+  const focusMode = hideTopbar && hideRail;
+  const toggleFocus = useCallback(function () {
+    const next = !(hideTopbar && hideRail);
+    setHideTopbar(next);
+    setHideRail(next);
+  }, [hideTopbar, hideRail]);
 
   /* 专注模式的按键：只改界面，不碰文档，所以放在最外层监听。 */
   useEffect(function () {
     function onKeyDown(event) {
-      if (!event.ctrlKey || !event.shiftKey || event.altKey) return;
       const key = String(event.key || '').toLowerCase();
-      if (key === 'h') {
+      if (event.ctrlKey && event.shiftKey && !event.altKey && (key === 'f' || key === 'h' || key === 'l')) {
         event.preventDefault();
         setHideTopbar(function (value) { return !value; });
-      } else if (key === 'l') {
-        event.preventDefault();
         setHideRail(function (value) { return !value; });
+        return;
+      }
+      if (key === 'escape' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        setHideTopbar(false);
+        setHideRail(false);
       }
     }
     window.addEventListener('keydown', onKeyDown);
@@ -1349,10 +1357,8 @@ function Page(props) {
       return (
         <Component
           onConnectDsh={undefined}
-          hideTopbar={hideTopbar}
-          hideRail={hideRail}
-          onToggleTopbar={function () { setHideTopbar(function (value) { return !value; }); }}
-          onToggleRail={function () { setHideRail(function (value) { return !value; }); }}
+          focus={focusMode}
+          onToggleFocus={toggleFocus}
           chapters={chapters}
           activeChapterId={chapterId}
           onSelectChapter={setChapterId}

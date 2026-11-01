@@ -1237,6 +1237,12 @@
 .moshu-root.is-hide-rail .editor-chapter-sidebar{display:none}
 /* 目录是 display:none，flex 布局会把省下的宽度直接给正文，不用再改写列宽。 */
 
+/* 专注模式：页面标题块也一起收起来（顶栏与目录已经由上面的规则隐藏）。 */
+.moshu-root.is-hide-topbar .page-heading,
+.moshu-root.is-hide-rail .page-heading{display:none}
+.moshu-root.is-hide-topbar .workspace,
+.moshu-root.is-hide-rail .workspace{padding-top:0}
+
 .moshu-root .focus-toggles{display:flex;align-items:center;gap:6px}
 .moshu-root .focus-toggle{
   border:1px solid var(--moshu-line);background:transparent;border-radius:6px;
