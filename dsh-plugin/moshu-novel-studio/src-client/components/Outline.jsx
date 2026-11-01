@@ -124,10 +124,10 @@ function Outline({ documents, chapters: chapterDocuments, onSave, onOpenChapter,
   async function create(path, content, key, extra) {
     setBusy(key); setError(''); setMessage('');
     try {
-      /* 优先用页面传进来的 onSave：它会更新本地文档状态、触发重新渲染。
-         以前这里直接 request('/document')，写完磁盘但页面状态没变 ——
-         用户看到的就是「点了没反应」。 */
-      if (typeof onSave === 'function') {
+      /* 新文件必须用 POST 建（onSave 是"更新"，对不存在的文档会 404）；
+         已存在的文件才走 onSave，这样页面状态与磁盘一致、不用手动刷新。 */
+      const exists = documents.some((doc) => doc.path === path);
+      if (exists && typeof onSave === 'function') {
         await onSave(path, content);
       } else {
         await request('/document', { method: 'POST', body: JSON.stringify({ path, content, ...(extra || {}) }) });
