@@ -306,11 +306,42 @@ function renderBlock(block, index) {
   );
 }
 
+/**
+ * 散文模式：**每个非空行就是一个段落**。
+ *
+ * 小说正文的习惯是一段一行、段间不留空行；标准 Markdown 会把连续行并成一段，
+ * 于是作者眼里明明是三四段，预览里却挤成一大坨——「段落位置错误」就是这么来的。
+ * 资料区仍走标准 Markdown（那里真的会用空行分节），两边各用各的规则。
+ */
+function parseProseBlocks(content) {
+  const lines = stripFrontMatter(content).replace(/\r/g, '').split('\n');
+  const blocks = [];
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (!line.trim()) continue;
+    const heading = RE.heading.exec(line);
+    if (heading) {
+      blocks.push({ type: 'heading', level: Math.min(6, heading[1].length), text: heading[2] });
+      continue;
+    }
+    if (RE.hr.test(line)) {
+      blocks.push({ type: 'hr' });
+      continue;
+    }
+    if (RE.quote.test(line)) {
+      blocks.push({ type: 'quote', lines: [RE.quote.exec(line)[1]] });
+      continue;
+    }
+    blocks.push({ type: 'paragraph', lines: [line.trim()] });
+  }
+  return blocks;
+}
+
 function Markdown(props) {
   const content = props && props.content ? props.content : '';
   const className = props && props.className ? props.className : 'markdown-preview';
-  const blocks = parseBlocks(content);
+  const blocks = props && props.prose ? parseProseBlocks(content) : parseBlocks(content);
   return <div className={className}>{blocks.map(renderBlock)}</div>;
 }
 
-module.exports = { Markdown, parseBlocks, renderInline };
+module.exports = { Markdown, parseBlocks, parseProseBlocks, renderInline };

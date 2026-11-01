@@ -368,6 +368,7 @@
 .moshu-root .statusbar {
   display: flex;
   align-items: center;
+  /* 三段：专注开关 · 作品信息 · 统计 */
   justify-content: space-between;
   gap: 16px;
   height: 30px;
@@ -1228,3 +1229,20 @@
 .moshu-root .fullscreen-trigger:hover{
   border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 42%,var(--moshu-line));
   background:var(--moshu-hover)}
+
+
+/* ---------- 专注写作：隐藏顶栏 / 左侧目录 ---------- */
+
+.moshu-root.is-hide-topbar .topbar{display:none}
+.moshu-root.is-hide-rail .editor-chapter-sidebar{display:none}
+/* 目录是 display:none，flex 布局会把省下的宽度直接给正文，不用再改写列宽。 */
+
+.moshu-root .focus-toggles{display:flex;align-items:center;gap:6px}
+.moshu-root .focus-toggle{
+  border:1px solid var(--moshu-line);background:transparent;border-radius:6px;
+  padding:1px 7px;font-size:10px;color:var(--moshu-muted);cursor:pointer;line-height:1.6}
+.moshu-root .focus-toggle:hover{background:var(--moshu-hover);color:var(--moshu-ink)}
+.moshu-root .focus-toggle.is-off{
+  color:var(--moshu-brand-ink);
+  border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 45%,var(--moshu-line));
+  background:color-mix(in oklab,var(--dsw-alias-brand-primary) 12%,transparent)}

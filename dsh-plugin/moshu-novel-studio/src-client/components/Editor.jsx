@@ -214,7 +214,8 @@ function inlineMarkdown(value) {
 
 function MarkdownPreview({ content }) {
   /* 与资料页共用同一套解析：一行一段会把折行拆成多段，表格与代码块也渲染不出来。 */
-  return <Markdown content={content} className="editor-markdown-preview" />;
+  /* 正文按「一段一行」渲染：一行一段，不把相邻行并成一段。 */
+  return <Markdown content={content} className="editor-markdown-preview" prose />;
 }
 
 function MenuDots({ size = 14 }) {

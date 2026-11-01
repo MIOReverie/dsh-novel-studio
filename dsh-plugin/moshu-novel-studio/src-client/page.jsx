@@ -206,6 +206,27 @@ function Page(props) {
   const inOverlay = Boolean(props && props.inOverlay);
   const [project, setProject] = useState(null);
   const [view, setView] = useState('write');
+  /* 专注写作：可以分别把顶栏、左侧目录藏起来。
+     Ctrl+Shift+H 顶栏 · Ctrl+Shift+L 左侧栏（再按一次恢复）。 */
+  const [hideTopbar, setHideTopbar] = useState(false);
+  const [hideRail, setHideRail] = useState(false);
+
+  /* 专注模式的按键：只改界面，不碰文档，所以放在最外层监听。 */
+  useEffect(function () {
+    function onKeyDown(event) {
+      if (!event.ctrlKey || !event.shiftKey || event.altKey) return;
+      const key = String(event.key || '').toLowerCase();
+      if (key === 'h') {
+        event.preventDefault();
+        setHideTopbar(function (value) { return !value; });
+      } else if (key === 'l') {
+        event.preventDefault();
+        setHideRail(function (value) { return !value; });
+      }
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return function () { window.removeEventListener('keydown', onKeyDown); };
+  }, []);
   const [chapterId, setChapterId] = useState('');
   const [error, setError] = useState('');
   const [search, setSearch] = useState(false);
@@ -1284,6 +1305,7 @@ function Page(props) {
   const modelTitle = modelReady ? t('切换模型') : (models.message || dsh.message || t('模型不可用'));
 
   const bookTitle = bookTitleOf(currentBook) || project.name || t('未命名');
+
   const heading = TITLES[view] || TITLES.write;
   const savedLabel = editorDirty || conflicts.length
     ? t('有未保存修改')
@@ -1449,10 +1471,10 @@ function Page(props) {
   const showStats = view !== 'settings';
 
   return (
-    <div className="moshu-root">
+    <div className={"moshu-root" + (hideRail ? " is-hide-rail" : "") + (hideTopbar ? " is-hide-topbar" : "")}>
       <style dangerouslySetInnerHTML={{ __html: css }} />
 
-      <header className="topbar">
+      <header className={'topbar' + (hideTopbar ? ' is-hidden' : '')}>
         <div className="breadcrumbs">
           <span>{t('墨枢')}</span>
           <span className="sep">/</span>
@@ -1585,6 +1607,27 @@ function Page(props) {
       <div className={'workspace' + (view === 'map' ? ' workspace-flush' : '')}>{renderWorkspace()}</div>
 
       <footer className="statusbar">
+        {/* 专注写作：把顶栏 / 左侧目录收起来，只留正文。快捷键 Ctrl+Shift+H / L。 */}
+        <div className="focus-toggles">
+          <button
+            type="button"
+            className={'focus-toggle' + (hideTopbar ? ' is-off' : '')}
+            onClick={function () { setHideTopbar(function (value) { return !value; }); }}
+            title={t('隐藏/显示顶栏（Ctrl+Shift+H）')}
+            aria-pressed={hideTopbar}
+          >
+            {t('顶栏')}
+          </button>
+          <button
+            type="button"
+            className={'focus-toggle' + (hideRail ? ' is-off' : '')}
+            onClick={function () { setHideRail(function (value) { return !value; }); }}
+            title={t('隐藏/显示左侧目录（Ctrl+Shift+L）')}
+            aria-pressed={hideRail}
+          >
+            {t('目录')}
+          </button>
+        </div>
         <div>
           <span className="local-indicator" />
           <span>{t('当前作品')}</span>
