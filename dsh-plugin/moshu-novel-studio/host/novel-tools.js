@@ -682,6 +682,49 @@ async function writeDocument(root, relative, content, mode, expectedMtime) {
 }
 
 /** `novel_write_reference` 的实现。 */
+/**
+ * 同一个主题是不是已经有文件了？
+ *
+ * 只提示、不拦截：作者确实可能想要一个新文件。但模型最常见的坏习惯是
+ * 「补充一条就新开一个 xxx-补充.md」，越写越多、越写越碎 —— 这里把现有文件指出来，
+ * 让它下一轮直接改写那一个。
+ */
+const VARIANT_NAME = /(补充|续写|续篇|下卷|附录|其二|其三|v\d+|副本|草稿|临时|备份)/i;
+
+async function referenceDuplicateHint(book, relative) {
+  const target = path.basename(relative, '.md');
+  const dir = path.posix.dirname(relative);
+  const norm = (text) => String(text || '').replace(/[\s（）()【】\[\]\-_·]/g, '').toLowerCase();
+  const hints = [];
+
+  if (VARIANT_NAME.test(target)) {
+    hints.push('文件名里带「补充 / 续 / v2 / 草稿」这类字样：同一个主题应该在原文件里写清楚，不要拆成平行文件。');
+  }
+
+  let docs = [];
+  try {
+    docs = await store.listDocuments(book.root);
+  } catch { docs = []; }
+
+  const siblings = docs
+    .filter((doc) => doc.type !== 'chapter' && doc.path !== relative && path.posix.dirname(doc.path) === dir)
+    .map((doc) => ({ path: doc.path, title: String(doc.title || path.basename(doc.path, '.md')) }));
+
+  const key = norm(target);
+  const similar = siblings.filter((doc) => {
+    const other = norm(doc.title);
+    if (!key || !other) return false;
+    return other === key || other.indexOf(key) >= 0 || key.indexOf(other) >= 0;
+  });
+
+  if (similar.length) {
+    const first = similar[0];
+    hints.push(`资料区里已经有「${first.title}」（${first.path}）：这个主题下次请用 mode=replace 改写它，而不是再建一个文件。`);
+  }
+
+  return { hints, similar: similar.map((doc) => doc.path) };
+}
+
 async function writeReference(args) {
   const book = resolveBook(args?.book);
   const requested = asText(args?.path).trim();
@@ -700,6 +743,10 @@ async function writeReference(args) {
 
   const { saved, bytes } = await writeDocument(book.root, relative, content, mode, args?.expectedMtime);
 
+  /* 新建时看一眼是不是"同一主题又开了一个文件"；只提示，不拦。 */
+  const duplicate = mode === 'create' ? await referenceDuplicateHint(book, relative) : { hints: [], similar: [] };
+  const warning = duplicate.hints.length ? duplicate.hints.join('') : '';
+
   return {
     ok: true,
     book: book.id,
@@ -711,6 +758,8 @@ async function writeReference(args) {
     updatedAt: saved.updatedAt,
     backup: saved.backup === undefined ? null : saved.backup,
     note: mode === 'create' ? '资料区新建（免审批）' : `资料区${mode === 'append' ? '追加' : '覆盖'}（免审批，旧内容已备份）`,
+    ...(warning ? { warning, similarPaths: duplicate.similar } : {}),
+    text: warning ? `已写入 ${saved.path}。\n\n提醒：${warning}` : `已写入 ${saved.path}。`,
   };
 }
 
@@ -1498,7 +1547,10 @@ export function apply(ctx) {
       'WRITES FILES, no approval needed. Creates, overwrites, or appends one Markdown document in the REFERENCE area of the novel: '
       + `${REFERENCE_DIRS.map((dir) => `${dir}/`).join(', ')} — character sheets, locations, worldbuilding, outline, memory notes, clue ledgers. `
       + 'Overwrites back up the old content under .backups/ first. It REFUSES anything under chapters/: prose belongs to novel_edit_chapter and needs the author\'s approval. '
-      + 'Write only facts you actually read in this book; never invent canon.',
+      + 'Write only facts you actually read in this book; never invent canon. '
+      + 'EDIT IN PLACE: if the topic already has a file, use mode=replace and merge the new facts into it — do not spawn parallel files like "xxx-补充.md", "xxx（二）", "xxx-v2.md". '
+      + 'ONE TOPIC, ONE COMPLETE FILE: write the whole thing in that file (e.g. an artefact split into three parts? name all three, where each one is and who holds it) instead of half-writing it or splitting it across files. '
+      + 'NO WORK-LOG: never write "a later conversation added…", "updated as requested", "（新增）" or any note about your own editing process — the document is canon, not a changelog.',
     parameters: {
       path: {
         type: 'string',
@@ -1513,7 +1565,7 @@ export function apply(ctx) {
       mode: {
         type: 'string',
         enum: ['create', 'replace', 'append'],
-        description: 'create=只新建（已存在会失败）/ replace=整篇覆盖 / append=接到末尾。默认 create。',
+        description: 'replace=整篇覆盖/合并（**主题已存在时用这个**）/ create=只新建（已存在会失败）/ append=接到末尾（只在真的往清单、时间线后面追加时用）。默认 create。',
       },
       force: {
         type: 'boolean',
@@ -1781,6 +1833,7 @@ async function chapterManageTool(ctx, args, exec) {
       + 'Before writing it asks the author through the harness approval prompt, naming the chapter and the exact word-count change; only an explicit "allow once" writes anything, '
       + 'and a reject/cancel/unavailable answer is reported back with the file untouched. The old text is backed up under .backups/. '
       + 'Use it only for changes the author asked for — never to continue the story or to silently rewrite their prose. '
+      + 'When you do write, edit the existing paragraphs in place and keep the author\'s voice: no "here I added…" comments, no summary paragraphs explaining your change. '
       + 'For reference material use novel_write_reference instead: that one is free. '
       + 'Touching more than one chapter in a turn? Use novel_chapter_batch: it asks the author once for the whole set instead of once per chapter.',
     parameters: {
