@@ -132,11 +132,17 @@ async function handleDocumentPost(req, res) {
   if (typeof body.content === 'string') content = body.content;
   else if (body.content !== undefined && body.content !== null) {
     throw new HttpError(400, '文档 content 必须是字符串。');
-  } else content = `# ${requireText(body.title, 'title', 200)}\n`;
+  } else content = '';
   if (content.length > MAX_DOCUMENT_BYTES) throw new HttpError(400, '文档 content 必须是 2 MB 以内的字符串。');
   const { novelDir } = store.projectContext();
   /* 新建文档前**不要** initializeProject：空书架时那会把《雾隐之城》造出来。 */
   const saved = await store.saveDocument(novelDir, body.path, content, { create: true, keep: readSettings().backupKeep });
+  /* 章节标题存在 chapters.json，不写进正文 */
+  const relative = String(body.path || '');
+  if (relative.startsWith('chapters/') && typeof body.title === 'string' && body.title.trim()) {
+    const titles = await import('./chapter-titles.js');
+    await titles.setTitle(novelDir, relative, body.title.trim()).catch(() => null);
+  }
   sendJson(res, 201, { ok: true, ...saved });
 }
 

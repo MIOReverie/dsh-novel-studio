@@ -33,6 +33,7 @@ import { deleteDocument } from './documents.js';
 /* 章节管理的改名/移动/删除复用 documents.js 的同一套实现。 */
 import * as documents from './documents.js';
 import * as assetsApi from './assets.js';
+import * as chapterTitles from './chapter-titles.js';
 import * as timelineApi from './timeline.js';
 import { CANVAS, describeMap, validateMap } from './map.js';
 import * as jsonstore from './jsonstore.js';
@@ -942,14 +943,20 @@ async function editChapter(ctx, args, exec) {
         message: decisionCreate.message || '作者没有同意新建这一章。',
       };
     }
-    const savedCreate = await store.saveDocument(book.root, relative, content, { create: true });
+    /* 章节标题不再写进正文：正文里若带了 `# 标题` 就剥掉，标题记进 chapters.json。 */
+    const split = chapterTitles.splitLeadingHeading(content);
+    const body = split.body;
+    const savedCreate = await store.saveDocument(book.root, relative, body, { create: true });
+    const title = asText(args?.title).trim() || split.heading || path.basename(relative, '.md');
+    await chapterTitles.setTitle(book.root, relative, title).catch(() => null);
     return {
       ok: true,
       path: relative,
       mode: 'create',
-      chars: countChars(content),
+      title,
+      chars: countChars(body),
       mtime: savedCreate.mtime,
-      text: `已在《${book.id}》新建 ${relative}（${countChars(content)} 字）。`,
+      text: `已在《${book.id}》新建 ${relative}（${countChars(body)} 字）：《${title}》。标题存在 chapters.json，正文里不再有标题行。`,
     };
   }
   if (!existing) {
@@ -1677,13 +1684,15 @@ async function chapterManageTool(ctx, args, exec) {
       };
     }
 
-    /* rename：先改正文一级标题，再改文件名；两步都成功才算完成。 */
+    /* rename：**只改标题元数据**（chapters.json），正文一个字不动；
+       旧数据里若还留着 `# 旧标题`，顺手把它从正文剥掉。文件名照旧跟着改。 */
     const nextTitle = asText(args?.title).trim().slice(0, 120);
-    const heading = /^#\s+(.+)$/m.test(existing.content);
-    const content = heading
-      ? existing.content.replace(/^#\s+(.+)$/m, '# ' + nextTitle)
-      : '# ' + nextTitle + '\n\n' + existing.content;
-    await store.saveDocument(book.root, relative, content, { expectedMtime: existing.mtime });
+    if (!nextTitle) throw new ToolRefusal('MISSING_TITLE', 'rename 需要 title。');
+    const splitOld = chapterTitles.splitLeadingHeading(existing.content);
+    if (splitOld.heading) {
+      await store.saveDocument(book.root, relative, splitOld.body, { expectedMtime: existing.mtime });
+    }
+    await chapterTitles.setTitle(book.root, relative, nextTitle);
 
     const baseName = relative.split('/').pop() || '';
     const matched = /^chapter-(\d+)(?:-([^/]*))?\.md$/i.exec(baseName);

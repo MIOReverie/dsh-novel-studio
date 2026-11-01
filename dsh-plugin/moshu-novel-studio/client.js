@@ -2408,11 +2408,13 @@ function Editor({
     if (typeof api.request !== 'function') throw new Error('新建章节接口暂不可用，请刷新页面后重试。');
     await flushPendingSave();
     const path = nextChapterPath(chapterList);
+    /* 正文留空，标题走元数据（不再写成 `# 标题`） */
     await api.request('/document', {
       method: 'POST',
       body: JSON.stringify({
         path,
-        content: '# ' + title + '\n\n'
+        content: '',
+        title
       })
     });
     const id = path.replace(/\.md$/i, '');

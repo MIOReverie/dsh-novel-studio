@@ -841,16 +841,29 @@ export async function listDocuments(root) {
     if (error?.code === 'ENOENT') return [];
     throw error;
   }
+  /* 章节标题存在 chapters.json 里，正文是纯正文（不再有 `# 标题` 那一行）。 */
+  const { readTitles, splitLeadingHeading } = await import('./chapter-titles.js');
+  const chapterTitles = await readTitles(root).catch(() => ({}));
+
   return Promise.all(files.sort((a, b) => a.localeCompare(b, 'zh-CN')).map(async (file) => {
     const relative = path.relative(root, file).split(path.sep).join('/');
-    const [content, stat] = await Promise.all([fs.readFile(file, 'utf8'), fs.stat(file)]);
-    const title = content.match(/^#\s+(.+)$/m)?.[1]?.trim() || path.basename(relative, '.md');
+    const [raw, stat] = await Promise.all([fs.readFile(file, 'utf8'), fs.stat(file)]);
+    const type = documentType(relative);
+    /* 章节：能拆出旧式 `# 标题` 就拆掉（正文与字数都不该带它）；
+       资料区保持原样——那边的 `# 标题` 是普通 Markdown 标题，不动。 */
+    const isChapter = type === 'chapter';
+    const split = isChapter ? splitLeadingHeading(raw) : { heading: '', body: raw };
+    const content = isChapter ? split.body : raw;
+    const title = (isChapter ? (chapterTitles[relative] || split.heading) : '')
+      || raw.match(/^#\s+(.+)$/m)?.[1]?.trim()
+      || path.basename(relative, '.md');
     return {
       id: relative.replace(/\.md$/i, ''),
       path: relative,
       title,
       content,
-      type: documentType(relative),
+      ...(isChapter && split.heading && !chapterTitles[relative] ? { legacyHeading: split.heading } : {}),
+      type,
       updatedAt: stat.mtime.toISOString(),
       // 页面保存时用它做乐观锁（PUT /document 的 expectedMtime）。
       mtime: mtimeOf(stat),
@@ -903,6 +916,11 @@ export async function appendTask(root, task) {
  * @param {{available:boolean,status:string,provider:string,model:string,message?:string}} dsh
  */
 export async function bootstrap(root, dsh) {
+  /* 章节标题迁出正文（一次性；旧书第一次打开时跑） */
+  try {
+    const titles = await import('./chapter-titles.js');
+    await titles.ensureChapterTitles(root, (relative, body) => saveDocument(root, relative, body, {}));
+  } catch { /* 迁移失败不影响打开 */ }
   /* 老数据搬到 <工作区>/.moshu/novels（只跑一次；失败也不影响打开书） */
   await ensureNovelsMigrated().catch(() => null);
   const [documents, annotations, memories, map, tasks] = await Promise.all([
