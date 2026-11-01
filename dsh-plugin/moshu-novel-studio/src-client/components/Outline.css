@@ -1,0 +1,104 @@
+/* 墨枢 · 故事大纲（重写版）：左侧卷列表 + 右侧就地编辑的章节。颜色全部走宿主 token。 */
+
+.moshu-root .outline-view{
+  display:flex;flex-direction:column;height:100%;min-height:0;gap:0;
+  color:var(--moshu-ink)}
+.moshu-root .outline-loading{align-items:center;justify-content:center;color:var(--moshu-muted);font-size:12.5px}
+
+/* ---------- 顶部条 ---------- */
+.moshu-root .outline-bar{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex-shrink:0;
+  padding:8px 14px;border-bottom:1px solid var(--moshu-line);background:var(--moshu-surface-soft)}
+.moshu-root .outline-bar-stats{display:flex;align-items:center;gap:14px;font-size:11.5px;color:var(--moshu-muted)}
+.moshu-root .outline-bar-stats b{margin-right:3px;font-size:13px;color:var(--moshu-ink)}
+.moshu-root .outline-bar-stats .is-warn b{color:var(--dsw-alias-state-warn-primary)}
+.moshu-root .outline-bar-actions{margin-left:auto;display:flex;align-items:center;gap:8px}
+.moshu-root .outline-dirty{font-size:11px;color:var(--dsw-alias-state-warn-primary)}
+.moshu-root .outline-error{font-size:11px;color:var(--dsw-alias-state-error-primary)}
+
+.moshu-root .outline-btn{
+  display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;
+  border:1px solid var(--moshu-line);background:var(--moshu-surface);color:var(--moshu-ink);
+  font-size:11.5px;cursor:pointer;white-space:nowrap}
+.moshu-root .outline-btn:hover:not(:disabled){background:var(--moshu-hover)}
+.moshu-root .outline-btn:disabled{opacity:.45;cursor:default}
+.moshu-root .outline-btn.is-primary{
+  border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 45%,var(--moshu-line));
+  background:color-mix(in oklab,var(--dsw-alias-brand-primary) 14%,transparent);color:var(--moshu-brand-ink)}
+.moshu-root .outline-btn.is-danger:hover{color:var(--dsw-alias-state-error-primary)}
+
+/* ---------- 主体：左卷 / 右章 ---------- */
+.moshu-root .outline-body{display:flex;flex:1;min-height:0;gap:14px;padding:12px 14px 16px}
+.moshu-root .outline-volumes{
+  flex:0 0 200px;display:flex;flex-direction:column;gap:6px;min-height:0;
+  overflow-y:auto;padding-right:4px;border-right:1px solid var(--moshu-line)}
+.moshu-root .outline-volume{
+  position:relative;display:flex;flex-direction:column;gap:2px;text-align:left;
+  padding:8px 26px 8px 10px;border:1px solid transparent;border-radius:9px;
+  background:transparent;color:var(--moshu-ink);cursor:pointer}
+.moshu-root .outline-volume:hover{background:var(--moshu-hover)}
+.moshu-root .outline-volume.is-active{
+  border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 42%,var(--moshu-line));
+  background:color-mix(in oklab,var(--dsw-alias-brand-primary) 12%,transparent)}
+.moshu-root .outline-volume strong{font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.moshu-root .outline-volume small{font-size:10.5px;color:var(--moshu-muted)}
+.moshu-root .outline-volume-del{
+  position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  display:grid;place-items:center;width:18px;height:18px;border-radius:5px;
+  color:var(--moshu-faint);cursor:pointer}
+.moshu-root .outline-volume-del:hover{background:var(--moshu-hover);color:var(--dsw-alias-state-error-primary)}
+.moshu-root .outline-empty-hint{font-size:11.5px;color:var(--moshu-faint);padding:8px 10px}
+
+.moshu-root .outline-main{flex:1;min-width:0;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+
+/* ---------- 卷编辑 ---------- */
+.moshu-root .outline-volume-edit{
+  display:flex;flex-direction:column;gap:8px;padding:10px 12px;
+  border:1px solid var(--moshu-line);border-radius:12px;background:var(--moshu-surface)}
+.moshu-root .outline-title-input{
+  border:0;border-bottom:1px solid var(--moshu-line);background:transparent;
+  font-family:var(--moshu-serif);font-size:16px;color:var(--moshu-ink);padding:2px 0;outline:none}
+.moshu-root .outline-field-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.moshu-root .outline-field-row label,
+.moshu-root .outline-chapter-foot label{
+  display:flex;flex-direction:column;gap:4px;font-size:10.5px;color:var(--moshu-muted)}
+.moshu-root .outline-field-row textarea{
+  resize:vertical;border:1px solid var(--moshu-line);border-radius:8px;padding:6px 8px;
+  background:var(--moshu-surface-2);color:var(--moshu-ink);
+  font-family:var(--moshu-sans);font-size:12px;line-height:1.6;outline:none}
+.moshu-root .outline-field-row textarea:focus{border-color:var(--dsw-alias-brand-primary)}
+
+/* ---------- 章节卡 ---------- */
+.moshu-root .outline-chapter{
+  border:1px solid var(--moshu-line);border-radius:12px;background:var(--moshu-surface);overflow:hidden}
+.moshu-root .outline-chapter.is-missing{border-left:3px solid color-mix(in oklab,var(--dsw-alias-state-warn-primary) 70%,transparent)}
+.moshu-root .outline-chapter-head{
+  display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer}
+.moshu-root .outline-chapter-head:hover{background:var(--moshu-hover)}
+.moshu-root .outline-chapter-no{
+  font-family:var(--moshu-mono);font-size:11px;color:var(--moshu-faint);flex-shrink:0}
+.moshu-root .outline-chapter-title{
+  flex:1;min-width:80px;border:0;background:transparent;color:var(--moshu-ink);
+  font-family:var(--moshu-serif);font-size:13.5px;outline:none;padding:2px 0}
+.moshu-root .outline-chapter-title:focus{border-bottom:1px dashed var(--dsw-alias-brand-primary)}
+.moshu-root .outline-tag{
+  flex-shrink:0;font-size:10px;padding:1px 7px;border-radius:999px;
+  border:1px solid var(--moshu-line);color:var(--moshu-muted)}
+.moshu-root .outline-tag.is-quiet{opacity:.75}
+.moshu-root .outline-tag.is-done{color:var(--dsw-alias-state-success-primary);border-color:color-mix(in oklab,var(--dsw-alias-state-success-primary) 40%,transparent)}
+.moshu-root .outline-tag.is-draft{color:var(--dsw-alias-state-business-primary);border-color:color-mix(in oklab,var(--dsw-alias-state-business-primary) 40%,transparent)}
+.moshu-root .outline-tag.is-warn{color:var(--dsw-alias-state-warn-primary);border-color:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 45%,transparent)}
+.moshu-root .outline-words{flex-shrink:0;font-size:10.5px;color:var(--moshu-faint)}
+
+.moshu-root .outline-chapter-body{
+  display:flex;flex-direction:column;gap:10px;padding:0 12px 12px;border-top:1px solid var(--moshu-line)}
+.moshu-root .outline-chapter-foot{
+  display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.moshu-root .outline-chapter-foot select{
+  padding:3px 8px;border-radius:7px;border:1px solid var(--moshu-line);
+  background:var(--moshu-surface-2);color:var(--moshu-ink);font-size:11.5px}
+.moshu-root .outline-chapter-tools{margin-left:auto;display:flex;gap:8px}
+
+.moshu-root .outline-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  padding:40px 0;color:var(--moshu-muted);font-size:12px}

@@ -98,6 +98,9 @@ export const ROUTES = Object.freeze([
   { method: 'GET', path: '/settings', handler: 'settingsGet', needsBook: false, write: false, json: true },
   /* 数据目录（自定义小说存放位置）：只读信息 + 修改 */
   { method: 'GET', path: '/storage', handler: 'storageGet', needsBook: false, write: false, json: true, bookScoped: false },
+  /* 故事大纲（结构化 outline.json）：读整份 / 写整份 */
+  { method: 'GET', path: '/outline', handler: 'outlineGet', needsBook: true, write: false, json: true },
+  { method: 'POST', path: '/outline', handler: 'outlinePost', needsBook: true, write: true, json: true },
   { method: 'POST', path: '/storage', handler: 'storagePost', needsBook: false, write: true, json: true, bookScoped: false },
   { method: 'POST', path: '/settings', handler: 'settingsPost', needsBook: false, write: true, json: true , bookScoped: false },
 ]);

@@ -28,6 +28,7 @@ import * as ai from './ai.js';
 import * as backups from './backups.js';
 import * as documents from './documents.js';
 import * as assetsApi from './assets.js';
+import * as outlineApi from './outline.js';
 import * as jsonstore from './jsonstore.js';
 import { validateMap } from './map.js';
 import { EDITABLE_KEYS, defaultSettings, readSettings, settingsRanges, writeSettingsPatch } from './settings.js';
@@ -555,6 +556,22 @@ function handleSettingsGet(_ctx, _req, res) {
   });
 }
 
+async function handleOutlineGet(_ctx, _req, res) {
+  const { novelDir } = store.projectContext();
+  const outline = await outlineApi.readOutline(novelDir);
+  sendJson(res, 200, { ok: true, outline, consts: outlineApi.OUTLINE_CONST });
+}
+
+async function handleOutlinePost(_ctx, req, res) {
+  const body = await readJsonBody(req);
+  const { novelDir } = store.projectContext();
+  if (!body || typeof body.outline !== 'object' || body.outline === null) {
+    throw new HttpError(400, '请求里缺少 outline 对象。');
+  }
+  const saved = await outlineApi.writeOutline(novelDir, body.outline);
+  sendJson(res, 200, { ok: true, outline: saved });
+}
+
 async function handleStorageGet(_ctx, _req, res) {
   sendJson(res, 200, store.storageInfo());
 }
@@ -706,6 +723,8 @@ const HANDLERS = {
   settingsGet: (ctx, req, res) => handleSettingsGet(ctx, req, res),
   settingsPost: (ctx, req, res) => handleSettingsPost(ctx, req, res),
   storageGet: (ctx, req, res) => handleStorageGet(ctx, req, res),
+  outlineGet: (ctx, req, res) => handleOutlineGet(ctx, req, res),
+  outlinePost: (ctx, req, res) => handleOutlinePost(ctx, req, res),
   storagePost: (ctx, req, res) => handleStoragePost(ctx, req, res),
 };
 

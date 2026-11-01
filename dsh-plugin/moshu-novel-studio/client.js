@@ -8600,220 +8600,250 @@ module.exports = {
 module.exports.default = Memory;
 });
 
+__define("./components/Outline.css", function (module) {
+module.exports = "/* 墨枢 · 故事大纲（重写版）：左侧卷列表 + 右侧就地编辑的章节。颜色全部走宿主 token。 */\n\n.moshu-root .outline-view{\n  display:flex;flex-direction:column;height:100%;min-height:0;gap:0;\n  color:var(--moshu-ink)}\n.moshu-root .outline-loading{align-items:center;justify-content:center;color:var(--moshu-muted);font-size:12.5px}\n\n/* ---------- 顶部条 ---------- */\n.moshu-root .outline-bar{\n  display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex-shrink:0;\n  padding:8px 14px;border-bottom:1px solid var(--moshu-line);background:var(--moshu-surface-soft)}\n.moshu-root .outline-bar-stats{display:flex;align-items:center;gap:14px;font-size:11.5px;color:var(--moshu-muted)}\n.moshu-root .outline-bar-stats b{margin-right:3px;font-size:13px;color:var(--moshu-ink)}\n.moshu-root .outline-bar-stats .is-warn b{color:var(--dsw-alias-state-warn-primary)}\n.moshu-root .outline-bar-actions{margin-left:auto;display:flex;align-items:center;gap:8px}\n.moshu-root .outline-dirty{font-size:11px;color:var(--dsw-alias-state-warn-primary)}\n.moshu-root .outline-error{font-size:11px;color:var(--dsw-alias-state-error-primary)}\n\n.moshu-root .outline-btn{\n  display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;\n  border:1px solid var(--moshu-line);background:var(--moshu-surface);color:var(--moshu-ink);\n  font-size:11.5px;cursor:pointer;white-space:nowrap}\n.moshu-root .outline-btn:hover:not(:disabled){background:var(--moshu-hover)}\n.moshu-root .outline-btn:disabled{opacity:.45;cursor:default}\n.moshu-root .outline-btn.is-primary{\n  border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 45%,var(--moshu-line));\n  background:color-mix(in oklab,var(--dsw-alias-brand-primary) 14%,transparent);color:var(--moshu-brand-ink)}\n.moshu-root .outline-btn.is-danger:hover{color:var(--dsw-alias-state-error-primary)}\n\n/* ---------- 主体：左卷 / 右章 ---------- */\n.moshu-root .outline-body{display:flex;flex:1;min-height:0;gap:14px;padding:12px 14px 16px}\n.moshu-root .outline-volumes{\n  flex:0 0 200px;display:flex;flex-direction:column;gap:6px;min-height:0;\n  overflow-y:auto;padding-right:4px;border-right:1px solid var(--moshu-line)}\n.moshu-root .outline-volume{\n  position:relative;display:flex;flex-direction:column;gap:2px;text-align:left;\n  padding:8px 26px 8px 10px;border:1px solid transparent;border-radius:9px;\n  background:transparent;color:var(--moshu-ink);cursor:pointer}\n.moshu-root .outline-volume:hover{background:var(--moshu-hover)}\n.moshu-root .outline-volume.is-active{\n  border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 42%,var(--moshu-line));\n  background:color-mix(in oklab,var(--dsw-alias-brand-primary) 12%,transparent)}\n.moshu-root .outline-volume strong{font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}\n.moshu-root .outline-volume small{font-size:10.5px;color:var(--moshu-muted)}\n.moshu-root .outline-volume-del{\n  position:absolute;right:6px;top:50%;transform:translateY(-50%);\n  display:grid;place-items:center;width:18px;height:18px;border-radius:5px;\n  color:var(--moshu-faint);cursor:pointer}\n.moshu-root .outline-volume-del:hover{background:var(--moshu-hover);color:var(--dsw-alias-state-error-primary)}\n.moshu-root .outline-empty-hint{font-size:11.5px;color:var(--moshu-faint);padding:8px 10px}\n\n.moshu-root .outline-main{flex:1;min-width:0;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:10px}\n\n/* ---------- 卷编辑 ---------- */\n.moshu-root .outline-volume-edit{\n  display:flex;flex-direction:column;gap:8px;padding:10px 12px;\n  border:1px solid var(--moshu-line);border-radius:12px;background:var(--moshu-surface)}\n.moshu-root .outline-title-input{\n  border:0;border-bottom:1px solid var(--moshu-line);background:transparent;\n  font-family:var(--moshu-serif);font-size:16px;color:var(--moshu-ink);padding:2px 0;outline:none}\n.moshu-root .outline-field-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}\n.moshu-root .outline-field-row label,\n.moshu-root .outline-chapter-foot label{\n  display:flex;flex-direction:column;gap:4px;font-size:10.5px;color:var(--moshu-muted)}\n.moshu-root .outline-field-row textarea{\n  resize:vertical;border:1px solid var(--moshu-line);border-radius:8px;padding:6px 8px;\n  background:var(--moshu-surface-2);color:var(--moshu-ink);\n  font-family:var(--moshu-sans);font-size:12px;line-height:1.6;outline:none}\n.moshu-root .outline-field-row textarea:focus{border-color:var(--dsw-alias-brand-primary)}\n\n/* ---------- 章节卡 ---------- */\n.moshu-root .outline-chapter{\n  border:1px solid var(--moshu-line);border-radius:12px;background:var(--moshu-surface);overflow:hidden}\n.moshu-root .outline-chapter.is-missing{border-left:3px solid color-mix(in oklab,var(--dsw-alias-state-warn-primary) 70%,transparent)}\n.moshu-root .outline-chapter-head{\n  display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer}\n.moshu-root .outline-chapter-head:hover{background:var(--moshu-hover)}\n.moshu-root .outline-chapter-no{\n  font-family:var(--moshu-mono);font-size:11px;color:var(--moshu-faint);flex-shrink:0}\n.moshu-root .outline-chapter-title{\n  flex:1;min-width:80px;border:0;background:transparent;color:var(--moshu-ink);\n  font-family:var(--moshu-serif);font-size:13.5px;outline:none;padding:2px 0}\n.moshu-root .outline-chapter-title:focus{border-bottom:1px dashed var(--dsw-alias-brand-primary)}\n.moshu-root .outline-tag{\n  flex-shrink:0;font-size:10px;padding:1px 7px;border-radius:999px;\n  border:1px solid var(--moshu-line);color:var(--moshu-muted)}\n.moshu-root .outline-tag.is-quiet{opacity:.75}\n.moshu-root .outline-tag.is-done{color:var(--dsw-alias-state-success-primary);border-color:color-mix(in oklab,var(--dsw-alias-state-success-primary) 40%,transparent)}\n.moshu-root .outline-tag.is-draft{color:var(--dsw-alias-state-business-primary);border-color:color-mix(in oklab,var(--dsw-alias-state-business-primary) 40%,transparent)}\n.moshu-root .outline-tag.is-warn{color:var(--dsw-alias-state-warn-primary);border-color:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 45%,transparent)}\n.moshu-root .outline-words{flex-shrink:0;font-size:10.5px;color:var(--moshu-faint)}\n\n.moshu-root .outline-chapter-body{\n  display:flex;flex-direction:column;gap:10px;padding:0 12px 12px;border-top:1px solid var(--moshu-line)}\n.moshu-root .outline-chapter-foot{\n  display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}\n.moshu-root .outline-chapter-foot select{\n  padding:3px 8px;border-radius:7px;border:1px solid var(--moshu-line);\n  background:var(--moshu-surface-2);color:var(--moshu-ink);font-size:11.5px}\n.moshu-root .outline-chapter-tools{margin-left:auto;display:flex;gap:8px}\n\n.moshu-root .outline-empty{\n  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;\n  padding:40px 0;color:var(--moshu-muted);font-size:12px}\n";
+});
+
 __define("./components/Outline.jsx", function (module, exports, require) {
+'use strict';
+
+/**
+ * 故事大纲 —— 重写版（无弹层，全部就地编辑）。
+ *
+ * 数据在宿主 `outline.json`（GET/POST /outline）：{ volumes[], chapters[] }。
+ * 左边选卷，右边是这个卷的章节；点开一章直接写目标/冲突/场景/钩子，标节拍·线索·状态。
+ */
 const React = require('react');
 const {
+  useEffect,
   useMemo,
+  useRef,
   useState
 } = React;
-const {
-  BookOpen,
-  Check,
-  ChevronDown,
-  ChevronRight,
-  CircleHelp,
-  FileText,
-  LibraryBig,
-  PenLine,
-  Plus,
-  Route,
-  Save,
-  ScanSearch,
-  Sparkles,
-  X
-} = require('../icons');
-const {
-  request
-} = require('../api');
+const api = require('../api');
 const {
   SharedStyle
 } = require('./SharedStyle');
-const css = require('./World.css');
-const BEATS = ['铺垫', '触发', '升级', '中点转折', '低谷', '高潮', '收束'];
-const STATUSES = ['未开始', '大纲中', '草稿', '待审阅', '已完成'];
-
-/**
- * 从文件名取章节号。
- * 工作台的章节文件名是 `chapter-001.md`（改名后会带标题 `chapter-001-雾里来客.md`），
- * 也兼容 `第3章.md` / `001-xxx.md` 这类写法。
- * 以前只认「文件名以数字开头」，导致 `chapter-001.md` 全部被判成 0 号：
- * 大纲页整列显示「第 0 章」，新建章节永远算成 1 → 撞 409，整页等于不可用。
- */
-function chapterNumber(path) {
-  const name = path.split('/').pop() || '';
-  const match = name.match(/^(?:chapter[-_\s]*)?(\d+)/i) || name.match(/第\s*(\d+)\s*章/);
-  return match ? Number(match[1]) : null;
+const {
+  BookOpen,
+  ChevronDown,
+  ChevronRight,
+  FileText,
+  Plus,
+  Save,
+  Trash2
+} = require('../icons');
+const css = require('./Outline.css');
+const STATUS_LABEL = {
+  idea: '设想',
+  draft: '大纲中',
+  done: '已完成'
+};
+const BEAT_LABEL = {
+  setup: '铺垫',
+  turn: '转折',
+  climax: '高潮',
+  resolution: '收束',
+  other: '未标记'
+};
+const ARC_LABEL = {
+  main: '主线',
+  sub: '支线',
+  hidden: '暗线'
+};
+function wordCount(value) {
+  return String(value || '').replace(/\s/g, '').length;
 }
-function metadata(content, key) {
-  const block = (content.match(/^---\r?\n([\s\S]*?)\r?\n---/) || [])[1] || '';
-  const found = block.match(new RegExp(`^${key}:\\s*["']?([^\\r\\n"']*)`, 'm'));
-  return found && found[1] ? found[1].trim() : '';
+function nextId(prefix, list) {
+  const used = new Set(list.map(item => String(item.id || '')));
+  let index = list.length + 1;
+  while (used.has(prefix + index)) index += 1;
+  return prefix + index;
 }
-function setMetadata(content, values) {
-  const existing = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
-  const lines = existing ? existing[1].split(/\r?\n/) : [];
-  Object.entries(values).forEach(([key, value]) => {
-    const index = lines.findIndex(line => line.startsWith(`${key}:`));
-    if (index >= 0) lines[index] = `${key}: ${value}`;else lines.push(`${key}: ${value}`);
-  });
-  return `---\n${lines.filter(Boolean).join('\n')}\n---\n\n${existing ? content.slice(existing[0].length) : content}`;
-}
-function withoutMetadata(content) {
-  return content.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '').replace(/^#\s+.*\r?\n/, '').trim();
-}
-function summarize(content) {
-  const text = withoutMetadata(content).replace(/[#>*_`\[\]-]/g, '').replace(/\s+/g, ' ').trim();
-  return text ? `${text.slice(0, 86)}${text.length > 86 ? '…' : ''}` : '尚未填写章纲，点击编辑补充本章目标与冲突。';
-}
-function wordCount(content) {
-  return (content.match(/[\u3400-\u9fff]|[a-zA-Z0-9]+/g) || []).length;
-}
-function outlineFor(chapter, outlines) {
-  return outlines.find(doc => Number(metadata(doc.content, 'chapter')) === chapter) || outlines.find(doc => (doc.path.match(/chapter[-_](\d+)/i) || [])[1] === String(chapter));
-}
-function volumeTemplate(number) {
-  return `---\nvolume: ${number}\n---\n\n# 第 ${number} 卷\n\n## 本卷目标\n\n## 主要冲突\n\n## 转折与结果\n`;
-}
-function chapterTemplate(number, title) {
-  return `---\nchapter: ${number}\nstatus: 大纲中\nbeat: 铺垫\narc: 主线\n---\n\n# 第 ${number} 章 · ${title}\n\n## 本章目标\n\n## 核心冲突\n\n## 场景与信息增量\n\n## 结尾钩子\n`;
-}
-
-/** 只要正文部分（不含 front matter），给编辑器用。 */
-function chapterBody(number, title) {
-  return withoutMetadata(chapterTemplate(number, title)) || `## 本章要发生什么\n\n`;
-}
-function Outline({
-  documents,
-  chapters: chapterDocuments,
-  onSave,
-  onOpenChapter,
-  onDocumentsChanged
-}) {
-  const outlines = useMemo(() => documents.filter(doc => doc.type === 'outline'), [documents]);
-  const [collapsed, setCollapsed] = useState([]);
-  const [editing, setEditing] = useState(null);
-  const [draft, setDraft] = useState('');
-  const [beat, setBeat] = useState('铺垫');
-  const [arc, setArc] = useState('主线');
-  const [status, setStatus] = useState('大纲中');
-  const [busy, setBusy] = useState('');
-  const [message, setMessage] = useState('');
+function Outline(props) {
+  const documents = Array.isArray(props && props.documents) ? props.documents : [];
+  const onOpenChapter = props && typeof props.onOpenChapter === 'function' ? props.onOpenChapter : null;
+  const onDocumentsChanged = props && typeof props.onDocumentsChanged === 'function' ? props.onDocumentsChanged : null;
+  const notify = props && typeof props.onNotify === 'function' ? props.onNotify : function () {};
+  const [outline, setOutline] = useState(null);
+  const [activeVolumeId, setActiveVolumeId] = useState('');
+  const [expanded, setExpanded] = useState('');
+  const [dirty, setDirty] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const volumes = useMemo(() => {
-    const chapters = (chapterDocuments || documents.filter(doc => doc.type === 'chapter')).map(document => ({
-      document,
-      number: chapterNumber(document.path) || 0,
-      title: document.title.replace(/^第\s*\d+\s*章\s*[·:：-]?\s*/, ''),
-      volume: Number(metadata((outlineFor(chapterNumber(document.path) || 0, outlines) || {}).content || '', 'volume')) || 1,
-      outline: outlineFor(chapterNumber(document.path) || 0, outlines)
-    })).sort((a, b) => a.number - b.number);
-    /* 卷号只来自「真实存在的东西」：章节挂的卷号 + 卷纲文件里的 volume。
-       以前这里在没有章节时会强行塞一个 [1]，于是空作品也显示「第 1 卷」；
-       再叠上点过一次「新建卷」生成的 volume-2.md，就成了「两卷故事」——其实一个字都没有。 */
-    const numbers = Array.from(new Set([...chapters.map(chapter => chapter.volume), ...outlines.map(doc => Number(metadata(doc.content, 'volume'))).filter(Boolean)])).sort((a, b) => a - b);
-    return numbers.map(number => {
-      const volumeDoc = outlines.find(doc => Number(metadata(doc.content, 'volume')) === number && !metadata(doc.content, 'chapter'));
-      return {
-        number,
-        title: volumeDoc && volumeDoc.title || `第 ${number} 卷`,
-        summary: volumeDoc ? summarize(volumeDoc.content) : '',
-        chapters: chapters.filter(chapter => chapter.volume === number)
-      };
-    });
-  }, [documents, chapterDocuments, outlines]);
-  const chapters = volumes.flatMap(volume => volume.chapters);
-  const done = chapters.filter(chapter => (chapter.outline ? metadata(chapter.outline.content, 'status') : chapter.document.status) === '已完成').length;
-  const words = chapters.reduce((sum, chapter) => sum + wordCount(chapter.document.content), 0);
-  const progress = chapters.length ? Math.round(done / chapters.length * 100) : 0;
-  async function save(path, content, key, close = false) {
-    setBusy(key);
-    setError('');
-    setMessage('');
-    try {
-      await onSave(path, content);
-      setMessage('已保存到项目');
-      /* 刷新一次文档列表：章节卡片的状态/摘要都来自 documents，
-         不刷新的话保存完看着像没生效。 */
-      if (typeof onDocumentsChanged === 'function') {
-        try {
-          await onDocumentsChanged();
-        } catch (error) {/* 刷新失败不影响已保存 */}
-      }
-      if (close) setEditing(null);
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : '保存失败，请重试');
-    } finally {
-      setBusy('');
-    }
-  }
-  async function create(path, content, key, extra) {
-    setBusy(key);
-    setError('');
-    setMessage('');
-    try {
-      /* 新文件必须用 POST 建（onSave 是"更新"，对不存在的文档会 404）；
-         已存在的文件才走 onSave，这样页面状态与磁盘一致、不用手动刷新。 */
-      const exists = documents.some(doc => doc.path === path);
-      if (exists && typeof onSave === 'function') {
-        await onSave(path, content);
-      } else {
-        await request('/document', {
-          method: 'POST',
-          body: JSON.stringify({
-            path,
-            content,
-            ...(extra || {})
-          })
-        });
-      }
-      setMessage('已创建到项目');
-      /* 通知父级重新拉一次目录：不然「已创建」提示之后列表还是空的，
-         再点一次就会用同一个文件名撞 409。 */
-      if (typeof onDocumentsChanged === 'function') {
-        try {
-          await onDocumentsChanged();
-        } catch (error) {/* 刷新失败不影响创建结果 */}
-      }
-      return true;
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : '创建失败，请重试');
-      return false;
-    } finally {
-      setBusy('');
-    }
-  }
-  async function saveOutline(chapter, content, key, close = false) {
-    if (chapter.outline) await save(chapter.outline.path, content, key, close);else {
-      const created = await create(`outline/chapter-${chapter.number}.md`, content, key);
-      if (created && close) setEditing(null);
-    }
-  }
-  function openEditor(chapter) {
-    setEditing(chapter);
-    /* 文本域里只放"本章要发生什么"这部分：
-       以前把整篇（含 --- chapter: 1 --- 那几行）塞进去，用户看到一堆元数据，
-       再保存一次就会重复写 front matter。 */
-    setDraft(chapter.outline ? withoutMetadata(chapter.outline.content) : chapterBody(chapter.number, chapter.title));
-    setBeat(chapter.outline ? metadata(chapter.outline.content, 'beat') || '铺垫' : '铺垫');
-    setArc(chapter.outline ? metadata(chapter.outline.content, 'arc') || '主线' : '主线');
-    setStatus(chapter.outline ? metadata(chapter.outline.content, 'status') || '大纲中' : chapter.document.status || '大纲中');
-    setMessage('');
-    setError('');
-  }
-  async function addChapter(volume) {
-    const number = Math.max(0, ...chapters.map(chapter => chapter.number)) + 1;
-    const title = `第 ${number} 章`;
-    const path = `chapters/chapter-${String(number).padStart(3, '0')}.md`;
-    /* 正文留空、标题进元数据（章节标题不再写在正文第一行） */
-    if (await create(path, '', `add-${volume}`, {
-      title
-    })) {
-      const outlineContent = setMetadata(chapterTemplate(number, title), {
-        volume: String(volume)
+  const outlineRef = useRef(null);
+  outlineRef.current = outline;
+  const chapterDocs = useMemo(() => documents.filter(doc => doc.type === 'chapter' || /^chapters\/.*\.md$/i.test(String(doc.path || ''))), [documents]);
+  const wordsOf = useMemo(() => {
+    const map = new Map();
+    chapterDocs.forEach((doc, index) => {
+      const number = Number(((doc.path || '').match(/chapter[-_]?(\d+)/i) || [])[1]) || index + 1;
+      map.set(number, {
+        words: wordCount(doc.content),
+        path: doc.path,
+        id: doc.id
       });
-      await create(`outline/chapter-${number}.md`, outlineContent, `outline-${number}`);
+    });
+    return map;
+  }, [chapterDocs]);
+  useEffect(function () {
+    let alive = true;
+    api.request('/outline').then(function (payload) {
+      if (!alive || !payload) return;
+      setOutline(payload.outline);
+      setActiveVolumeId(current => current || (payload.outline.volumes[0] || {}).id || '');
+    }).catch(function (reason) {
+      if (alive) setError(reason && reason.message ? reason.message : '大纲读取失败');
+    });
+    return function () {
+      alive = false;
+    };
+  }, []);
+  async function persist(next) {
+    setBusy(true);
+    setError('');
+    try {
+      const saved = await api.request('/outline', {
+        method: 'POST',
+        body: JSON.stringify({
+          outline: next
+        })
+      });
+      if (saved && saved.outline) {
+        setOutline(saved.outline);
+        setDirty(false);
+        notify('大纲已保存');
+      }
+    } catch (reason) {
+      setError(reason && reason.message ? reason.message : '保存失败');
+    } finally {
+      setBusy(false);
     }
   }
+  function patch(next) {
+    setOutline(next);
+    setDirty(true);
+  }
+  function updateVolume(id, value) {
+    const current = outlineRef.current;
+    patch({
+      ...current,
+      volumes: current.volumes.map(volume => volume.id === id ? {
+        ...volume,
+        ...value
+      } : volume)
+    });
+  }
+  function updateChapter(id, value) {
+    const current = outlineRef.current;
+    patch({
+      ...current,
+      chapters: current.chapters.map(chapter => chapter.id === id ? {
+        ...chapter,
+        ...value
+      } : chapter)
+    });
+  }
+  function addVolume() {
+    const current = outlineRef.current;
+    const number = current.volumes.reduce((max, volume) => Math.max(max, Number(volume.number) || 0), 0) + 1;
+    const volume = {
+      id: nextId('v', current.volumes),
+      number,
+      title: `第 ${number} 卷`,
+      goal: '',
+      conflict: '',
+      turn: ''
+    };
+    patch({
+      ...current,
+      volumes: current.volumes.concat([volume])
+    });
+    setActiveVolumeId(volume.id);
+  }
+  async function addChapter() {
+    const current = outlineRef.current;
+    const volumeId = activeVolumeId || (current.volumes[0] || {}).id || '';
+    if (!volumeId) {
+      addVolume();
+      return;
+    }
+    const number = current.chapters.reduce((max, chapter) => Math.max(max, Number(chapter.number) || 0), 0) + 1;
+    const path = `chapters/chapter-${String(number).padStart(3, '0')}.md`;
+    const chapter = {
+      id: nextId('c', current.chapters),
+      number,
+      volumeId,
+      title: `第 ${number} 章`,
+      goal: '',
+      conflict: '',
+      scenes: '',
+      hook: '',
+      beat: 'other',
+      arc: 'main',
+      status: 'idea',
+      chapterPath: path
+    };
+    const next = {
+      ...current,
+      chapters: current.chapters.concat([chapter])
+    };
+    setOutline(next);
+    setExpanded(chapter.id);
+    await persist(next);
+    try {
+      await api.request('/document', {
+        method: 'POST',
+        body: JSON.stringify({
+          path,
+          content: '',
+          title: chapter.title
+        })
+      });
+      if (onDocumentsChanged) await onDocumentsChanged();
+    } catch (reason) {
+      notify('大纲已保存，但正文文件没建成：' + (reason && reason.message ? reason.message : ''));
+    }
+  }
+  function removeChapter(id) {
+    const current = outlineRef.current;
+    patch({
+      ...current,
+      chapters: current.chapters.filter(chapter => chapter.id !== id)
+    });
+  }
+  function removeVolume(id) {
+    const current = outlineRef.current;
+    patch({
+      ...current,
+      volumes: current.volumes.filter(volume => volume.id !== id),
+      chapters: current.chapters.filter(chapter => chapter.volumeId !== id)
+    });
+    if (activeVolumeId === id) setActiveVolumeId((current.volumes.find(volume => volume.id !== id) || {}).id || '');
+  }
+  useEffect(function () {
+    function onKeyDown(event) {
+      if ((event.ctrlKey || event.metaKey) && String(event.key || '').toLowerCase() === 's') {
+        if (!outlineRef.current) return;
+        event.preventDefault();
+        void persist(outlineRef.current);
+      }
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return function () {
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, []);
+  if (!outline) {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "outline-view outline-loading"
+    }, /*#__PURE__*/React.createElement("style", null, css), /*#__PURE__*/React.createElement("p", null, error || '正在读取大纲…'));
+  }
+  const activeVolume = outline.volumes.find(volume => volume.id === activeVolumeId) || outline.volumes[0] || null;
+  const chaptersOf = outline.chapters.filter(chapter => !activeVolume || chapter.volumeId === activeVolume.id).sort((a, b) => a.number - b.number);
+  const missing = outline.chapters.filter(chapter => !chapter.goal.trim()).length;
+  const done = outline.chapters.filter(chapter => chapter.status === 'done').length;
+  const totalWords = chapterDocs.reduce((sum, doc) => sum + wordCount(doc.content), 0);
   return /*#__PURE__*/React.createElement("div", {
     className: "outline-view"
   }, /*#__PURE__*/React.createElement(SharedStyle, null), /*#__PURE__*/React.createElement("style", {
@@ -8821,259 +8851,221 @@ function Outline({
       __html: css
     }
   }), /*#__PURE__*/React.createElement("header", {
-    className: "outline-header"
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h1", null, "\u6545\u4E8B\u5927\u7EB2")), /*#__PURE__*/React.createElement("button", {
-    type: "button",
-    className: "primary-button",
-    disabled: !!busy,
-    onClick: () => create(`outline/volume-${Math.max(0, ...volumes.map(v => v.number)) + 1}.md`, volumeTemplate(Math.max(0, ...volumes.map(v => v.number)) + 1), 'volume')
-  }, /*#__PURE__*/React.createElement(Plus, {
-    size: 17
-  }), "\u65B0\u5EFA\u5377")), (message || error) && /*#__PURE__*/React.createElement("div", {
-    className: error ? 'notice error' : 'notice success',
-    role: "status"
-  }, error || message, /*#__PURE__*/React.createElement("button", {
-    type: "button",
-    onClick: () => {
-      setError('');
-      setMessage('');
-    },
-    "aria-label": "\u5173\u95ED\u63D0\u793A"
-  }, /*#__PURE__*/React.createElement(X, {
-    size: 15
-  }))), /*#__PURE__*/React.createElement("section", {
-    className: "outline-stats",
-    "aria-label": "\u5199\u4F5C\u8FDB\u5EA6"
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(LibraryBig, {
-    size: 20
-  }), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("strong", null, volumes.length), "\u5377\u6545\u4E8B")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(BookOpen, {
-    size: 20
-  }), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("strong", null, chapters.length), "\u7AE0\u89C4\u5212")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(PenLine, {
-    size: 20
-  }), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("strong", null, words.toLocaleString()), "\u5DF2\u5199\u5B57\u6570")), /*#__PURE__*/React.createElement("div", {
-    className: "outline-progress"
-  }, /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("strong", null, "\u6574\u4F53\u5B8C\u6210\u5EA6"), /*#__PURE__*/React.createElement("b", null, progress, "%")), /*#__PURE__*/React.createElement("div", {
-    className: "progress-track",
-    role: "progressbar",
-    "aria-valuenow": progress,
-    "aria-valuemin": 0,
-    "aria-valuemax": 100
-  }, /*#__PURE__*/React.createElement("i", {
-    style: {
-      width: `${progress}%`
-    }
-  })), /*#__PURE__*/React.createElement("small", null, done, " / ", chapters.length || 0, " \u7AE0\u5DF2\u5B8C\u6210"))), /*#__PURE__*/React.createElement("section", {
-    className: "story-arc"
+    className: "outline-bar"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "section-heading"
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Route, {
-    size: 19
-  }), /*#__PURE__*/React.createElement("h2", null, "\u4E3B\u7EBF\u5F27\u7EBF"))), chapters.length ? /*#__PURE__*/React.createElement("div", {
-    className: "arc-track"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "arc-line"
-  }), chapters.map(chapter => {
-    const chapterBeat = chapter.outline ? metadata(chapter.outline.content, 'beat') : '';
-    const chapterArc = chapter.outline ? metadata(chapter.outline.content, 'arc') : '';
-    return /*#__PURE__*/React.createElement("button", {
-      type: "button",
-      className: "arc-stop",
-      key: chapter.document.id,
-      onClick: () => openEditor(chapter),
-      title: `${chapter.document.title}：${chapterBeat || '待设置节拍'}`
-    }, /*#__PURE__*/React.createElement("span", {
-      className: "arc-node"
-    }, chapterBeat === '高潮' ? /*#__PURE__*/React.createElement(Sparkles, {
-      size: 15
-    }) : /*#__PURE__*/React.createElement(CircleHelp, {
-      size: 10
-    })), /*#__PURE__*/React.createElement("strong", null, chapterBeat || '待设置'), /*#__PURE__*/React.createElement("small", null, chapter.number ? `第 ${chapter.number} 章` : chapter.title, chapterArc && chapterArc !== '主线' ? ` · ${chapterArc}` : ''));
-  })) : /*#__PURE__*/React.createElement("div", {
-    className: "empty-inline"
-  }, /*#__PURE__*/React.createElement(Route, {
-    size: 22
-  }), /*#__PURE__*/React.createElement("span", null, "\u8FD8\u6CA1\u6709\u7AE0\u8282"))), /*#__PURE__*/React.createElement("div", {
-    className: "volume-list"
-  }, volumes.length === 0 ? /*#__PURE__*/React.createElement("div", {
-    className: "empty-volume outline-empty"
-  }, /*#__PURE__*/React.createElement(LibraryBig, {
-    size: 26
-  }), /*#__PURE__*/React.createElement("p", null, "\u8FD8\u6CA1\u6709\u6545\u4E8B\u5927\u7EB2"), /*#__PURE__*/React.createElement("button", {
+    className: "outline-bar-stats"
+  }, /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("b", null, outline.volumes.length), "\u5377"), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("b", null, outline.chapters.length), "\u7AE0"), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("b", null, done), "\u5DF2\u5B8C\u6210"), /*#__PURE__*/React.createElement("span", {
+    className: missing ? 'is-warn' : ''
+  }, /*#__PURE__*/React.createElement("b", null, missing), "\u7F3A\u7AE0\u7EB2"), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("b", null, totalWords.toLocaleString()), "\u5B57")), /*#__PURE__*/React.createElement("div", {
+    className: "outline-bar-actions"
+  }, error ? /*#__PURE__*/React.createElement("span", {
+    className: "outline-error",
+    role: "alert"
+  }, error) : null, dirty ? /*#__PURE__*/React.createElement("span", {
+    className: "outline-dirty"
+  }, "\u672A\u4FDD\u5B58") : null, /*#__PURE__*/React.createElement("button", {
     type: "button",
-    className: "primary-button",
-    disabled: !!busy,
-    onClick: () => create('outline/volume-1.md', volumeTemplate(1), 'volume', {
-      title: '第 1 卷'
-    })
+    className: "outline-btn",
+    onClick: addVolume,
+    disabled: busy
   }, /*#__PURE__*/React.createElement(Plus, {
-    size: 16
-  }), "\u65B0\u5EFA\u7B2C\u4E00\u5377")) : volumes.map(volume => {
-    const isCollapsed = collapsed.includes(volume.number);
-    return /*#__PURE__*/React.createElement("section", {
-      className: "volume-section",
-      key: volume.number
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "volume-heading"
-    }, /*#__PURE__*/React.createElement("button", {
-      type: "button",
-      className: "collapse-button",
-      onClick: () => setCollapsed(current => isCollapsed ? current.filter(n => n !== volume.number) : [...current, volume.number]),
-      "aria-label": isCollapsed ? '展开卷' : '收起卷'
-    }, isCollapsed ? /*#__PURE__*/React.createElement(ChevronRight, {
-      size: 20
-    }) : /*#__PURE__*/React.createElement(ChevronDown, {
-      size: 20
-    })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", null, volume.title), /*#__PURE__*/React.createElement("p", null, volume.summary || `${volume.chapters.length} 个章节 · 规划本卷的目标、冲突与转折`)), /*#__PURE__*/React.createElement("button", {
-      type: "button",
-      className: "secondary-button",
-      disabled: !!busy,
-      onClick: () => addChapter(volume.number)
-    }, /*#__PURE__*/React.createElement(Plus, {
-      size: 16
-    }), "\u6DFB\u52A0\u7AE0\u8282")), !isCollapsed && (volume.chapters.length ? /*#__PURE__*/React.createElement("div", {
-      className: "chapter-grid"
-    }, volume.chapters.map(chapter => {
-      const chapterStatus = chapter.outline ? metadata(chapter.outline.content, 'status') || '大纲中' : chapter.document.status || '未开始';
-      const chapterBeat = chapter.outline ? metadata(chapter.outline.content, 'beat') : '';
-      return /*#__PURE__*/React.createElement("article", {
-        className: "chapter-card",
-        key: chapter.document.id
-      }, /*#__PURE__*/React.createElement("div", {
-        className: "chapter-card-top"
-      }, /*#__PURE__*/React.createElement("span", {
-        className: "chapter-number"
-      }, String(chapter.number).padStart(2, '0')), /*#__PURE__*/React.createElement("span", {
-        className: `status-badge status-${chapterStatus}`
-      }, chapterStatus === '已完成' ? /*#__PURE__*/React.createElement(Check, {
-        size: 12
-      }) : /*#__PURE__*/React.createElement(CircleHelp, {
-        size: 9
-      }), chapterStatus)), /*#__PURE__*/React.createElement("h3", null, chapter.title), /*#__PURE__*/React.createElement("p", null, chapter.outline ? summarize(chapter.outline.content) : '尚未填写章纲，点击编辑补充本章目标与冲突。'), /*#__PURE__*/React.createElement("div", {
-        className: "chapter-meta"
-      }, /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement(ScanSearch, {
-        size: 13
-      }), chapterBeat || '未标记节拍'), /*#__PURE__*/React.createElement("span", null, wordCount(chapter.document.content).toLocaleString(), " \u5B57")), /*#__PURE__*/React.createElement("div", {
-        className: "chapter-actions"
-      }, /*#__PURE__*/React.createElement("button", {
-        type: "button",
-        className: "primary-button",
-        onClick: () => openEditor(chapter)
-      }, /*#__PURE__*/React.createElement(FileText, {
-        size: 15
-      }), "\u7F16\u8F91\u7AE0\u7EB2"), onOpenChapter && /*#__PURE__*/React.createElement("button", {
-        type: "button",
-        className: "icon-button",
-        onClick: () => onOpenChapter(chapter.document.id),
-        title: "\u6253\u5F00\u6B63\u6587",
-        "aria-label": `打开${chapter.title}正文`
-      }, /*#__PURE__*/React.createElement(PenLine, {
-        size: 16
-      })), /*#__PURE__*/React.createElement("select", {
-        "aria-label": `${chapter.title}状态`,
-        value: chapterStatus,
-        disabled: !!busy,
-        onChange: event => {
-          const content = setMetadata(chapter.outline && chapter.outline.content || chapterTemplate(chapter.number, chapter.title), {
-            status: event.target.value
-          });
-          void saveOutline(chapter, content, chapter.document.id);
-        }
-      }, STATUSES.map(item => /*#__PURE__*/React.createElement("option", {
-        key: item
-      }, item)))));
-    })) : /*#__PURE__*/React.createElement("div", {
-      className: "empty-volume"
-    }, /*#__PURE__*/React.createElement(BookOpen, {
-      size: 24
-    }), /*#__PURE__*/React.createElement("p", null, "\u8FD9\u4E00\u5377\u8FD8\u6CA1\u6709\u7AE0\u8282"), /*#__PURE__*/React.createElement("button", {
-      type: "button",
-      onClick: () => addChapter(volume.number)
-    }, /*#__PURE__*/React.createElement(Plus, {
-      size: 15
-    }), "\u6DFB\u52A0\u7B2C\u4E00\u7AE0"))));
-  })), editing && /*#__PURE__*/React.createElement("div", {
-    className: "modal-backdrop",
-    role: "presentation",
-    style: {
-      position: 'fixed',
-      inset: 0,
-      zIndex: 3000,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'color-mix(in oklab, #000 45%, transparent)'
-    },
-    onMouseDown: event => {
-      if (event.target === event.currentTarget) setEditing(null);
-    }
-  }, /*#__PURE__*/React.createElement("section", {
-    className: "outline-editor modal-panel",
-    role: "dialog",
-    style: {
-      position: 'relative',
-      zIndex: 3001,
-      maxWidth: 720,
-      width: 'min(720px, calc(100vw - 48px))',
-      maxHeight: 'calc(100vh - 96px)',
-      overflow: 'auto',
-      background: 'var(--dsw-alias-bg-overlay)',
-      border: '1px solid var(--moshu-line-strong)',
-      borderRadius: 14,
-      boxShadow: '0 24px 60px color-mix(in oklab, #000 35%, transparent)'
-    },
-    "aria-modal": "true",
-    "aria-labelledby": "outline-editor-title"
-  }, /*#__PURE__*/React.createElement("header", null, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
-    className: "eyebrow"
-  }, "CHAPTER ", String(editing.number).padStart(2, '0')), /*#__PURE__*/React.createElement("h2", {
-    id: "outline-editor-title"
-  }, editing.title)), /*#__PURE__*/React.createElement("button", {
+    size: 14
+  }), "\u65B0\u5EFA\u5377"), /*#__PURE__*/React.createElement("button", {
     type: "button",
-    className: "icon-button",
-    onClick: () => setEditing(null),
-    "aria-label": "\u5173\u95ED"
-  }, /*#__PURE__*/React.createElement(X, {
-    size: 20
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "outline-editor-options"
-  }, /*#__PURE__*/React.createElement("label", null, "\u6545\u4E8B\u8282\u62CD", /*#__PURE__*/React.createElement("select", {
-    value: beat,
-    onChange: event => setBeat(event.target.value)
-  }, BEATS.map(item => /*#__PURE__*/React.createElement("option", {
-    key: item
-  }, item)))), /*#__PURE__*/React.createElement("label", null, "\u5267\u60C5\u5F27\u7EBF", /*#__PURE__*/React.createElement("input", {
-    value: arc,
-    onChange: event => setArc(event.target.value),
-    placeholder: "\u4E3B\u7EBF / \u4EBA\u7269\u5F27 / \u611F\u60C5\u7EBF"
-  })), /*#__PURE__*/React.createElement("label", null, "\u5199\u4F5C\u72B6\u6001", /*#__PURE__*/React.createElement("select", {
-    value: status,
-    onChange: event => setStatus(event.target.value)
-  }, STATUSES.map(item => /*#__PURE__*/React.createElement("option", {
-    key: item
-  }, item))))), /*#__PURE__*/React.createElement("label", {
-    className: "markdown-field"
-  }, "\u7AE0\u7EB2 Markdown", /*#__PURE__*/React.createElement("textarea", {
-    value: draft,
-    onChange: event => setDraft(event.target.value),
-    spellCheck: false,
-    autoFocus: true
-  })), /*#__PURE__*/React.createElement("footer", null, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
+    className: "outline-btn",
+    onClick: () => void addChapter(),
+    disabled: busy || !outline.volumes.length
+  }, /*#__PURE__*/React.createElement(Plus, {
+    size: 14
+  }), "\u65B0\u5EFA\u7AE0"), /*#__PURE__*/React.createElement("button", {
     type: "button",
-    className: "secondary-button",
-    onClick: () => setEditing(null)
-  }, "\u53D6\u6D88"), /*#__PURE__*/React.createElement("button", {
-    type: "button",
-    className: "primary-button",
-    disabled: !!busy,
-    onClick: () => saveOutline(editing, setMetadata(draft, {
-      chapter: String(editing.number),
-      beat,
-      arc,
-      status
-    }), 'editor', true)
+    className: "outline-btn is-primary",
+    onClick: () => void persist(outline),
+    disabled: busy || !dirty
   }, /*#__PURE__*/React.createElement(Save, {
-    size: 16
-  }), busy === 'editor' ? '保存中…' : '保存章纲'))))));
+    size: 14
+  }), busy ? '保存中…' : '保存'))), /*#__PURE__*/React.createElement("div", {
+    className: "outline-body"
+  }, /*#__PURE__*/React.createElement("aside", {
+    className: "outline-volumes"
+  }, outline.volumes.length ? outline.volumes.map(volume => {
+    const count = outline.chapters.filter(chapter => chapter.volumeId === volume.id).length;
+    return /*#__PURE__*/React.createElement("button", {
+      key: volume.id,
+      type: "button",
+      className: 'outline-volume' + (activeVolume && activeVolume.id === volume.id ? ' is-active' : ''),
+      onClick: () => setActiveVolumeId(volume.id)
+    }, /*#__PURE__*/React.createElement("strong", null, volume.title || `第 ${volume.number} 卷`), /*#__PURE__*/React.createElement("small", null, count, " \u7AE0"), /*#__PURE__*/React.createElement("span", {
+      role: "button",
+      tabIndex: 0,
+      className: "outline-volume-del",
+      title: "\u5220\u9664\u8FD9\u4E00\u5377\uFF08\u8FDE\u5E26\u5377\u5185\u7AE0\u7EB2\uFF09",
+      onClick: event => {
+        event.stopPropagation();
+        removeVolume(volume.id);
+      },
+      onKeyDown: event => {
+        if (event.key === 'Enter') {
+          event.stopPropagation();
+          removeVolume(volume.id);
+        }
+      }
+    }, /*#__PURE__*/React.createElement(Trash2, {
+      size: 12
+    })));
+  }) : /*#__PURE__*/React.createElement("p", {
+    className: "outline-empty-hint"
+  }, "\u8FD8\u6CA1\u6709\u5377\u3002\u70B9\u300C\u65B0\u5EFA\u5377\u300D\u5F00\u59CB\u3002")), /*#__PURE__*/React.createElement("main", {
+    className: "outline-main"
+  }, activeVolume ? /*#__PURE__*/React.createElement("section", {
+    className: "outline-volume-edit"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "outline-title-input",
+    value: activeVolume.title,
+    placeholder: "\u5377\u540D",
+    onChange: event => updateVolume(activeVolume.id, {
+      title: event.target.value
+    })
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "outline-field-row"
+  }, /*#__PURE__*/React.createElement("label", null, "\u672C\u5377\u76EE\u6807", /*#__PURE__*/React.createElement("textarea", {
+    rows: 2,
+    value: activeVolume.goal,
+    onChange: event => updateVolume(activeVolume.id, {
+      goal: event.target.value
+    })
+  })), /*#__PURE__*/React.createElement("label", null, "\u6838\u5FC3\u51B2\u7A81", /*#__PURE__*/React.createElement("textarea", {
+    rows: 2,
+    value: activeVolume.conflict,
+    onChange: event => updateVolume(activeVolume.id, {
+      conflict: event.target.value
+    })
+  })), /*#__PURE__*/React.createElement("label", null, "\u8F6C\u6298\u4E0E\u7ED3\u679C", /*#__PURE__*/React.createElement("textarea", {
+    rows: 2,
+    value: activeVolume.turn,
+    onChange: event => updateVolume(activeVolume.id, {
+      turn: event.target.value
+    })
+  })))) : null, chaptersOf.length ? chaptersOf.map(chapter => {
+    const word = wordsOf.get(Number(chapter.number));
+    const open = expanded === chapter.id;
+    return /*#__PURE__*/React.createElement("article", {
+      className: 'outline-chapter' + (open ? ' is-open' : '') + (chapter.goal.trim() ? '' : ' is-missing'),
+      key: chapter.id
+    }, /*#__PURE__*/React.createElement("header", {
+      className: "outline-chapter-head",
+      onClick: () => setExpanded(open ? '' : chapter.id)
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "outline-chapter-no"
+    }, String(chapter.number).padStart(2, '0')), /*#__PURE__*/React.createElement("input", {
+      className: "outline-chapter-title",
+      value: chapter.title,
+      placeholder: "\u7AE0\u8282\u6807\u9898",
+      onClick: event => event.stopPropagation(),
+      onChange: event => updateChapter(chapter.id, {
+        title: event.target.value
+      })
+    }), /*#__PURE__*/React.createElement("span", {
+      className: 'outline-tag is-' + chapter.status
+    }, STATUS_LABEL[chapter.status]), /*#__PURE__*/React.createElement("span", {
+      className: "outline-tag is-quiet"
+    }, BEAT_LABEL[chapter.beat]), /*#__PURE__*/React.createElement("span", {
+      className: "outline-tag is-quiet"
+    }, ARC_LABEL[chapter.arc]), /*#__PURE__*/React.createElement("span", {
+      className: "outline-words"
+    }, word ? word.words.toLocaleString() + ' 字' : '未建正文'), chapter.goal.trim() ? null : /*#__PURE__*/React.createElement("span", {
+      className: "outline-tag is-warn"
+    }, "\u7F3A\u7AE0\u7EB2"), open ? /*#__PURE__*/React.createElement(ChevronDown, {
+      size: 14
+    }) : /*#__PURE__*/React.createElement(ChevronRight, {
+      size: 14
+    })), open ? /*#__PURE__*/React.createElement("div", {
+      className: "outline-chapter-body"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "outline-field-row"
+    }, /*#__PURE__*/React.createElement("label", null, "\u672C\u7AE0\u76EE\u6807", /*#__PURE__*/React.createElement("textarea", {
+      rows: 3,
+      value: chapter.goal,
+      placeholder: "\u8FD9\u4E00\u7AE0\u8981\u63A8\u8FDB\u4EC0\u4E48",
+      onChange: event => updateChapter(chapter.id, {
+        goal: event.target.value
+      })
+    })), /*#__PURE__*/React.createElement("label", null, "\u6838\u5FC3\u51B2\u7A81", /*#__PURE__*/React.createElement("textarea", {
+      rows: 3,
+      value: chapter.conflict,
+      placeholder: "\u8C01\u8981\u4EC0\u4E48\uFF0C\u88AB\u4EC0\u4E48\u6321\u4F4F",
+      onChange: event => updateChapter(chapter.id, {
+        conflict: event.target.value
+      })
+    }))), /*#__PURE__*/React.createElement("div", {
+      className: "outline-field-row"
+    }, /*#__PURE__*/React.createElement("label", null, "\u573A\u666F\u4E0E\u4FE1\u606F\u589E\u91CF", /*#__PURE__*/React.createElement("textarea", {
+      rows: 3,
+      value: chapter.scenes,
+      placeholder: "\u5728\u54EA\u3001\u8C01\u5728\u573A\u3001\u8BFB\u8005\u65B0\u77E5\u9053\u4EC0\u4E48",
+      onChange: event => updateChapter(chapter.id, {
+        scenes: event.target.value
+      })
+    })), /*#__PURE__*/React.createElement("label", null, "\u7ED3\u5C3E\u94A9\u5B50", /*#__PURE__*/React.createElement("textarea", {
+      rows: 3,
+      value: chapter.hook,
+      placeholder: "\u8FD9\u4E00\u7AE0\u505C\u5728\u4EC0\u4E48\u5730\u65B9",
+      onChange: event => updateChapter(chapter.id, {
+        hook: event.target.value
+      })
+    }))), /*#__PURE__*/React.createElement("div", {
+      className: "outline-chapter-foot"
+    }, /*#__PURE__*/React.createElement("label", null, "\u8282\u62CD", /*#__PURE__*/React.createElement("select", {
+      value: chapter.beat,
+      onChange: event => updateChapter(chapter.id, {
+        beat: event.target.value
+      })
+    }, Object.keys(BEAT_LABEL).map(key => /*#__PURE__*/React.createElement("option", {
+      key: key,
+      value: key
+    }, BEAT_LABEL[key])))), /*#__PURE__*/React.createElement("label", null, "\u7EBF\u7D22", /*#__PURE__*/React.createElement("select", {
+      value: chapter.arc,
+      onChange: event => updateChapter(chapter.id, {
+        arc: event.target.value
+      })
+    }, Object.keys(ARC_LABEL).map(key => /*#__PURE__*/React.createElement("option", {
+      key: key,
+      value: key
+    }, ARC_LABEL[key])))), /*#__PURE__*/React.createElement("label", null, "\u72B6\u6001", /*#__PURE__*/React.createElement("select", {
+      value: chapter.status,
+      onChange: event => updateChapter(chapter.id, {
+        status: event.target.value
+      })
+    }, Object.keys(STATUS_LABEL).map(key => /*#__PURE__*/React.createElement("option", {
+      key: key,
+      value: key
+    }, STATUS_LABEL[key])))), /*#__PURE__*/React.createElement("div", {
+      className: "outline-chapter-tools"
+    }, word && onOpenChapter ? /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      className: "outline-btn",
+      onClick: () => onOpenChapter(word.path || word.id)
+    }, /*#__PURE__*/React.createElement(FileText, {
+      size: 13
+    }), "\u6253\u5F00\u6B63\u6587") : null, /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      className: "outline-btn is-danger",
+      onClick: () => removeChapter(chapter.id)
+    }, /*#__PURE__*/React.createElement(Trash2, {
+      size: 13
+    }), "\u5220\u9664\u7AE0\u7EB2")))) : null);
+  }) : /*#__PURE__*/React.createElement("div", {
+    className: "outline-empty"
+  }, /*#__PURE__*/React.createElement(BookOpen, {
+    size: 22
+  }), /*#__PURE__*/React.createElement("p", null, "\u8FD9\u4E00\u5377\u8FD8\u6CA1\u6709\u7AE0\u8282"), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "outline-btn is-primary",
+    onClick: () => void addChapter(),
+    disabled: busy
+  }, /*#__PURE__*/React.createElement(Plus, {
+    size: 14
+  }), "\u65B0\u5EFA\u7B2C\u4E00\u7AE0")))));
 }
 module.exports = {
   Outline
