@@ -8993,12 +8993,33 @@ function Outline({
   })), editing && /*#__PURE__*/React.createElement("div", {
     className: "modal-backdrop",
     role: "presentation",
+    style: {
+      position: 'fixed',
+      inset: 0,
+      zIndex: 3000,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'color-mix(in oklab, #000 45%, transparent)'
+    },
     onMouseDown: event => {
       if (event.target === event.currentTarget) setEditing(null);
     }
   }, /*#__PURE__*/React.createElement("section", {
     className: "outline-editor modal-panel",
     role: "dialog",
+    style: {
+      position: 'relative',
+      zIndex: 3001,
+      maxWidth: 720,
+      width: 'min(720px, calc(100vw - 48px))',
+      maxHeight: 'calc(100vh - 96px)',
+      overflow: 'auto',
+      background: 'var(--dsw-alias-bg-overlay)',
+      border: '1px solid var(--moshu-line-strong)',
+      borderRadius: 14,
+      boxShadow: '0 24px 60px color-mix(in oklab, #000 35%, transparent)'
+    },
     "aria-modal": "true",
     "aria-labelledby": "outline-editor-title"
   }, /*#__PURE__*/React.createElement("header", null, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
