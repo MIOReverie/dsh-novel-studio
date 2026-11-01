@@ -58,19 +58,22 @@
 .moshu-root .outline-title-input{
   border:0;border-bottom:1px solid var(--moshu-line);background:transparent;
   font-family:var(--moshu-serif);font-size:16px;color:var(--moshu-ink);padding:2px 0;outline:none}
-.moshu-root .outline-field-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.moshu-root .outline-field-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px 18px}
 .moshu-root .outline-field-row label,
 .moshu-root .outline-chapter-foot label{
   display:flex;flex-direction:column;gap:4px;font-size:10.5px;color:var(--moshu-muted)}
 .moshu-root .outline-field-row textarea{
-  resize:vertical;border:1px solid var(--moshu-line);border-radius:8px;padding:6px 8px;
-  background:var(--moshu-surface-2);color:var(--moshu-ink);
+  resize:vertical;border:0;border-bottom:1px solid var(--moshu-line);border-radius:0;padding:4px 2px;
+  background:transparent;color:var(--moshu-ink);
   font-family:var(--moshu-sans);font-size:12px;line-height:1.6;outline:none}
 .moshu-root .outline-field-row textarea:focus{border-color:var(--dsw-alias-brand-primary)}
 
 /* ---------- 章节卡 ---------- */
 .moshu-root .outline-chapter{
-  border:1px solid var(--moshu-line);border-radius:12px;background:var(--moshu-surface);overflow:hidden}
+  border:1px solid color-mix(in oklab,var(--moshu-line) 65%,transparent);border-radius:12px;
+  background:transparent;overflow:hidden;transition:background-color .15s}
+.moshu-root .outline-chapter:hover{background:color-mix(in oklab,var(--moshu-surface) 60%,transparent)}
+.moshu-root .outline-chapter.is-open{background:var(--moshu-surface)}
 .moshu-root .outline-chapter.is-missing{border-left:3px solid color-mix(in oklab,var(--dsw-alias-state-warn-primary) 70%,transparent)}
 .moshu-root .outline-chapter-head{
   display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer}

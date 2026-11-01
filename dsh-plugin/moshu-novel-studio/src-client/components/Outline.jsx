@@ -11,7 +11,7 @@ const React = require('react');
 const { useEffect, useMemo, useRef, useState } = React;
 const api = require('../api');
 const { SharedStyle } = require('./SharedStyle');
-const { BookOpen, ChevronDown, ChevronRight, FileText, Plus, Save, Trash2 } = require('../icons');
+const { BookOpen, ChevronDown, ChevronRight, FileText, Plus, Save, X } = require('../icons');
 const css = require('./Outline.css');
 
 const STATUS_LABEL = { idea: '设想', draft: '大纲中', done: '已完成' };
@@ -219,7 +219,7 @@ function Outline(props) {
                   title="删除这一卷（连带卷内章纲）"
                   onClick={(event) => { event.stopPropagation(); removeVolume(volume.id); }}
                   onKeyDown={(event) => { if (event.key === 'Enter') { event.stopPropagation(); removeVolume(volume.id); } }}
-                ><Trash2 size={12} /></span>
+                ><X size={12} /></span>
               </button>
             );
           }) : <p className="outline-empty-hint">还没有卷。点「新建卷」开始。</p>}
@@ -294,7 +294,7 @@ function Outline(props) {
                         {word && onOpenChapter ? (
                           <button type="button" className="outline-btn" onClick={() => onOpenChapter(word.path || word.id)}><FileText size={13} />打开正文</button>
                         ) : null}
-                        <button type="button" className="outline-btn is-danger" onClick={() => removeChapter(chapter.id)}><Trash2 size={13} />删除章纲</button>
+                        <button type="button" className="outline-btn is-danger" onClick={() => removeChapter(chapter.id)}><X size={13} />删除章纲</button>
                       </div>
                     </div>
                   </div>
