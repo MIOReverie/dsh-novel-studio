@@ -148,6 +148,7 @@
 .moshu-root .editor-text-container{flex:1;min-height:0;display:flex;overflow:hidden;position:relative}
 .moshu-root .editor-line-numbers{
   width:49px;flex:0 0 49px;padding-top:18px;overflow:hidden;scrollbar-width:none;border-right:1px solid var(--moshu-line);
+  /* 行号用 transform 位移跟随正文滚动（见 Editor.jsx 的 syncGutterScroll）。 */
   color:var(--moshu-faint);text-align:right;user-select:none}
 /* 每行的行高必须等于正文的真实行高（正文行高 = 字号变量 × 2.15），
    以前这里写 2.15em，em 相对的是行号自己的 10px 字号 → 21.5px，和正文的 32.25px 差一截。 */
@@ -471,3 +472,7 @@
   color:var(--moshu-brand-ink);
   border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 45%,var(--moshu-line));
   background:color-mix(in oklab,var(--dsw-alias-brand-primary) 12%,transparent)}
+
+
+/* 行号内容块：整块位移，比逐格 scrollTop 可靠（外层容器滚动时也能跟）。 */
+.moshu-root .editor-line-numbers-inner{will-change:transform;transition:none}

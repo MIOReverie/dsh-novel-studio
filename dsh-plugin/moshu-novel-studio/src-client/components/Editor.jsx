@@ -291,6 +291,30 @@ function Editor({
   /* 行号要对齐的是**视觉行**：一段话在正文里折成 3 行，行号面板却只占 1 行高，
      越往下错得越多。这里用同字体的离屏量尺量出每行实际占几行，再写回 span 高度。 */
   const measureGutterRef = useRef(function () {});
+  const gutterInnerRef = useRef(null);
+  const containerRef = useRef(null);
+
+  /**
+   * 行号跟随滚动。
+   *
+   * 以前是把 textarea 的 scrollTop 抄给行号栏，但真正滚的并不总是 textarea：
+   * 正文撑高时滚的是外层 .editor-text-container，textarea 自己不动 ——
+   * onScroll 根本不触发，行号就"钉"在原地。现在两个都听，并且用 transform 位移，
+   * 不依赖行号栏自己能不能滚。
+   */
+  function syncGutterScroll() {
+    const inner = gutterInnerRef.current;
+    const area = textareaRef.current;
+    const box = containerRef.current;
+    if (!inner) return;
+    const top = Math.max(
+      area && area.scrollTop ? area.scrollTop : 0,
+      box && box.scrollTop ? box.scrollTop : 0,
+    );
+    inner.style.transform = top ? 'translateY(' + (-top) + 'px)' : '';
+  }
+  const syncGutterScrollRef = useRef(syncGutterScroll);
+  syncGutterScrollRef.current = syncGutterScroll;
 
   function measureGutter() {
     const gutter = gutterRef.current;
@@ -614,6 +638,20 @@ function Editor({
   const activePathRef = useRef(activePath);
   activePathRef.current = activePath;
 
+  /* 行号跟随：textarea 与容器都挂原生 scroll（合成事件在容器滚动时收不到）。 */
+  useEffect(function () {
+    if (!showLineNumbers) return undefined;
+    const area = textareaRef.current;
+    const box = containerRef.current;
+    const handler = function () { syncGutterScrollRef.current(); };
+    if (area) area.addEventListener('scroll', handler, { passive: true });
+    if (box) box.addEventListener('scroll', handler, { passive: true });
+    return function () {
+      if (area) area.removeEventListener('scroll', handler);
+      if (box) box.removeEventListener('scroll', handler);
+    };
+  }, [showLineNumbers, activeChapter && activeChapter.id]);
+
   /* 行号量尺：正文、字号、字体、行号开关、窗口宽度变化都重量一次（下一帧，等布局稳定）。 */
   useEffect(function () {
     if (!showLineNumbers) return undefined;
@@ -624,6 +662,7 @@ function Editor({
     }
     schedule();
     window.addEventListener('resize', schedule);
+    syncGutterScrollRef.current();
     return function () {
       if (frame) cancelAnimationFrame(frame);
       window.removeEventListener('resize', schedule);
@@ -1478,12 +1517,14 @@ function Editor({
           ) : null}
         </div>
 
-        <div className={`editor-text-container ${showLineNumbers ? 'has-line-numbers' : ''}`}>
+        <div className={`editor-text-container ${showLineNumbers ? 'has-line-numbers' : ''}`} ref={containerRef}>
           {mode === 'write' ? (
             <>
               {showLineNumbers && (
                 <div className="editor-line-numbers" aria-hidden="true" ref={gutterRef}>
-                  {lines.map((_, index) => <span key={index}>{index + 1}</span>)}
+                  <div className="editor-line-numbers-inner" ref={gutterInnerRef}>
+                    {lines.map((_, index) => <span key={index}>{index + 1}</span>)}
+                  </div>
                 </div>
               )}
               <textarea
@@ -1501,10 +1542,7 @@ function Editor({
                 onKeyDown={e => {
                   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); void save(); }
                 }}
-                onScroll={(event) => {
-                  const gutter = gutterRef.current;
-                  if (gutter) gutter.scrollTop = event.currentTarget.scrollTop;
-                }}
+                onScroll={() => { syncGutterScrollRef.current(); }}
                 onSelect={captureSelection}
                 onKeyUp={captureSelection}
                 onMouseUp={captureSelection}
