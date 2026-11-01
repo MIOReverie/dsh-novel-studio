@@ -1,6 +1,6 @@
 {
   "name": "@local/moshu-novel-studio",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "private": true,
   "type": "module",
   "description": "墨枢 · DSH 小说工作台：在 DSH Web 里打开一个独立的小说创作与审阅页面。",
