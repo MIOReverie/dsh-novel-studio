@@ -29,6 +29,7 @@ import * as backups from './backups.js';
 import * as documents from './documents.js';
 import * as assetsApi from './assets.js';
 import * as outlineApi from './outline.js';
+import * as timelineApi from './timeline.js';
 import * as jsonstore from './jsonstore.js';
 import { validateMap } from './map.js';
 import { EDITABLE_KEYS, defaultSettings, readSettings, settingsRanges, writeSettingsPatch } from './settings.js';
@@ -556,6 +557,23 @@ function handleSettingsGet(_ctx, _req, res) {
   });
 }
 
+async function handleTimelineGet(_ctx, _req, res) {
+  const { novelDir } = store.projectContext();
+  const events = await timelineApi.readTimeline(novelDir);
+  sendJson(res, 200, { ok: true, events });
+}
+
+async function handleTimelinePost(_ctx, req, res) {
+  const body = await readJsonBody(req);
+  const { novelDir } = store.projectContext();
+  if (!body || !Array.isArray(body.events)) {
+    throw new HttpError(400, '请求里缺少 events 数组。');
+  }
+  /* 作者在界面上改的时间线：整份写回（带锁、带校验）。 */
+  const saved = await timelineApi.writeTimeline(novelDir, body.events);
+  sendJson(res, 200, { ok: true, events: saved });
+}
+
 async function handleOutlineGet(_ctx, _req, res) {
   const { novelDir } = store.projectContext();
   const outline = await outlineApi.readOutline(novelDir);
@@ -724,6 +742,8 @@ const HANDLERS = {
   settingsPost: (ctx, req, res) => handleSettingsPost(ctx, req, res),
   storageGet: (ctx, req, res) => handleStorageGet(ctx, req, res),
   outlineGet: (ctx, req, res) => handleOutlineGet(ctx, req, res),
+  timelineGet: (ctx, req, res) => handleTimelineGet(ctx, req, res),
+  timelinePost: (ctx, req, res) => handleTimelinePost(ctx, req, res),
   outlinePost: (ctx, req, res) => handleOutlinePost(ctx, req, res),
   storagePost: (ctx, req, res) => handleStoragePost(ctx, req, res),
 };

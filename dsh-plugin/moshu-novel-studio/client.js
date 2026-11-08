@@ -9831,75 +9831,83 @@ module.exports = {
 });
 
 __define("./components/Timeline.css", function (module) {
-module.exports = "/* 墨枢 · 时间线（横向泳道 + 剧情网）。\n   所有规则挂在 .moshu-root 下；颜色全部由宿主 token 派生。\n   注意：这段 CSS 由组件以纯文本注入，全文不出现尖括号。 */\n\n.moshu-root .tl-board{\n  /* 事件类型色（与旧版同一套语义，仍然跟主题走） */\n  --tl-turning:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 58%,var(--dsw-alias-brand-primary));\n  --tl-journey:color-mix(in oklab,var(--dsw-alias-state-success-primary) 34%,var(--dsw-alias-state-business-primary) 34%,var(--dsw-alias-brand-primary));\n  --tl-revelation:color-mix(in oklab,var(--dsw-alias-state-business-primary) 38%,var(--dsw-alias-state-error-primary) 26%,var(--dsw-alias-brand-primary));\n  --tl-conflict:color-mix(in oklab,var(--dsw-alias-state-error-primary) 56%,var(--dsw-alias-brand-primary));\n  --tl-decision:color-mix(in oklab,var(--dsw-alias-state-success-primary) 52%,var(--dsw-alias-brand-primary));\n  --tl-other:color-mix(in oklab,var(--dsw-alias-label-tertiary) 70%,var(--dsw-alias-brand-primary));\n\n  position:relative;display:flex;flex-direction:column;\n  height:100%;min-height:0;overflow:hidden;\n  border:1px solid var(--moshu-line);border-radius:14px;\n  background:var(--moshu-surface);color:var(--moshu-ink)}\n\n/* ---------- 顶部条 ---------- */\n\n.moshu-root .tl-bar{\n  display:flex;align-items:center;gap:10px;flex-wrap:nowrap;\n  padding:6px 12px;border-bottom:1px solid var(--moshu-line);\n  background:var(--moshu-surface-soft);flex-shrink:0}\n.moshu-root .tl-bar-title{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--moshu-muted);white-space:nowrap}\n.moshu-root .tl-bar-title strong{color:var(--moshu-ink);font-weight:600}\n.moshu-root .tl-sep{color:var(--moshu-faint)}\n.moshu-root .tl-search{\n  margin-left:auto;position:relative;display:flex;align-items:center;gap:6px;\n  padding:3px 8px;border:1px solid var(--moshu-line);border-radius:8px;\n  background:var(--moshu-surface);color:var(--moshu-faint);min-width:180px}\n.moshu-root .tl-search input{\n  flex:1;min-width:0;border:0;background:transparent;outline:none;\n  font-size:11.5px;color:var(--moshu-ink)}\n.moshu-root .tl-search button{\n  border:0;background:transparent;padding:0;display:grid;place-items:center;\n  color:var(--moshu-muted);cursor:pointer}\n.moshu-root .tl-toggle{\n  display:flex;align-items:center;gap:5px;padding:3px 9px;border-radius:8px;\n  border:1px solid var(--moshu-line);background:var(--moshu-surface);\n  font-size:11.5px;color:var(--moshu-muted);cursor:pointer;white-space:nowrap}\n.moshu-root .tl-toggle.is-on{\n  border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 45%,var(--moshu-line));\n  color:var(--moshu-brand-ink);\n  background:color-mix(in oklab,var(--dsw-alias-brand-primary) 12%,transparent)}\n\n/* ---------- 画布 ---------- */\n\n.moshu-root .tl-scroll{\n  flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;\n  scrollbar-gutter:stable;\n  /* 可拖动平移：空白处抓手，拖动时禁止选中文本 */\n  cursor:grab;user-select:none}\n.moshu-root .tl-scroll.is-panning{cursor:grabbing}\n.moshu-root .tl-node{cursor:pointer}\n.moshu-root .tl-canvas{position:relative;min-height:100%}\n\n.moshu-root .tl-lane{\n  position:absolute;box-sizing:border-box;\n  border-bottom:1px dashed color-mix(in oklab,var(--moshu-line) 70%,transparent)}\n.moshu-root .tl-lane.is-dark{background:color-mix(in oklab,var(--dsw-alias-label-primary) 4%,transparent)}\n.moshu-root .tl-lane-rule{display:none}\n\n.moshu-root .tl-lane-label{\n  position:absolute;left:0;top:0;width:132px;box-sizing:border-box;\n  display:flex;flex-direction:column;justify-content:center;gap:1px;\n  padding:0 12px;border-right:1px solid var(--moshu-line);\n  background:var(--moshu-surface);z-index:3}\n.moshu-root .tl-lane-label strong{\n  font-size:12px;font-weight:600;color:var(--moshu-ink);\n  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}\n.moshu-root .tl-lane-label span{font-size:10px;color:var(--moshu-muted)}\n.moshu-root .tl-lane-label em{font-size:9.5px;color:var(--moshu-faint);font-style:normal}\n.moshu-root .tl-lane-label.is-dark strong{color:color-mix(in oklab,var(--moshu-ink) 68%,transparent)}\n\n/* ---------- 连线（剧情网） ---------- */\n\n.moshu-root .tl-links{position:absolute;top:0;pointer-events:none;z-index:1;overflow:visible}\n.moshu-root .tl-link{fill:none;stroke-width:1.4;opacity:.75}\n.moshu-root .tl-link.is-cause{stroke:color-mix(in oklab,var(--dsw-alias-state-error-primary) 58%,transparent)}\n.moshu-root .tl-link.is-impact{stroke:color-mix(in oklab,var(--dsw-alias-state-business-primary) 62%,transparent)}\n.moshu-root .tl-link.is-foreshadow{stroke:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 58%,transparent)}\n.moshu-root .tl-link.is-dark{stroke-dasharray:5 5;opacity:.55}\n\n/* ---------- 事件节点 ---------- */\n\n.moshu-root .tl-node{\n  position:absolute;z-index:2;width:148px;\n  display:flex;align-items:flex-start;gap:7px;\n  padding:6px 8px;border:1px solid var(--moshu-line);border-radius:9px;\n  background:var(--moshu-surface);color:var(--moshu-ink);\n  text-align:left;cursor:pointer;\n  box-shadow:0 1px 3px color-mix(in oklab,#000 6%,transparent)}\n.moshu-root .tl-node:hover{border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 40%,var(--moshu-line))}\n.moshu-root .tl-node.is-selected{\n  border-color:var(--dsw-alias-brand-primary);\n  box-shadow:0 0 0 2px color-mix(in oklab,var(--dsw-alias-brand-primary) 22%,transparent)}\n.moshu-root .tl-node-dot{\n  width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:3px;\n  background:var(--tl-other)}\n.moshu-root .tl-node.is-turning .tl-node-dot{background:var(--tl-turning)}\n.moshu-root .tl-node.is-journey .tl-node-dot{background:var(--tl-journey)}\n.moshu-root .tl-node.is-revelation .tl-node-dot{background:var(--tl-revelation)}\n.moshu-root .tl-node.is-conflict .tl-node-dot{background:var(--tl-conflict)}\n.moshu-root .tl-node.is-decision .tl-node-dot{background:var(--tl-decision)}\n.moshu-root .tl-node-body{display:flex;flex-direction:column;gap:1px;min-width:0}\n.moshu-root .tl-node-body strong{\n  font-size:11.5px;font-weight:550;line-height:1.35;\n  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}\n.moshu-root .tl-node-body em{font-size:9.5px;font-style:normal;color:var(--moshu-muted)}\n/* 暗线：整体压暗 + 虚线边，一眼和明线分开 */\n.moshu-root .tl-node.is-dark{\n  border-style:dashed;\n  background:color-mix(in oklab,var(--moshu-surface) 92%,var(--dsw-alias-label-primary) 4%);\n  opacity:.82}\n.moshu-root .tl-node.is-dark .tl-node-body strong{color:color-mix(in oklab,var(--moshu-ink) 78%,transparent)}\n\n/* ---------- 详情 ---------- */\n\n.moshu-root .tl-detail{\n  flex-shrink:0;max-height:34%;overflow:auto;\n  border-top:1px solid var(--moshu-line);background:var(--moshu-surface-soft);\n  padding:10px 14px 12px}\n.moshu-root .tl-detail-head{display:flex;align-items:center;justify-content:space-between;gap:8px}\n.moshu-root .tl-detail-head button{\n  border:0;background:transparent;padding:2px;display:grid;place-items:center;\n  color:var(--moshu-muted);cursor:pointer}\n.moshu-root .tl-type{\n  font-size:10px;padding:1px 7px;border-radius:999px;\n  border:1px solid var(--moshu-line);color:var(--moshu-muted)}\n.moshu-root .tl-type.is-turning{color:var(--tl-turning);border-color:color-mix(in oklab,var(--tl-turning) 40%,transparent)}\n.moshu-root .tl-type.is-journey{color:var(--tl-journey);border-color:color-mix(in oklab,var(--tl-journey) 40%,transparent)}\n.moshu-root .tl-type.is-revelation{color:var(--tl-revelation);border-color:color-mix(in oklab,var(--tl-revelation) 40%,transparent)}\n.moshu-root .tl-type.is-conflict{color:var(--tl-conflict);border-color:color-mix(in oklab,var(--tl-conflict) 40%,transparent)}\n.moshu-root .tl-detail h3{margin:6px 0 8px;font-size:14px;font-weight:600}\n.moshu-root .tl-detail dl{display:flex;flex-wrap:wrap;gap:4px 18px;margin:0 0 8px}\n.moshu-root .tl-detail dl div{display:flex;align-items:center;gap:6px;font-size:11.5px}\n.moshu-root .tl-detail dt{color:var(--moshu-muted)}\n.moshu-root .tl-detail dd{margin:0;display:flex;align-items:center;gap:4px;color:var(--moshu-ink)}\n.moshu-root .tl-detail p{margin:0 0 8px;font-size:12px;line-height:1.6;color:var(--moshu-soft-ink)}\n.moshu-root .tl-open{\n  display:inline-flex;align-items:center;gap:6px;padding:4px 10px;\n  border:1px solid var(--moshu-line);border-radius:8px;background:var(--moshu-surface);\n  font-size:11.5px;color:var(--moshu-ink);cursor:pointer}\n.moshu-root .tl-open:hover{background:var(--moshu-hover)}\n\n/* ---------- 图例 / 空态 ---------- */\n\n.moshu-root .tl-legend{\n  flex-shrink:0;display:flex;align-items:center;gap:14px;flex-wrap:wrap;\n  padding:6px 12px;border-top:1px solid var(--moshu-line);\n  font-size:10px;color:var(--moshu-muted)}\n.moshu-root .tl-legend-item{display:flex;align-items:center;gap:5px}\n.moshu-root .tl-legend-item::before{content:'';width:18px;height:0;border-top-width:1.6px;border-top-style:solid}\n.moshu-root .tl-legend-item.is-cause::before{border-color:color-mix(in oklab,var(--dsw-alias-state-error-primary) 58%,transparent)}\n.moshu-root .tl-legend-item.is-impact::before{border-color:color-mix(in oklab,var(--dsw-alias-state-business-primary) 62%,transparent)}\n.moshu-root .tl-legend-item.is-foreshadow::before{border-color:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 58%,transparent)}\n.moshu-root .tl-legend-item.is-dark::before{border-color:var(--moshu-muted);border-top-style:dashed}\n\n.moshu-root .tl-empty{\n  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;\n  gap:6px;color:var(--moshu-muted);font-size:12px}\n.moshu-root .tl-empty p{margin:0;color:var(--moshu-ink);font-size:13px}\n.moshu-root .tl-empty span{font-size:11px;color:var(--moshu-faint)}\n";
+module.exports = "/* 墨枢 · 故事时间线：左侧泳道栏 + 横向事件画布 + 右侧编辑面板。\n   所有规则挂在 .moshu-root 下；颜色全部由宿主 token 派生。 */\n\n.moshu-root .tl-board{\n  display:flex;flex-direction:column;height:100%;min-height:0;\n  color:var(--moshu-ink)}\n.moshu-root .tl-bar{\n  display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex-shrink:0;\n  padding:8px 14px;border-bottom:1px solid var(--moshu-line);background:var(--moshu-surface-soft)}\n.moshu-root .tl-bar-title{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--moshu-muted)}\n.moshu-root .tl-bar-title b{color:var(--moshu-ink);font-size:13px}\n.moshu-root .tl-sep{opacity:.5}\n.moshu-root .tl-bar-actions{margin-left:auto;display:flex;align-items:center;gap:8px}\n.moshu-root .tl-dirty{font-size:11px;color:var(--dsw-alias-state-warn-primary)}\n.moshu-root .tl-error{font-size:11px;color:var(--dsw-alias-state-error-primary)}\n\n.moshu-root .tl-btn{\n  display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;\n  border:1px solid var(--moshu-line);background:var(--moshu-surface);color:var(--moshu-ink);\n  font-size:11.5px;cursor:pointer;white-space:nowrap}\n.moshu-root .tl-btn:hover:not(:disabled){background:var(--moshu-hover)}\n.moshu-root .tl-btn:disabled{opacity:.45;cursor:default}\n.moshu-root .tl-btn.is-primary{\n  border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 45%,var(--moshu-line));\n  background:color-mix(in oklab,var(--dsw-alias-brand-primary) 14%,transparent);color:var(--moshu-brand-ink)}\n.moshu-root .tl-btn.is-danger:hover{color:var(--dsw-alias-state-error-primary)}\n\n/* ---------- 主体三列：泳道栏 / 画布 / 编辑面板 ---------- */\n.moshu-root .tl-body{display:flex;flex:1;min-height:0}\n\n/* 左栏：只放剧情线，绝不与事件卡重叠 */\n.moshu-root .tl-lanes{\n  flex:0 0 178px;display:flex;flex-direction:column;gap:4px;min-height:0;\n  overflow-y:auto;padding:10px 8px;border-right:1px solid var(--moshu-line);\n  background:var(--moshu-surface)}\n.moshu-root .tl-lanes-title{\n  margin:0 0 4px;padding:0 6px;font-size:10.5px;letter-spacing:.06em;\n  color:var(--moshu-faint);text-transform:uppercase}\n.moshu-root .tl-lanes-empty{margin:0;padding:4px 6px;font-size:11px;color:var(--moshu-faint)}\n.moshu-root .tl-lane-item{\n  display:flex;align-items:center;gap:6px;width:100%;text-align:left;\n  padding:6px 8px;border:1px solid transparent;border-radius:8px;\n  background:transparent;color:var(--moshu-ink);cursor:pointer}\n.moshu-root .tl-lane-item:hover{background:var(--moshu-hover)}\n.moshu-root .tl-lane-item.is-dark{background:color-mix(in oklab,var(--moshu-ink) 5%,transparent)}\n.moshu-root .tl-thread-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--dsw-alias-brand-primary)}\n.moshu-root .tl-thread-dot.is-dark{background:transparent;border:1.5px dashed var(--moshu-muted)}\n.moshu-root .tl-lane-name{flex:1;min-width:0;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}\n.moshu-root .tl-thread-tag{\n  flex-shrink:0;font-size:9.5px;padding:0 5px;border-radius:999px;\n  border:1px solid var(--moshu-line);color:var(--moshu-muted)}\n.moshu-root .tl-thread-tag.is-dark{color:var(--moshu-faint);border-style:dashed}\n.moshu-root .tl-lane-count{flex-shrink:0;font-size:10px;color:var(--moshu-faint);font-family:var(--moshu-mono)}\n\n/* 画布 */\n.moshu-root .tl-scroll{flex:1;min-width:0;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable;cursor:grab;user-select:none}\n.moshu-root .tl-canvas{position:relative;min-height:100%}\n.moshu-root .tl-row{\n  position:absolute;left:0;box-sizing:border-box;\n  border-bottom:1px dashed color-mix(in oklab,var(--moshu-line) 70%,transparent)}\n.moshu-root .tl-row.is-dark{background:color-mix(in oklab,var(--moshu-ink) 4%,transparent)}\n.moshu-root .tl-links{position:absolute;top:0;left:0;pointer-events:none;overflow:visible}\n.moshu-root .tl-link{fill:none;stroke-width:1.4;opacity:.75}\n.moshu-root .tl-link.is-cause{stroke:color-mix(in oklab,var(--dsw-alias-state-error-primary) 58%,transparent)}\n.moshu-root .tl-link.is-impact{stroke:color-mix(in oklab,var(--dsw-alias-state-business-primary) 62%,transparent)}\n.moshu-root .tl-link.is-foreshadow{stroke:color-mix(in oklab,var(--dsw-alias-state-warn-primary) 58%,transparent)}\n.moshu-root .tl-link.is-dark{stroke-dasharray:5 5;opacity:.55}\n\n.moshu-root .tl-node{\n  position:absolute;z-index:2;display:flex;align-items:flex-start;gap:6px;\n  padding:7px 9px;border:1px solid var(--moshu-line);border-radius:9px;\n  background:var(--moshu-surface);color:var(--moshu-ink);text-align:left;cursor:pointer;\n  box-shadow:0 1px 3px color-mix(in oklab,#000 6%,transparent)}\n.moshu-root .tl-node:hover{border-color:color-mix(in oklab,var(--dsw-alias-brand-primary) 40%,var(--moshu-line))}\n.moshu-root .tl-node.is-selected{\n  border-color:var(--dsw-alias-brand-primary);\n  box-shadow:0 0 0 2px color-mix(in oklab,var(--dsw-alias-brand-primary) 22%,transparent)}\n.moshu-root .tl-node-body{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1}\n.moshu-root .tl-node-body strong{\n  font-size:11.5px;font-weight:550;line-height:1.35;\n  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}\n.moshu-root .tl-node-body em{font-size:9.5px;font-style:normal;color:var(--moshu-muted)}\n.moshu-root .tl-node-links{\n  flex-shrink:0;font-size:9px;padding:0 4px;border-radius:999px;\n  border:1px solid var(--moshu-line);color:var(--moshu-faint)}\n.moshu-root .tl-node.is-dark{border-style:dashed;opacity:.85}\n\n.moshu-root .tl-empty{\n  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;\n  height:100%;color:var(--moshu-muted);font-size:12px}\n.moshu-root .tl-empty p{margin:0;color:var(--moshu-ink);font-size:13px}\n\n/* 右侧编辑面板 */\n.moshu-root .tl-detail{\n  flex:0 0 288px;display:flex;flex-direction:column;gap:8px;min-height:0;\n  overflow-y:auto;padding:10px 12px;border-left:1px solid var(--moshu-line);\n  background:var(--moshu-surface-soft)}\n.moshu-root .tl-detail-head{display:flex;align-items:center;justify-content:space-between}\n.moshu-root .tl-detail-title{font-size:12px;font-weight:600;color:var(--moshu-ink)}\n.moshu-root .tl-detail-head button{\n  border:0;background:transparent;padding:2px;display:grid;place-items:center;\n  color:var(--moshu-muted);cursor:pointer}\n.moshu-root .tl-field{display:flex;flex-direction:column;gap:3px;font-size:10.5px;color:var(--moshu-muted)}\n.moshu-root .tl-field input,\n.moshu-root .tl-field textarea,\n.moshu-root .tl-field select{\n  border:1px solid var(--moshu-line);border-radius:7px;padding:4px 7px;\n  background:var(--moshu-surface);color:var(--moshu-ink);\n  font-family:var(--moshu-sans);font-size:11.5px;line-height:1.6;outline:none}\n.moshu-root .tl-field input:focus,\n.moshu-root .tl-field textarea:focus{border-color:var(--dsw-alias-brand-primary)}\n.moshu-root .tl-field textarea{resize:vertical}\n.moshu-root .tl-field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}\n\n.moshu-root .tl-links-edit{display:flex;flex-direction:column;gap:5px;margin-top:2px}\n.moshu-root .tl-links-title{margin:0;font-size:10.5px;color:var(--moshu-muted)}\n.moshu-root .tl-links-empty{margin:0;font-size:10.5px;color:var(--moshu-faint)}\n.moshu-root .tl-link-row{display:flex;align-items:center;gap:5px;font-size:11px}\n.moshu-root .tl-link-kind{\n  flex-shrink:0;font-size:9.5px;padding:0 5px;border-radius:999px;border:1px solid var(--moshu-line)}\n.moshu-root .tl-link-kind.is-cause{color:var(--dsw-alias-state-error-primary)}\n.moshu-root .tl-link-kind.is-impact{color:var(--dsw-alias-state-business-primary)}\n.moshu-root .tl-link-kind.is-foreshadow{color:var(--dsw-alias-state-warn-primary)}\n.moshu-root .tl-link-target{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}\n.moshu-root .tl-link-row button{\n  border:0;background:transparent;padding:1px;display:grid;place-items:center;\n  color:var(--moshu-faint);cursor:pointer}\n.moshu-root .tl-link-add{display:flex;align-items:center;gap:5px;margin-top:4px;flex-wrap:wrap}\n.moshu-root .tl-link-add select{\n  flex:1 1 90px;min-width:0;padding:3px 6px;border-radius:7px;\n  border:1px solid var(--moshu-line);background:var(--moshu-surface);\n  color:var(--moshu-ink);font-size:11px}\n.moshu-root .tl-detail-foot{display:flex;gap:8px;margin-top:auto;padding-top:8px}\n";
 });
 
 __define("./components/Timeline.jsx", function (module, exports, require) {
 'use strict';
 
 /**
- * 故事时间线 —— 横向泳道视图。
+ * 故事时间线 —— 左侧泳道栏 + 右侧横向事件画布 + 详情编辑，作者可自己改。
  *
- * 纵向列表只能回答"先发生什么"，回答不了"这几条线怎么缠在一起"。
- * 所以改成：**横轴是顺序，纵轴是剧情线**（主线/支线/人物线…），
- * 每个事件是泳道上的一个节点，事件之间的 links 画成曲线——明线实线、暗线虚线。
- *
- * 数据契约（timeline.json 里的事件）：
+ * 数据（timeline.json，GET/POST /timeline）：
  *   { id, title, date, era, description, characters[], chapterId, chapterTitle,
  *     location, type, lane, laneName, thread, links: [{ target, kind }] }
- *   lane     —— 泳道 id（缺省 'main'）
- *   laneName —— 泳道显示名（缺省"主线"）
- *   thread   —— 'bright' 明线 / 'dark' 暗线（缺省 bright）
- *   links    —— 指向别的事件 id；kind: cause 因果 / impact 影响 / foreshadow 伏笔
+ *
+ * 上一版的布局问题：泳道名用绝对定位压在同一层里，第一张事件卡正好盖在泳道栏上。
+ * 这一版把泳道栏做成**独立的左侧列**（不在画布内、不与卡片重叠），
+ * 画布只放事件卡与连线。
+ *
+ * 作者可做的事：新建/删除事件、改标题/时间/描述/人物/地点、改剧情线与明暗线、
+ * 手动连线（因果 / 影响 / 伏笔）、删连线，改完保存（Ctrl+S）。
  */
 const React = require('react');
 const {
+  useEffect,
   useMemo,
   useRef,
   useState
 } = React;
+const api = require('../api');
+const {
+  SharedStyle
+} = require('./SharedStyle');
 const {
   Activity,
-  BookOpen,
   ChevronRight,
-  Map: MapIcon,
-  Network,
-  Search,
+  Plus,
+  Save,
   X
 } = require('../icons');
 const css = require('./Timeline.css');
-const TYPE_LABELS = {
-  turning: '命运转折',
-  journey: '旅途',
-  revelation: '真相揭示',
-  conflict: '冲突',
-  decision: '抉择',
-  dialogue: '对话',
-  other: '故事事件'
-};
-const THREAD_LABELS = {
+const THREAD_LABEL = {
   bright: '明线',
   dark: '暗线'
 };
-const LINK_LABELS = {
+const LINK_LABEL = {
   cause: '因果',
   impact: '影响',
   foreshadow: '伏笔'
 };
+const TYPE_LABEL = {
+  turning: '转折',
+  journey: '旅途',
+  revelation: '揭示',
+  conflict: '冲突',
+  decision: '抉择',
+  dialogue: '对话',
+  other: '事件'
+};
 
-/* 布局常量：横轴步长、泳道行高、左侧标签栏宽度 */
-const COL_W = 168;
-const ROW_H = 76;
-const PAD_X = 28;
-const LABEL_W = 132;
-function eventsOf(props) {
-  return Array.isArray(props && props.events) ? props.events : [];
+/* 画布布局常量 */
+const COL_W = 190;
+const ROW_H = 88;
+const PAD_X = 24;
+const NODE_W = 168;
+const GAP = 12;
+function sortEvents(events) {
+  return events.slice().sort((a, b) => {
+    const an = Number(a.order);
+    const bn = Number(b.order);
+    if (Number.isFinite(an) && Number.isFinite(bn) && an !== bn) return an - bn;
+    return String(a.id).localeCompare(String(b.id));
+  });
 }
 
-/** 泳道：按出现顺序把事件分组；任意一条是暗线，整条泳道按暗线渲染。 */
+/** 按出现顺序分泳道；laneName 取事件里的显示名。 */
 function buildLanes(events) {
   const map = new Map();
-  events.forEach((event, index) => {
+  events.forEach(event => {
     const id = String(event.lane || 'main');
     if (!map.has(id)) {
       map.set(id, {
@@ -9911,102 +9919,72 @@ function buildLanes(events) {
     }
     const lane = map.get(id);
     if (event.thread === 'dark') lane.thread = 'dark';
-    lane.events.push({
-      event,
-      order: index
-    });
+    lane.events.push(event);
   });
   return [...map.values()];
 }
 function Timeline(props) {
-  const className = props && props.className ? props.className : '';
-  const events = eventsOf(props);
-  const onSelectEvent = props && props.onSelectEvent;
-  const onOpenChapter = props && props.onOpenChapter;
-  const [query, setQuery] = useState('');
-  const [showDark, setShowDark] = useState(true);
-  const [selected, setSelected] = useState(null);
-  const [panning, setPanning] = useState(false);
-  const boardRef = useRef(null);
-  const dragRef = useRef(null);
+  const incoming = Array.isArray(props && props.events) ? props.events : [];
+  const onOpenChapter = props && typeof props.onOpenChapter === 'function' ? props.onOpenChapter : null;
+  const notify = props && typeof props.onNotify === 'function' ? props.onNotify : function () {};
+  const [events, setEvents] = useState(incoming);
+  const [selectedId, setSelectedId] = useState('');
+  const [dirty, setDirty] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [linkDraft, setLinkDraft] = useState({
+    target: '',
+    kind: 'cause'
+  });
+  const eventsRef = useRef(events);
+  eventsRef.current = events;
+  const loadedOnce = useRef(false);
 
-  /* 按住空白处拖动 = 平移画布（和地图一样的手感）。
-     拖节点是"点选"，所以只认空白区域起手的拖动；松手时若没移动就当作点击。 */
-  function beginPan(event) {
-    if (event.button !== 0) return;
-    const node = boardRef.current;
-    if (!node) return;
-    dragRef.current = {
-      x: event.clientX,
-      y: event.clientY,
-      left: node.scrollLeft,
-      top: node.scrollTop,
-      moved: false
+  /* 初次从接口取（作者 edits 落在 timeline.json，bootstrap 也给一份，优先接口） */
+  useEffect(function () {
+    let alive = true;
+    api.request('/timeline').then(function (payload) {
+      if (!alive || !payload || !Array.isArray(payload.events)) return;
+      loadedOnce.current = true;
+      setEvents(payload.events);
+    }).catch(function () {/* 接口不可用时用 props 里的数据 */});
+    return function () {
+      alive = false;
     };
-    setPanning(true);
-    if (typeof node.setPointerCapture === 'function') {
-      try {
-        node.setPointerCapture(event.pointerId);
-      } catch {/* 忽略 */}
-    }
-  }
-  function movePan(event) {
-    const drag = dragRef.current;
-    const node = boardRef.current;
-    if (!drag || !node) return;
-    const dx = event.clientX - drag.x;
-    const dy = event.clientY - drag.y;
-    if (Math.abs(dx) + Math.abs(dy) > 3) drag.moved = true;
-    node.scrollLeft = drag.left - dx;
-    node.scrollTop = drag.top - dy;
-  }
-  function endPan() {
-    dragRef.current = null;
-    setPanning(false);
-  }
-  const visible = useMemo(() => {
-    const key = query.trim().toLowerCase();
-    return events.filter(event => {
-      if (!showDark && event.thread === 'dark') return false;
-      if (!key) return true;
-      const haystack = [event.title, event.description, event.location, event.era, event.date].concat(event.characters || []).join(' ').toLowerCase();
-      return haystack.indexOf(key) >= 0;
-    });
-  }, [events, query, showDark]);
-  const lanes = useMemo(() => buildLanes(visible), [visible]);
+  }, []);
 
-  /* 每个事件的位置：x 由全局顺序决定（同一条竖线 ≈ 同一段时间）。 */
+  /* props 变化（AI 刚写过）且本地没改动时同步 */
+  useEffect(function () {
+    if (dirty || !loadedOnce.current) return;
+    setEvents(incoming);
+  }, [incoming, dirty]);
+  const ordered = useMemo(() => sortEvents(events), [events]);
+  const lanes = useMemo(() => buildLanes(ordered), [ordered]);
   const positions = useMemo(() => {
     const pos = new Map();
-    const order = new Map();
-    visible.forEach((event, index) => order.set(event.id, index));
-    lanes.forEach((lane, laneIndex) => {
-      lane.events.forEach(({
-        event
-      }) => {
-        const column = order.has(event.id) ? order.get(event.id) : 0;
-        pos.set(event.id, {
-          x: PAD_X + column * COL_W,
-          y: laneIndex * ROW_H + ROW_H / 2
-        });
+    ordered.forEach((event, index) => {
+      const laneIndex = lanes.findIndex(lane => lane.id === String(event.lane || 'main'));
+      pos.set(event.id, {
+        x: PAD_X + index * COL_W,
+        y: (laneIndex < 0 ? 0 : laneIndex) * ROW_H + ROW_H / 2
       });
     });
     return pos;
-  }, [lanes, visible]);
-  const width = PAD_X * 2 + Math.max(visible.length, 1) * COL_W;
+  }, [ordered, lanes]);
+  const width = PAD_X * 2 + Math.max(ordered.length, 1) * COL_W;
   const height = Math.max(lanes.length, 1) * ROW_H;
   const links = useMemo(() => {
     const out = [];
-    visible.forEach(event => {
+    ordered.forEach(event => {
       const from = positions.get(event.id);
       if (!from) return;
-      (Array.isArray(event.links) ? event.links : []).forEach(link => {
+      (Array.isArray(event.links) ? event.links : []).forEach((link, index) => {
         const to = positions.get(link && link.target);
         if (!to) return;
-        const kind = LINK_LABELS[link.kind] ? link.kind : 'cause';
+        const kind = LINK_LABEL[link.kind] ? link.kind : 'cause';
         const midX = (from.x + to.x) / 2;
         out.push({
-          key: event.id + '->' + link.target,
+          key: event.id + '->' + link.target + '-' + index,
           d: 'M' + from.x + ' ' + from.y + ' C' + midX + ' ' + from.y + ' ' + midX + ' ' + to.y + ' ' + to.x + ' ' + to.y,
           kind,
           dark: event.thread === 'dark'
@@ -10014,138 +9992,378 @@ function Timeline(props) {
       });
     });
     return out;
-  }, [visible, positions]);
-  const selectedEvent = selected ? visible.filter(event => event.id === selected)[0] : null;
-  function pick(id) {
-    setSelected(id);
-    if (onSelectEvent) onSelectEvent(id);
+  }, [ordered, positions]);
+  const selected = ordered.find(event => event.id === selectedId) || null;
+  function patch(next) {
+    setEvents(next);
+    setDirty(true);
   }
+  function updateSelected(value) {
+    patch(eventsRef.current.map(event => event.id === selectedId ? {
+      ...event,
+      ...value
+    } : event));
+  }
+  async function persist() {
+    setBusy(true);
+    setError('');
+    try {
+      const saved = await api.request('/timeline', {
+        method: 'POST',
+        body: JSON.stringify({
+          events: eventsRef.current
+        })
+      });
+      if (saved && Array.isArray(saved.events)) {
+        setEvents(saved.events);
+        setDirty(false);
+        notify('时间线已保存');
+      }
+    } catch (reason) {
+      setError(reason && reason.message ? reason.message : '保存失败');
+    } finally {
+      setBusy(false);
+    }
+  }
+  function addEvent() {
+    const current = eventsRef.current;
+    const id = 'evt-' + Date.now().toString(36);
+    const lane = selected ? String(selected.lane || 'main') : lanes[0] ? lanes[0].id : 'main';
+    const laneName = selected ? String(selected.laneName || '') : lanes[0] ? lanes[0].name : '主线';
+    const next = current.concat([{
+      id,
+      title: '新事件',
+      date: '',
+      era: '',
+      description: '',
+      characters: [],
+      chapterId: '',
+      chapterTitle: '',
+      location: '',
+      type: 'other',
+      lane,
+      laneName,
+      thread: selected && selected.thread === 'dark' ? 'dark' : 'bright',
+      links: [],
+      order: current.length
+    }]);
+    patch(next);
+    setSelectedId(id);
+  }
+  function removeEvent(id) {
+    const next = eventsRef.current.filter(event => event.id !== id).map(event => ({
+      ...event,
+      links: (event.links || []).filter(link => link.target !== id)
+    }));
+    patch(next);
+    if (selectedId === id) setSelectedId('');
+  }
+  function addLink() {
+    if (!selected || !linkDraft.target) return;
+    if (linkDraft.target === selected.id) return;
+    const exists = (selected.links || []).some(link => link.target === linkDraft.target && link.kind === linkDraft.kind);
+    if (exists) return;
+    const links2 = (selected.links || []).concat([{
+      target: linkDraft.target,
+      kind: linkDraft.kind
+    }]);
+    updateSelected({
+      links: links2
+    });
+    setLinkDraft({
+      target: '',
+      kind: linkDraft.kind
+    });
+  }
+  function removeLink(target, kind) {
+    if (!selected) return;
+    updateSelected({
+      links: (selected.links || []).filter(link => !(link.target === target && link.kind === kind))
+    });
+  }
+
+  /* 切换一条泳道的明/暗：改这一组所有事件，保持一致 */
+  function toggleLaneThread(laneId) {
+    const lane = lanes.find(item => item.id === laneId);
+    if (!lane) return;
+    const nextThread = lane.thread === 'dark' ? 'bright' : 'dark';
+    patch(eventsRef.current.map(event => String(event.lane || 'main') === laneId ? {
+      ...event,
+      thread: nextThread
+    } : event));
+  }
+  useEffect(function () {
+    function onKeyDown(event) {
+      if ((event.ctrlKey || event.metaKey) && String(event.key || '').toLowerCase() === 's') {
+        event.preventDefault();
+        void persist();
+      }
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return function () {
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, []);
   return /*#__PURE__*/React.createElement("section", {
-    className: ('tl-board ' + className).trim()
-  }, /*#__PURE__*/React.createElement("style", null, css), /*#__PURE__*/React.createElement("header", {
+    className: "tl-board"
+  }, /*#__PURE__*/React.createElement(SharedStyle, null), /*#__PURE__*/React.createElement("style", {
+    dangerouslySetInnerHTML: {
+      __html: css
+    }
+  }), /*#__PURE__*/React.createElement("header", {
     className: "tl-bar"
   }, /*#__PURE__*/React.createElement("div", {
     className: "tl-bar-title"
-  }, /*#__PURE__*/React.createElement(Network, {
-    size: 14
-  }), /*#__PURE__*/React.createElement("strong", null, visible.length), /*#__PURE__*/React.createElement("span", null, "\u4E2A\u4E8B\u4EF6"), /*#__PURE__*/React.createElement("span", {
-    className: "tl-sep"
-  }, "\xB7"), /*#__PURE__*/React.createElement("strong", null, lanes.length), /*#__PURE__*/React.createElement("span", null, "\u6761\u7EBF")), /*#__PURE__*/React.createElement("label", {
-    className: "tl-search"
-  }, /*#__PURE__*/React.createElement(Search, {
-    size: 13
-  }), /*#__PURE__*/React.createElement("input", {
-    value: query,
-    onChange: event => setQuery(event.target.value),
-    placeholder: "\u641C\u7D22\u4E8B\u4EF6\u3001\u5730\u70B9\u3001\u4EBA\u7269\u2026"
-  }), query ? /*#__PURE__*/React.createElement("button", {
-    type: "button",
-    onClick: () => setQuery(''),
-    "aria-label": "\u6E05\u9664\u641C\u7D22"
-  }, /*#__PURE__*/React.createElement(X, {
-    size: 12
-  })) : null), /*#__PURE__*/React.createElement("button", {
-    type: "button",
-    className: 'tl-toggle' + (showDark ? ' is-on' : ''),
-    "aria-pressed": showDark,
-    onClick: () => setShowDark(value => !value),
-    title: "\u663E\u793A/\u9690\u85CF\u6697\u7EBF"
   }, /*#__PURE__*/React.createElement(Activity, {
-    size: 13
-  }), /*#__PURE__*/React.createElement("span", null, "\u6697\u7EBF"))), events.length === 0 ? /*#__PURE__*/React.createElement("div", {
-    className: "tl-empty"
-  }, /*#__PURE__*/React.createElement("p", null, "\u8FD8\u6CA1\u6709\u65F6\u95F4\u7EBF\u4E8B\u4EF6\u3002"), /*#__PURE__*/React.createElement("span", null, "\u53EF\u4EE5\u5728\u5BF9\u8BDD\u91CC\u8BA9 AI \u8BFB\u6B63\u6587\u540E\u63D0\u53D6\u3002")) : /*#__PURE__*/React.createElement("div", {
-    className: 'tl-scroll' + (panning ? ' is-panning' : ''),
-    ref: boardRef,
-    onPointerDown: beginPan,
-    onPointerMove: movePan,
-    onPointerUp: endPan,
-    onPointerLeave: endPan,
-    onPointerCancel: endPan
-  }, /*#__PURE__*/React.createElement("div", {
+    size: 14
+  }), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("b", null, ordered.length), " \u4E2A\u4E8B\u4EF6"), /*#__PURE__*/React.createElement("span", {
+    className: "tl-sep"
+  }, "\xB7"), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("b", null, lanes.length), " \u6761\u7EBF")), /*#__PURE__*/React.createElement("div", {
+    className: "tl-bar-actions"
+  }, error ? /*#__PURE__*/React.createElement("span", {
+    className: "tl-error",
+    role: "alert"
+  }, error) : null, dirty ? /*#__PURE__*/React.createElement("span", {
+    className: "tl-dirty"
+  }, "\u672A\u4FDD\u5B58") : null, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "tl-btn",
+    onClick: addEvent,
+    disabled: busy
+  }, /*#__PURE__*/React.createElement(Plus, {
+    size: 14
+  }), "\u65B0\u5EFA\u4E8B\u4EF6"), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "tl-btn is-primary",
+    onClick: () => void persist(),
+    disabled: busy || !dirty
+  }, /*#__PURE__*/React.createElement(Save, {
+    size: 14
+  }), busy ? '保存中…' : '保存'))), /*#__PURE__*/React.createElement("div", {
+    className: "tl-body"
+  }, /*#__PURE__*/React.createElement("aside", {
+    className: "tl-lanes",
+    "aria-label": "\u5267\u60C5\u7EBF"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "tl-lanes-title"
+  }, "\u5267\u60C5\u7EBF"), lanes.length ? lanes.map(lane => /*#__PURE__*/React.createElement("button", {
+    key: lane.id,
+    type: "button",
+    className: 'tl-lane-item is-' + lane.thread,
+    onClick: () => toggleLaneThread(lane.id),
+    title: lane.thread === 'dark' ? '当前是暗线，点击改为明线' : '当前是明线，点击改为暗线'
+  }, /*#__PURE__*/React.createElement("span", {
+    className: 'tl-thread-dot is-' + lane.thread
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "tl-lane-name"
+  }, lane.name), /*#__PURE__*/React.createElement("span", {
+    className: 'tl-thread-tag is-' + lane.thread
+  }, THREAD_LABEL[lane.thread]), /*#__PURE__*/React.createElement("span", {
+    className: "tl-lane-count"
+  }, lane.events.length))) : /*#__PURE__*/React.createElement("p", {
+    className: "tl-lanes-empty"
+  }, "\u8FD8\u6CA1\u6709\u4E8B\u4EF6")), /*#__PURE__*/React.createElement("div", {
+    className: "tl-scroll"
+  }, ordered.length ? /*#__PURE__*/React.createElement("div", {
     className: "tl-canvas",
     style: {
-      width: width + LABEL_W,
+      width,
       height
     }
   }, lanes.map((lane, index) => /*#__PURE__*/React.createElement("div", {
     key: lane.id,
-    className: 'tl-lane is-' + lane.thread,
+    className: 'tl-row is-' + lane.thread,
     style: {
       top: index * ROW_H,
       height: ROW_H,
-      left: LABEL_W,
       width
     }
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "tl-lane-rule"
-  }))), lanes.map((lane, index) => /*#__PURE__*/React.createElement("div", {
-    key: 'label-' + lane.id,
-    className: 'tl-lane-label is-' + lane.thread,
-    style: {
-      top: index * ROW_H,
-      height: ROW_H
-    }
-  }, /*#__PURE__*/React.createElement("strong", null, lane.name), /*#__PURE__*/React.createElement("span", null, THREAD_LABELS[lane.thread]), /*#__PURE__*/React.createElement("em", null, lane.events.length))), /*#__PURE__*/React.createElement("svg", {
+  })), /*#__PURE__*/React.createElement("svg", {
     className: "tl-links",
     width: width,
-    height: height,
-    style: {
-      left: LABEL_W
-    }
+    height: height
   }, links.map(link => /*#__PURE__*/React.createElement("path", {
     key: link.key,
     className: 'tl-link is-' + link.kind + (link.dark ? ' is-dark' : ''),
     d: link.d
-  }))), visible.map(event => {
+  }))), ordered.map(event => {
     const point = positions.get(event.id);
     if (!point) return null;
     const dark = event.thread === 'dark';
     return /*#__PURE__*/React.createElement("button", {
       key: event.id,
       type: "button",
-      className: 'tl-node is-' + (event.type || 'other') + (dark ? ' is-dark' : '') + (selected === event.id ? ' is-selected' : ''),
+      className: 'tl-node is-' + (event.type || 'other') + (dark ? ' is-dark' : '') + (selectedId === event.id ? ' is-selected' : ''),
       style: {
-        left: LABEL_W + point.x - 74,
-        top: point.y - 26
+        left: point.x - NODE_W / 2,
+        top: point.y - 30,
+        width: NODE_W
       },
-      onClick: () => pick(event.id),
+      onClick: () => setSelectedId(event.id),
       title: event.title
     }, /*#__PURE__*/React.createElement("span", {
-      className: "tl-node-dot"
-    }), /*#__PURE__*/React.createElement("span", {
       className: "tl-node-body"
-    }, /*#__PURE__*/React.createElement("strong", null, event.title), /*#__PURE__*/React.createElement("em", null, event.date || event.era || TYPE_LABELS[event.type || 'other'])));
-  }))), selectedEvent ? /*#__PURE__*/React.createElement("aside", {
+    }, /*#__PURE__*/React.createElement("strong", null, event.title), /*#__PURE__*/React.createElement("em", null, event.date || event.era || TYPE_LABEL[event.type || 'other'])), (event.links || []).length ? /*#__PURE__*/React.createElement("span", {
+      className: "tl-node-links"
+    }, (event.links || []).length) : null);
+  })) : /*#__PURE__*/React.createElement("div", {
+    className: "tl-empty"
+  }, /*#__PURE__*/React.createElement("p", null, "\u8FD8\u6CA1\u6709\u65F6\u95F4\u7EBF\u4E8B\u4EF6"), /*#__PURE__*/React.createElement("span", null, "\u53EF\u4EE5\u8BA9 AI \u4ECE\u6B63\u6587\u91CC\u63D0\u53D6\uFF0C\u4E5F\u53EF\u4EE5\u70B9\u53F3\u4E0A\u89D2\u300C\u65B0\u5EFA\u4E8B\u4EF6\u300D\u81EA\u5DF1\u5199\u3002"))), selected ? /*#__PURE__*/React.createElement("aside", {
     className: "tl-detail"
-  }, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("header", {
     className: "tl-detail-head"
   }, /*#__PURE__*/React.createElement("span", {
-    className: 'tl-type is-' + (selectedEvent.type || 'other')
-  }, TYPE_LABELS[selectedEvent.type || 'other']), /*#__PURE__*/React.createElement("button", {
+    className: "tl-detail-title"
+  }, "\u7F16\u8F91\u4E8B\u4EF6"), /*#__PURE__*/React.createElement("button", {
     type: "button",
-    onClick: () => setSelected(null),
-    "aria-label": "\u5173\u95ED\u8BE6\u60C5"
+    onClick: () => setSelectedId(''),
+    "aria-label": "\u5173\u95ED"
   }, /*#__PURE__*/React.createElement(X, {
-    size: 13
-  }))), /*#__PURE__*/React.createElement("h3", null, selectedEvent.title), /*#__PURE__*/React.createElement("dl", null, selectedEvent.date ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("dt", null, "\u65F6\u95F4"), /*#__PURE__*/React.createElement("dd", null, selectedEvent.date)) : null, selectedEvent.era ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("dt", null, "\u7EAA\u5143"), /*#__PURE__*/React.createElement("dd", null, selectedEvent.era)) : null, selectedEvent.location ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("dt", null, "\u5730\u70B9"), /*#__PURE__*/React.createElement("dd", null, /*#__PURE__*/React.createElement(MapIcon, {
-    size: 12
-  }), " ", selectedEvent.location)) : null, selectedEvent.characters && selectedEvent.characters.length ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("dt", null, "\u4EBA\u7269"), /*#__PURE__*/React.createElement("dd", null, selectedEvent.characters.join('、'))) : null), selectedEvent.description ? /*#__PURE__*/React.createElement("p", null, selectedEvent.description) : null, selectedEvent.chapterTitle || selectedEvent.chapterId ? /*#__PURE__*/React.createElement("button", {
+    size: 14
+  }))), /*#__PURE__*/React.createElement("label", {
+    className: "tl-field"
+  }, "\u6807\u9898", /*#__PURE__*/React.createElement("input", {
+    value: selected.title,
+    onChange: event => updateSelected({
+      title: event.target.value
+    })
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "tl-field-row"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "tl-field"
+  }, "\u65F6\u95F4", /*#__PURE__*/React.createElement("input", {
+    value: selected.date || '',
+    onChange: event => updateSelected({
+      date: event.target.value
+    }),
+    placeholder: "\u7B2C\u4E09\u5E74\u6625"
+  })), /*#__PURE__*/React.createElement("label", {
+    className: "tl-field"
+  }, "\u7EAA\u5143/\u5377", /*#__PURE__*/React.createElement("input", {
+    value: selected.era || '',
+    onChange: event => updateSelected({
+      era: event.target.value
+    }),
+    placeholder: "\u7B2C\u4E00\u5377 \xB7 \u96FE\u8D77"
+  }))), /*#__PURE__*/React.createElement("label", {
+    className: "tl-field"
+  }, "\u63CF\u8FF0", /*#__PURE__*/React.createElement("textarea", {
+    rows: 3,
+    value: selected.description || '',
+    onChange: event => updateSelected({
+      description: event.target.value
+    })
+  })), /*#__PURE__*/React.createElement("label", {
+    className: "tl-field"
+  }, "\u5728\u573A\u4EBA\u7269\uFF08\u9017\u53F7\u5206\u9694\uFF09", /*#__PURE__*/React.createElement("input", {
+    value: (selected.characters || []).join('、'),
+    onChange: event => updateSelected({
+      characters: event.target.value.split(/[、,，\s]+/).filter(Boolean)
+    })
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "tl-field-row"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "tl-field"
+  }, "\u5730\u70B9", /*#__PURE__*/React.createElement("input", {
+    value: selected.location || '',
+    onChange: event => updateSelected({
+      location: event.target.value
+    })
+  })), /*#__PURE__*/React.createElement("label", {
+    className: "tl-field"
+  }, "\u5267\u60C5\u7EBF", /*#__PURE__*/React.createElement("input", {
+    value: selected.laneName || (selected.lane === 'main' ? '主线' : selected.lane || ''),
+    onChange: event => updateSelected({
+      laneName: event.target.value
+    }),
+    placeholder: "\u4E3B\u7EBF / \u671D\u5802\u7EBF"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "tl-field-row"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "tl-field"
+  }, "\u7EBF\u522B", /*#__PURE__*/React.createElement("select", {
+    value: selected.thread === 'dark' ? 'dark' : 'bright',
+    onChange: event => updateSelected({
+      thread: event.target.value
+    })
+  }, /*#__PURE__*/React.createElement("option", {
+    value: "bright"
+  }, "\u660E\u7EBF"), /*#__PURE__*/React.createElement("option", {
+    value: "dark"
+  }, "\u6697\u7EBF"))), /*#__PURE__*/React.createElement("label", {
+    className: "tl-field"
+  }, "\u7C7B\u578B", /*#__PURE__*/React.createElement("select", {
+    value: selected.type || 'other',
+    onChange: event => updateSelected({
+      type: event.target.value
+    })
+  }, Object.keys(TYPE_LABEL).map(key => /*#__PURE__*/React.createElement("option", {
+    key: key,
+    value: key
+  }, TYPE_LABEL[key]))))), /*#__PURE__*/React.createElement("div", {
+    className: "tl-links-edit"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "tl-links-title"
+  }, "\u5267\u60C5\u5173\u7CFB"), (selected.links || []).length ? (selected.links || []).map((link, index) => {
+    const target = ordered.find(event => event.id === link.target);
+    return /*#__PURE__*/React.createElement("div", {
+      className: "tl-link-row",
+      key: link.target + index
+    }, /*#__PURE__*/React.createElement("span", {
+      className: 'tl-link-kind is-' + link.kind
+    }, LINK_LABEL[link.kind] || '因果'), /*#__PURE__*/React.createElement(ChevronRight, {
+      size: 12
+    }), /*#__PURE__*/React.createElement("span", {
+      className: "tl-link-target"
+    }, target ? target.title : '（事件已删除）'), /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      onClick: () => removeLink(link.target, link.kind),
+      "aria-label": "\u5220\u9664\u8FD9\u6761\u5173\u7CFB"
+    }, /*#__PURE__*/React.createElement(X, {
+      size: 12
+    })));
+  }) : /*#__PURE__*/React.createElement("p", {
+    className: "tl-links-empty"
+  }, "\u8FD8\u6CA1\u6709\u8FDE\u7EBF\u3002\u8FDE\u4E0A\u5B83\u5BFC\u81F4 / \u5F71\u54CD / \u94FA\u57AB\u7684\u90A3\u6761\u4E8B\u4EF6\u3002"), /*#__PURE__*/React.createElement("div", {
+    className: "tl-link-add"
+  }, /*#__PURE__*/React.createElement("select", {
+    value: linkDraft.kind,
+    onChange: event => setLinkDraft({
+      ...linkDraft,
+      kind: event.target.value
+    })
+  }, Object.keys(LINK_LABEL).map(key => /*#__PURE__*/React.createElement("option", {
+    key: key,
+    value: key
+  }, LINK_LABEL[key]))), /*#__PURE__*/React.createElement("select", {
+    value: linkDraft.target,
+    onChange: event => setLinkDraft({
+      ...linkDraft,
+      target: event.target.value
+    })
+  }, /*#__PURE__*/React.createElement("option", {
+    value: ""
+  }, "\u9009\u62E9\u4E8B\u4EF6\u2026"), ordered.filter(event => event.id !== selected.id).map(event => /*#__PURE__*/React.createElement("option", {
+    key: event.id,
+    value: event.id
+  }, event.title))), /*#__PURE__*/React.createElement("button", {
     type: "button",
-    className: "tl-open",
-    onClick: () => onOpenChapter && onOpenChapter(selectedEvent.chapterId || selectedEvent.chapterTitle)
-  }, /*#__PURE__*/React.createElement(BookOpen, {
+    className: "tl-btn",
+    onClick: addLink,
+    disabled: !linkDraft.target
+  }, /*#__PURE__*/React.createElement(Plus, {
     size: 13
-  }), /*#__PURE__*/React.createElement("span", null, selectedEvent.chapterTitle || selectedEvent.chapterId), /*#__PURE__*/React.createElement(ChevronRight, {
-    size: 13
-  })) : null) : null, /*#__PURE__*/React.createElement("footer", {
-    className: "tl-legend"
-  }, Object.keys(LINK_LABELS).map(kind => /*#__PURE__*/React.createElement("span", {
-    key: kind,
-    className: 'tl-legend-item is-' + kind
-  }, LINK_LABELS[kind])), /*#__PURE__*/React.createElement("span", {
-    className: "tl-legend-item is-dark"
-  }, "\u6697\u7EBF = \u865A\u7EBF")));
+  }), "\u8FDE\u7EBF"))), /*#__PURE__*/React.createElement("div", {
+    className: "tl-detail-foot"
+  }, selected.chapterTitle || selected.chapterId ? /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "tl-btn",
+    onClick: () => onOpenChapter && onOpenChapter(selected.chapterId || selected.chapterTitle)
+  }, "\u6253\u5F00\u7AE0\u8282") : null, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "tl-btn is-danger",
+    onClick: () => removeEvent(selected.id)
+  }, "\u5220\u9664\u4E8B\u4EF6"))) : null));
 }
 module.exports = {
   Timeline
