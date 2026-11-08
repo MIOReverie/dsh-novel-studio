@@ -406,6 +406,39 @@ async function overview(args) {
     const top = doc.path.split('/')[0];
     if (Object.prototype.hasOwnProperty.call(referenceCounts, top)) referenceCounts[top] += 1;
   }
+  /* 资料区是否需要整理：同目录下标题互相包含、或文件明显空。
+     只统计，不修改；让"该整理了"这件事在数据里可见，而不是靠模型自己想起来。 */
+  const referenceDocs = documents.filter((doc) => {
+    const top = doc.path.split('/')[0];
+    return Object.prototype.hasOwnProperty.call(referenceCounts, top);
+  });
+  const norm = (value) => String(value || '').replace(/[\s（）()【】\[\]\-_·]/g, '').toLowerCase();
+  const groups = new Map();
+  for (const doc of referenceDocs) {
+    const dir = path.posix.dirname(doc.path);
+    const key = norm(String(doc.title || '').replace(/\.md$/i, ''));
+    if (!key) continue;
+    const list = groups.get(dir) || [];
+    list.push({ path: doc.path, key, chars: countChars(doc.content) });
+    groups.set(dir, list);
+  }
+  const duplicates = [];
+  for (const [dir, list] of groups) {
+    for (let i = 0; i < list.length; i += 1) {
+      for (let j = i + 1; j < list.length; j += 1) {
+        const a = list[i];
+        const b = list[j];
+        if (a.key === b.key || a.key.indexOf(b.key) >= 0 || b.key.indexOf(a.key) >= 0) {
+          duplicates.push({ dir, a: a.path, b: b.path });
+        }
+      }
+    }
+  }
+  const emptyDocs = referenceDocs.filter((doc) => countChars(doc.content) < 12).map((doc) => doc.path);
+  const tidyHint = (duplicates.length || emptyDocs.length >= 5)
+    ? `- 资料区需要整理：${duplicates.length ? `${duplicates.length} 组疑似同主题文件（${duplicates.slice(0, 3).map((item) => item.a + ' / ' + item.b).join('；')}${duplicates.length > 3 ? ' …' : ''}）` : ''}${duplicates.length && emptyDocs.length >= 5 ? '；' : ''}${emptyDocs.length >= 5 ? `${emptyDocs.length} 篇几乎空白` : ''}。作者要求"整理"时按【主动整理】一次做完；没要求就只提一句建议。`
+    : '';
+
   const sortedChapters = [...chapters].sort((left, right) => left.mtime - right.mtime);
   const latest = sortedChapters[sortedChapters.length - 1];
   const totalChars = documents.reduce((sum, doc) => sum + countChars(doc.content), 0);
@@ -451,6 +484,7 @@ async function overview(args) {
     `- 作品：${book.id}`,
     `- 路径约定：所有 path 都是**相对作品目录**的（例如 chapters/chapter-001.md），不要拼绝对路径`,
     seedHint,
+    tidyHint,
     `- 地图：${mapSummary}`,
     `- 章节：${chapters.length} 章`,
     `- 正文字数（去空白）：${chapterChars} 字`,
@@ -469,6 +503,9 @@ async function overview(args) {
     totalChars,
     referenceCounts,
     currentChapter: latest ? { path: latest.path, title: latest.title, mtime: latest.mtime } : null,
+    ...(duplicates.length || emptyDocs.length >= 5
+      ? { tidy: { duplicates, emptyDocs: emptyDocs.slice(0, 20) } }
+      : {}),
     text,
   };
 }
@@ -2169,7 +2206,7 @@ async function timelineWriteTool(args) {
   register({
     name: 'novel_timeline_read',
     description:
-      'Read-only. Lists every timeline event of this book (id / title / date / era / characters / chapter), so you can see what is already recorded before adding more. '
+      'Read-only. Lists every timeline event of this book (id / title / date / era / characters / chapter), so you can see what is already recorded before adding more — and so you can remove entries that are not real turning points. '
       + 'Changes nothing on disk.',
     parameters: {
       chapter: { type: 'string', description: '只看某一章的事件（章节路径或标题都行）。' },
@@ -2197,7 +2234,10 @@ async function timelineWriteTool(args) {
     name: 'novel_timeline_write',
     description:
       'WRITES THE STORY TIMELINE by extracting events from the prose, no approval needed (it is reference material, like the map). '
-      + 'Read the chapters first (novel_list + novel_read), then add one event per thing that actually happens in the text: a battle, a death, an arrival, a reveal, a decision. '
+      + 'Read the chapters first (novel_list + novel_read), then add ONLY events that matter: something that changes the situation (a death, an alliance breaking, a secret revealed, a place destroyed), has consequences later, changes what a character wants/knows, or sets up a payoff. '
+      + 'Do NOT record routine action and movement — "the protagonist picked up the phone", "she walked into the room", eating, travelling, scenery, atmosphere. '
+      + 'Test every candidate: if you deleted this event, would a later chapter stop making sense? If not, do not write it. A short timeline of real turning points beats a complete log of movements. '
+      + 'The first event of a book must be the story\'s actual starting point, not the protagonist\'s small gesture. '
       + 'Put the wording the book itself uses into date / era (e.g. "第三年春", "雾夜之后"; leave it empty when the text gives no time), list the characters present, and point chapterId at the chapter it happened in. '
       + 'Never invent events that are not in the prose — a short, accurate timeline beats a long, made-up one. '
       + 'The timeline is shown as horizontal swimlanes: lane groups events into a plot thread (main / a character / a faction), thread=bright|dark marks main plot vs hidden plot, and links [{target,kind}] draw the plot web (cause / impact / foreshadow). '
